@@ -34,13 +34,21 @@ class Graph
     public: 
         Graph(int n);
         void addEdge(int s, int d, int w);
-        //~Graph();
+        void printMatrix();
+        ~Graph();
         //void printGraph();
 };
 
 Graph::Graph(int n)
 {
+    _nv = n;
     //construct lower triangular matrix
+    matrix = new int* [n];
+
+    for (int i = 0; i < n; i++)
+    {
+        matrix[i] = new int [i + 1];
+    }
 
     //initialise all i=j nodes to infinity
     for (int i = 0; i < n; i++)
@@ -49,38 +57,51 @@ Graph::Graph(int n)
     }
 }
 
-
-void Graph::addEdge(int s, int d, int w)
+Graph::~Graph()
 {
-    //ensure s smaller than d
-    if (s > d)
-    {
-        int temp;
-        temp = s;
-        s = d;
-        d = temp;
-    }
 
-    matrix[s][d] = w;
+}
+
+void Graph::printMatrix()
+{
+    for (int i = 0; i < _nv; i++)
+    {
+        for (int j = 0; j < i + 1; j++)
+        {
+            cout << matrix[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+
+void Graph::addEdge(int row, int col, int w)
+{
+    matrix[row][col] = w;
 }
 
 
 int main()
 {
+    //read in number of nodes
     int numOfNodes;
     cin >> numOfNodes;
 
     //create graph
     Graph map(numOfNodes);
-    for (int i = 0; i < numOfNodes - 1; i++)
+
+    for (int i = 1; i < numOfNodes; i++)
     {
-        for (int j = 0; j < i - 1; j++)
+        for (int j = 0; j < i; j++)
         {
+            cout << i << " " << j << ":";
             int w;
             cin >> w;
-            addEdge(i, j, w);
+            map.addEdge(i, j, w);
         }
     }
+
+    map.printMatrix();
 
     //find MST
     //push vertices with odd degree into list
