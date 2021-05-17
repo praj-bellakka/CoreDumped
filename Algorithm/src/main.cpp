@@ -1,3 +1,13 @@
+/**
+ * CP2106 Orbital 20/21
+ * 
+ * To find the optimal path on a fully connected graph.
+ *
+ * @file: main.cpp
+ * @author: Leow Yuan Yang & Prajwal Bellaka
+ *
+ */
+
 #include <iostream>
 #include <string>
 
@@ -5,8 +15,7 @@
 
 using namespace std;
 
-class Graph;
-
+//class definitions
 class nodeLocation
 {
     private:
@@ -19,11 +28,6 @@ class nodeLocation
 
         friend Graph;
 };
-
-string nodeLocation::locationName(int index)
-{
-    return _locationName;
-}
 
 class Graph
 {
@@ -39,47 +43,12 @@ class Graph
         //void printGraph();
 };
 
-Graph::Graph(int n)
-{
-    _nv = n;
-    //construct lower triangular matrix
-    matrix = new int* [n];
 
-    for (int i = 0; i < n; i++)
-    {
-        matrix[i] = new int [i + 1];
-    }
-
-    //initialise all i=j nodes to infinity
-    for (int i = 0; i < n; i++)
-    {
-        addEdge(i, i, INFINITY);
-    }
-}
-
-Graph::~Graph()
-{
-
-}
-
-void Graph::printMatrix()
-{
-    for (int i = 0; i < _nv; i++)
-    {
-        for (int j = 0; j < i + 1; j++)
-        {
-            cout << matrix[i][j] << " ";
-        }
-        cout << endl;
-    }
-}
-
-
-void Graph::addEdge(int row, int col, int w)
-{
-    matrix[row][col] = w;
-}
-
+//function definitions
+Graph::Graph(int n);
+Graph::~Graph();
+void Graph::addEdge(int row, int col, int w);
+void Graph::printMatrix();
 
 int main()
 {
@@ -101,9 +70,85 @@ int main()
         }
     }
 
-    map.printMatrix();
 
-    //find MST
-    //push vertices with odd degree into list
+
+    map.~Graph();
+
     return 0;
 }
+
+
+/**
+ * Contructor of the class Graph
+ * 
+ * @param[in] n The number of nodes in the graph.
+ * @post _nv will be updated.
+ * @post matrix will be initialize to a lower triangular matrix.
+ * @post matrix[i][i] for all i < n will be initialized to INFINITY.
+ */
+Graph::Graph(int n)
+{
+    _nv = n;
+    //construct lower triangular matrix
+    matrix = new int* [n];
+
+    for (int i = 0; i < n; i++)
+    {
+        matrix[i] = new int [i + 1];
+    }
+
+    //initialise all i=j nodes to infinity
+    for (int i = 0; i < n; i++)
+    {
+        addEdge(i, i, INFINITY);
+    }
+}
+
+/**
+ * Deconstructor for class Graph
+ */
+Graph::~Graph()
+{
+
+}
+
+/**
+ * To print out the adjacency matrix to the terminal.
+ */
+void Graph::printMatrix()
+{
+    for (int i = 0; i < _nv; i++)
+    {
+        for (int j = 0; j < i + 1; j++)
+        {
+            cout << matrix[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+/**
+ * To add an edge between 2 nodes.
+ *
+ * @param[in] row Index of the first node.
+ * @param[in] col Index of the second node.
+ * @param[in] w Weight between the two nodes.
+ * @pre row < col
+ * @post matrix[row][col] will be updated with the weight of the edge.
+ */
+void Graph::addEdge(int row, int col, int w)
+{
+    matrix[row][col] = w;
+}
+
+/**
+ * To return the location name
+ *
+ * @param[in] index The index of the locationl
+ */
+string nodeLocation::locationName(int index)
+{
+    return _locationName;
+}
+
+
