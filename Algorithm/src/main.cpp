@@ -5,34 +5,22 @@
  *
  * @file: main.cpp
  * @author: Leow Yuan Yang & Prajwal Bellaka
- *
  */
 
 #include <iostream>
 #include <string>
+#include <list>
 
 #define INFINITY 9999
 
 using namespace std;
 
 //class definitions
-class nodeLocation
-{
-    private:
-        int _nodeIndex;
-        string _locationName;
-
-    public:
-        nodeLocation(int index, string name);
-        string locationName(int index);
-
-        friend Graph;
-};
-
 class Graph
 {
     private:
-        int **matrix;
+        int **_matrix;
+        int **_list;
         int _nv; // number of nodes
 
     public: 
@@ -43,12 +31,22 @@ class Graph
         //void printGraph();
 };
 
+/*
+class nodeWeightPair {
+private:
+	int _index;
+	int _weight;
 
-//function definitions
-Graph::Graph(int n);
-Graph::~Graph();
-void Graph::addEdge(int row, int col, int w);
-void Graph::printMatrix();
+public:
+	nodeWeightPair(int n, int w) { _node = n; _weight = w; };
+	nodeWeightPair(const nodeWeightPair& nwp) { _node = nwp._node; _weight = nwp._weight; };
+	int nodeIndex() { return _index; };
+	int weight() { return _weight; };
+	//bool operator>(const nodeWeightPair& nwp) { return _weight > nwp._weight;};
+	//bool operator == (const nodeWeightPair& nwp) { return _node == nwp._node; };
+};
+
+*/
 
 int main()
 {
@@ -69,6 +67,7 @@ int main()
             map.addEdge(i, j, w);
         }
     }
+    map.printMatrix();
 
 
 
@@ -83,21 +82,25 @@ int main()
  * 
  * @param[in] n The number of nodes in the graph.
  * @post _nv will be updated.
- * @post matrix will be initialize to a lower triangular matrix.
- * @post matrix[i][i] for all i < n will be initialized to INFINITY.
+ * @post _matrix will be initialize to a lower triangular matrix.
+ * @post _matrix[i][i] for all i < n will be initialized to INFINITY.
  */
 Graph::Graph(int n)
 {
     _nv = n;
-    //construct lower triangular matrix
-    matrix = new int* [n];
-
+    //construct adjacency matrix
+    _matrix = new int* [n];
     for (int i = 0; i < n; i++)
     {
-        matrix[i] = new int [i + 1];
+        _matrix[i] = new int [i + 1];
+    }
+    //construct adjacency list
+    _list = new int* [n];
+    for (int i = 0; i < _nv; i++)
+    {
+        list<int> _list[i];
     }
 
-    //initialise all i=j nodes to infinity
     for (int i = 0; i < n; i++)
     {
         addEdge(i, i, INFINITY);
@@ -117,14 +120,18 @@ Graph::~Graph()
  */
 void Graph::printMatrix()
 {
+    cout << endl;
     for (int i = 0; i < _nv; i++)
     {
+        cout << i << ":\t";
         for (int j = 0; j < i + 1; j++)
         {
-            cout << matrix[i][j] << " ";
+            cout << _matrix[i][j] << "\t";
         }
         cout << endl;
     }
+    for (int i = 0; i < _nv; i++)
+        cout << "\t" << i;
 }
 
 /**
@@ -134,21 +141,10 @@ void Graph::printMatrix()
  * @param[in] col Index of the second node.
  * @param[in] w Weight between the two nodes.
  * @pre row < col
- * @post matrix[row][col] will be updated with the weight of the edge.
+ * @post _matrix[row][col] will be updated with the weight of the edge.
  */
 void Graph::addEdge(int row, int col, int w)
 {
-    matrix[row][col] = w;
+    _matrix[row][col] = w;
+    //_list[row].push_front(w);
 }
-
-/**
- * To return the location name
- *
- * @param[in] index The index of the locationl
- */
-string nodeLocation::locationName(int index)
-{
-    return _locationName;
-}
-
-
