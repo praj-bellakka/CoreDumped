@@ -15,12 +15,33 @@
 
 using namespace std;
 
+//struct definitions
+typedef struct 
+{
+    int _index;
+    string _address;
+} location;
+
 //class definitions
+class nodeWeightPair {
+    private:
+        int _index;
+        int _weight;
+
+    public:
+        nodeWeightPair(int n, int w) { _index = n; _weight = w; };
+        nodeWeightPair(const nodeWeightPair& nwp) { _index = nwp._index; _weight = nwp._weight; };
+        int nodeIndex() { return _index; };
+        int weight() { return _weight; };
+        //bool operator>(const nodeWeightPair& nwp) { return _weight > nwp._weight;};
+        //bool operator == (const nodeWeightPair& nwp) { return _index == nwp._index; };
+};
+
 class Graph
 {
     private:
         int **_matrix;
-        list<int> *_list;
+        list<nodeWeightPair> *_list;                               //1
         int _nv; // number of nodes
 
     public: 
@@ -31,24 +52,6 @@ class Graph
         ~Graph();
         //void printGraph();
 };
-
-/*
-   class nodeWeightPair {
-   private:
-   int _index;
-   int _weight;
-
-   public:
-   nodeWeightPair(int n, int w) { _node = n; _weight = w; };
-   nodeWeightPair(const nodeWeightPair& nwp) { _node = nwp._node; _weight = nwp._weight; };
-   int nodeIndex() { return _index; };
-   int weight() { return _weight; };
-//bool operator>(const nodeWeightPair& nwp) { return _weight > nwp._weight;};
-//bool operator == (const nodeWeightPair& nwp) { return _node == nwp._node; };
-};
-
-*/
-
 int main()
 {
     //read in number of nodes
@@ -58,7 +61,7 @@ int main()
     //create graph
     Graph map(numOfNodes);
 
-    for (int i = 1; i < numOfNodes; i++)
+    for (int i = 0; i < numOfNodes; i++)
     {
         for (int j = 0; j < i; j++)
         {
@@ -71,12 +74,28 @@ int main()
     }
 
     map.printMatrix();
-    map.printList();
+//    map.printList();
 
+    //generate minimum spanning tree mst
+    Graph mst(numOfNodes);
+    minSpanTree(mst, map);
 
     map.~Graph();
 
     return 0;
+}
+
+void minSpanTree(mst, map)
+{
+
+    //push into min heap
+    
+
+    //loop
+        //extract min
+        //if it doesnt form a cycle
+            //addedge
+
 }
 
 
@@ -98,7 +117,7 @@ Graph::Graph(int n)
         _matrix[i] = new int [i + 1];
     }
     //construct adjacency list
-    _list = new list<int> [n];
+    _list = new list<nodeWeightPair> [n];
 
 }
 
@@ -133,6 +152,7 @@ void Graph::printMatrix()
 /**
  * To print out the adjacency list to stdout.
  */
+/*
 void Graph::printList()
 {
     cout << endl;
@@ -150,7 +170,7 @@ void Graph::printList()
     for (int i = 0; i < _nv; i++)
         cout << "\t" << i;
 }
-
+*/
 
 /**
  * To add an edge between 2 nodes.
@@ -164,5 +184,5 @@ void Graph::printList()
 void Graph::addEdge(int row, int col, int w)
 {
     _matrix[row][col] = w;
-    _list[row].push_back(w);
+   _list[row].push_back(w);
 }

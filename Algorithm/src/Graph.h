@@ -1,3 +1,12 @@
+typedef struct 
+{
+    int _index;
+    string _address;
+} location;
+
+
+
+
 class locationIndex
 {
     private:
