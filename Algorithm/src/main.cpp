@@ -20,30 +20,31 @@ class Graph
 {
     private:
         int **_matrix;
-        int **_list;
+        list<int> *_list;
         int _nv; // number of nodes
 
     public: 
         Graph(int n);
         void addEdge(int s, int d, int w);
         void printMatrix();
+        void printList();
         ~Graph();
         //void printGraph();
 };
 
 /*
-class nodeWeightPair {
-private:
-	int _index;
-	int _weight;
+   class nodeWeightPair {
+   private:
+   int _index;
+   int _weight;
 
-public:
-	nodeWeightPair(int n, int w) { _node = n; _weight = w; };
-	nodeWeightPair(const nodeWeightPair& nwp) { _node = nwp._node; _weight = nwp._weight; };
-	int nodeIndex() { return _index; };
-	int weight() { return _weight; };
-	//bool operator>(const nodeWeightPair& nwp) { return _weight > nwp._weight;};
-	//bool operator == (const nodeWeightPair& nwp) { return _node == nwp._node; };
+   public:
+   nodeWeightPair(int n, int w) { _node = n; _weight = w; };
+   nodeWeightPair(const nodeWeightPair& nwp) { _node = nwp._node; _weight = nwp._weight; };
+   int nodeIndex() { return _index; };
+   int weight() { return _weight; };
+//bool operator>(const nodeWeightPair& nwp) { return _weight > nwp._weight;};
+//bool operator == (const nodeWeightPair& nwp) { return _node == nwp._node; };
 };
 
 */
@@ -66,9 +67,11 @@ int main()
             cin >> w;
             map.addEdge(i, j, w);
         }
+        map.addEdge(i, i, INFINITY);
     }
-    map.printMatrix();
 
+    map.printMatrix();
+    map.printList();
 
 
     map.~Graph();
@@ -95,16 +98,8 @@ Graph::Graph(int n)
         _matrix[i] = new int [i + 1];
     }
     //construct adjacency list
-    _list = new int* [n];
-    for (int i = 0; i < _nv; i++)
-    {
-        list<int> _list[i];
-    }
+    _list = new list<int> [n];
 
-    for (int i = 0; i < n; i++)
-    {
-        addEdge(i, i, INFINITY);
-    }
 }
 
 /**
@@ -116,11 +111,12 @@ Graph::~Graph()
 }
 
 /**
- * To print out the adjacency matrix to the terminal.
+ * To print out the adjacency matrix to stdout.
  */
 void Graph::printMatrix()
 {
     cout << endl;
+    cout << "Adjacency Matrix: " << endl;
     for (int i = 0; i < _nv; i++)
     {
         cout << i << ":\t";
@@ -135,6 +131,28 @@ void Graph::printMatrix()
 }
 
 /**
+ * To print out the adjacency list to stdout.
+ */
+void Graph::printList()
+{
+    cout << endl;
+    cout << "Adjacency List: " << endl;
+    for (int i = 0; i < _nv; i++)
+    {
+        cout << i << ":\t";
+        //print each linked list
+        for (list<int>::iterator it = _list[i].begin(); it != _list[i].end(); it++)
+        {
+            cout << *it << "\t";
+        }
+        cout << endl;
+    }
+    for (int i = 0; i < _nv; i++)
+        cout << "\t" << i;
+}
+
+
+/**
  * To add an edge between 2 nodes.
  *
  * @param[in] row Index of the first node.
@@ -146,5 +164,5 @@ void Graph::printMatrix()
 void Graph::addEdge(int row, int col, int w)
 {
     _matrix[row][col] = w;
-    //_list[row].push_front(w);
+    _list[row].push_back(w);
 }
