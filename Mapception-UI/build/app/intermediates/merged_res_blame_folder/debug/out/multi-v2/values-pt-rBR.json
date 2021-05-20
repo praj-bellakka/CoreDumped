@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "/Volumes/ssd/flutter-playground/mapception/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values-pt-rBR/values-pt-rBR.xml",
+            "outputFile": "/Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values-pt-rBR/values-pt-rBR.xml",
             "map": [
                 {
                     "source": "/Users/praj/.gradle/caches/transforms-2/files-2.1/3c8e7eb3d21ac94d08f658f6d8a1c9f3/jetified-play-services-basement-17.0.0/res/values-pt-rBR/values.xml",
@@ -38,7 +38,7 @@
                     }
                 },
                 {
-                    "source": "/Users/praj/.gradle/caches/transforms-2/files-2.1/2e94107f30f39be366a17347c2bf100b/core-1.1.0/res/values-pt-rBR/values-pt-rBR.xml",
+                    "source": "/Users/praj/.gradle/caches/transforms-2/files-2.1/22596e141ed939448a45bb52248db646/core-1.3.2/res/values-pt-rBR/values-pt-rBR.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
