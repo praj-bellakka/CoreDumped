@@ -6,8 +6,8 @@
  * @file: Graph.h
  * @author: Leow Yuan Yang
  */
-#pragma once
 
+#pragma once
 #include <list>
 
 class nodeWeightPair {

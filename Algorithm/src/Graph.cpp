@@ -1,3 +1,12 @@
+/**
+ * CP2016 Orbital 20/21 
+ * 
+ * Methods for class Graph 
+ *
+ * @file: Graph.cpp
+ * @author: Leow Yuan Yang
+ */
+
 #include "Graph.h"
 /**
  * Contructor of the class Graph
