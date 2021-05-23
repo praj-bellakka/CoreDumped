@@ -4,7 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:location/location.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:mapception/place_services.dart';
+import 'package:uuid/uuid.dart';
+import 'search-map.dart';
 
 void main() {
   runApp(MyApp());
@@ -38,11 +40,11 @@ class _MapScreenState extends State<MapScreen> {
   Circle circle; // adds a circle around the marker for visibility
   bool flag = false;
   Map _position;
+  final _destinationController = TextEditingController();
   static final _initialCameraPosition = CameraPosition(
     target: LatLng(1.3521, 103.8198),
     zoom: 11.5,
   );
-
   //code to convert icon asset to bitmap
   Future<Uint8List> getMarker() async {
     ByteData bytedata =
@@ -89,7 +91,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _getCurrentLocation() async {
-    print("executing _getCurrentLocation ");
+    //print("executing _getCurrentLocation ");
     try {
       Uint8List imageData = await getMarker();
       var currentLocation = await _locationTracker.getLocation();
@@ -108,7 +110,6 @@ class _MapScreenState extends State<MapScreen> {
             "heading": newLocalData.heading,
           };
         });
-        print(newLocalData);
         updateMarker(newLocalData, imageData);
       });
     } on PlatformException catch (error) {
@@ -120,7 +121,6 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("build ");
     _getCurrentLocation();
     return Scaffold(
         // appBar: AppBar(
@@ -151,19 +151,57 @@ class _MapScreenState extends State<MapScreen> {
                       borderRadius: BorderRadius.circular(30),
                     ),
                     child: TextField(
+                        onTap: () async {
+                          final sessionToken = Uuid().v4();
+                          final Suggestion result = await showSearch(
+                            context: context,
+                            delegate: DataSearch(sessionToken),
+                          );
+                          debugPrint(result.description);
+                          if (result != null) {
+                            setState(() {
+                              _destinationController.text = result.description;
+                            });
+                          }
+                          //showSearch(context: context, delegate: DataSearch());
+                        },
+                        controller: _destinationController,
+                        readOnly: true,
                         decoration: InputDecoration(
-                      labelText: "Going to?",
-                      contentPadding:
-                          EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                      prefixIcon: Icon(Icons.search),
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                    )),
-                  )
+                          labelText: "Going to?",
+                          contentPadding:
+                              EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                          prefixIcon: Icon(Icons.search),
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                        )),
+                  ),
                 ])),
+            /*TODO: ADD PROFILE BUTTON*/
+            /*Positioned(
+            top: 70,
+            right: 0,
+            left: 80,
+            child: Container(
+              child:Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(40),
+                      image: DecorationImage(
+                        image: AssetImage('assets/locator.png'),
+                      ), 
+                    ),
+                  )
+                ]
+              )
+            )
+          ),*/
           ],
         ),
         floatingActionButton: FloatingActionButton(
