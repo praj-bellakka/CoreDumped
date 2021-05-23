@@ -1,31 +1,42 @@
-class locationIndex
-{
+/**
+ * CP2016 Orbital 20/21 
+ * 
+ * Class definitions for Graph
+ *
+ * @file: Graph.h
+ * @author: Leow Yuan Yang
+ */
+
+#pragma once
+#include <list>
+
+class nodeWeightPair {
     private:
         int _index;
-        string _address;
+        int _weight;
 
     public:
-        locationIndex(int index, string address);
-        string locationName(int index);
-
-        //friend Graph;
+        nodeWeightPair(int n, int w) { _index = n; _weight = w; };
+        nodeWeightPair(const nodeWeightPair& nwp) { _index = nwp._index; _weight = nwp._weight; };
+        int nodeIndex() { return _index; };
+        int weight() { return _weight; };
+        //bool operator>(const nodeWeightPair& nwp) { return _weight > nwp._weight;};
+        //bool operator == (const nodeWeightPair& nwp) { return _index == nwp._index; };
 };
 
-/**
- * Contructor for class locationIndex
- */
-locationIndex::locationIndex(int index, string address)
+class Graph
 {
-    _index = index;
-    _address = name;
-}
+    private:
+        int **_matrix;
+        list<nodeWeightPair> *_list;                               //1
+        int _nv; // number of nodes
 
-/**
- * To return the location name
- *
- * @param[in] index The index of the locationl
- */
-string locationIndex::locationName(int index)
-{
-    return _address;
-}
+    public: 
+        Graph(int n);
+        void addEdge(int s, int d, int w);
+        void printMatrix();
+        void printList();
+        ~Graph();
+        //void printGraph();
+};
+
