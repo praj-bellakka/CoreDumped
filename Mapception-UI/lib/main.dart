@@ -36,6 +36,7 @@ class _MapScreenState extends State<MapScreen> {
   StreamSubscription _locationSubscription;
   //Geolocator geolocator = Geolocator();
   Marker marker; //adds the locator icoon to mark current location in real time
+  List<Marker> _markers = <Marker>[]; //list of markers for locations picked
   Location _locationTracker = Location();
   Circle circle; // adds a circle around the marker for visibility
   bool flag = false;
@@ -52,10 +53,10 @@ class _MapScreenState extends State<MapScreen> {
     return bytedata.buffer.asUint8List();
   }
 
-  updateMarker(LocationData _locationData, Uint8List imageData) async {
+  void updateMarker(LocationData _locationData, Uint8List imageData) async {
     LatLng latlng = LatLng(_locationData.latitude, _locationData.longitude);
     this.setState(() {
-      marker = Marker(
+      _markers.add(Marker(
         markerId: MarkerId("current_location"),
         position: latlng,
         draggable: false,
@@ -63,7 +64,7 @@ class _MapScreenState extends State<MapScreen> {
         zIndex: 2,
         anchor: Offset(0.5, 0.5),
         icon: BitmapDescriptor.fromBytes(imageData),
-      );
+      ));
       circle = Circle(
         circleId: CircleId("locator-circle"),
         radius: _locationData.accuracy,
@@ -75,7 +76,7 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-//function to get the current location using geocoder api
+//utility function to get the current location using geocoder api
   void _gotoCurrentPosition() {
     if (null != _controller && null != _position) {
       _controller.animateCamera(
@@ -88,6 +89,14 @@ class _MapScreenState extends State<MapScreen> {
         ),
       );
     }
+  }
+
+  //utility function to transition map camera to given coordinates from present state location
+  void _gotoGivenPostion(double lat, double long) {
+    _controller.animateCamera(CameraUpdate.newCameraPosition(new CameraPosition(
+      target: LatLng(lat, long),
+      zoom: 16.00,
+    )));
   }
 
   void _getCurrentLocation() async {
@@ -119,6 +128,16 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
+  //utility function to dynamically add markers
+  void _addMarker(markerId, coord) {
+    _markers.add(Marker(
+      markerId: MarkerId(markerId),
+      position: coord,
+      infoWindow: InfoWindow(title: 'The title of the marker'),
+      draggable: false,
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     _getCurrentLocation();
@@ -133,7 +152,7 @@ class _MapScreenState extends State<MapScreen> {
               myLocationButtonEnabled: false,
               zoomControlsEnabled: false,
               initialCameraPosition: _initialCameraPosition,
-              markers: Set.of((marker != null) ? [marker] : []),
+              markers: Set<Marker>.of(_markers),
               circles: Set.of((circle != null) ? [circle] : []),
               onMapCreated: (GoogleMapController controller) {
                 _controller = controller;
@@ -159,7 +178,19 @@ class _MapScreenState extends State<MapScreen> {
                           );
                           debugPrint(result.description);
                           if (result != null) {
+                            print(result.placeId);
+                            final placeDetails =
+                                await PlaceApiProvider(sessionToken)
+                                    .getPlaceDetails(result.placeId);
                             setState(() {
+                              LatLng _coord = LatLng(
+                                  placeDetails.coordinates['lat'],
+                                  placeDetails.coordinates['lng']);
+                              //animate camera to location once json request has been received
+                              _gotoGivenPostion(_coord.latitude, _coord.longitude);
+                              _addMarker(
+                                  result.placeId,
+                                  _coord);
                               _destinationController.text = result.description;
                             });
                           }

@@ -55,11 +55,9 @@ class DataSearch extends SearchDelegate<Suggestion> {
   @override
   Widget buildSuggestions(BuildContext context) {
     // items to display when something is searched
+    bool tapped = false;
     return FutureBuilder(
-      future: query == ""
-          ? null
-          : apiClient.fetchSuggestions(
-              query),
+      future: query == "" ? null : apiClient.fetchSuggestions(query),
       builder: (context, snapshot) => query == ''
           ? Container(
               padding: EdgeInsets.all(16.0),
@@ -69,9 +67,32 @@ class DataSearch extends SearchDelegate<Suggestion> {
               ? ListView.builder(
                   itemBuilder: (context, index) => ListTile(
                     // we will display the data returned from our future here
-                    title: Text((snapshot.data[index] as Suggestion).description),
+                    leading: Icon(Icons.location_city),
+                    title: TextButton(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          (snapshot.data[index] as Suggestion).description,
+                          style: TextStyle(
+                            fontFamily: 'Raleway',
+                            color: Colors.black45,
+                            fontSize: 15,
+                          ),
+                          textAlign: TextAlign.left,
+                        ),
+                      ),
+                      onPressed: () {
+                        close(context, snapshot.data[index]);
+                      },
+                    ),
+                    //trailing: tapped  ? Icon(Icons.add_box_outlined) : Icon(Icons.access_alarms),
+                    trailing: IconButton(
+                      //icon: tapped ? Icon(Icons.add_box_outlined) : Icon(Icons.access_alarms),
+                      icon: Icon(Icons.add_box_outlined),
+                      onPressed: () {},
+                    ),
                     onTap: () {
-                      close(context, snapshot.data[index]);
+                      tapped = true;
                     },
                   ),
                   itemCount: snapshot.data.length,
