@@ -14,7 +14,65 @@
 
 using namespace std;
 
-class edgeListNode 
+class unionFind
+{
+    private:
+        int _size;
+        int *_parent;
+        int *_rank;
+
+    public:
+        unionFind(int size);
+        ~unionFind();
+        int size() { return _size; };
+        bool isSameSet(int index1, int index2);
+        int findSet(int index);
+        void unionSet(int index1, int index2);
+};
+
+unionFind::unionFind(int size)
+{
+    _size = size;
+    _parent = new int [_size];
+    _rank = new int [_size];
+    for (int i = 0; i < _size; i++)
+    {
+        _parent[i] = i;
+        _rank[i] = 0;
+    }
+}
+
+void unionFind::unionSet(int index1, int index2)
+{
+    if (isSameSet(index1, index2))
+        return;
+
+    if (_rank[index1] > _rank[index2])
+    {
+        swap(index1, index2);
+    }
+    _parent[index1] = index2;
+    if (_rank[index1] == _rank[index2])
+        _rank[index2]++;
+}
+
+int unionFind::findSet(int index)
+{
+    return _parent[index];
+}
+
+bool unionFind::isSameSet(int index1, int index2)
+{
+    return findSet(index1) == findSet(index2);
+}
+
+unionFind::~unionFind()
+{
+
+}
+
+
+class edge 
 {
     private:
         int _from;
@@ -22,8 +80,8 @@ class edgeListNode
         int _weight;
 
     public:
-        edgeListNode(int f, int t, int w) { _from = f; _to = t; _weight = w; };
-        edgeListNode(const edgeListNode& eln) { _from = eln._from; _to = eln._to; _weight = eln._weight; };
+        edge(int f, int t, int w) { _from = f; _to = t; _weight = w; };
+        edge(const edge& eln) { _from = eln._from; _to = eln._to; _weight = eln._weight; };
         int fromNode() { return _from; };
         int toNode() { return _to; };
         int weight() { return _weight; };
@@ -43,7 +101,7 @@ class adListNode {
         //bool operator < (adListNode nwp) { return _weight > nwp._weight;};
         //bool operator == (const adListNode& nwp) { return _index == nwp._index; };
 };
-bool operator<(const edgeListNode nwp1, const edgeListNode nwp2)
+bool operator<(const edge nwp1, const edge nwp2)
 {
     int w1 = nwp1.weight();
     int w2 = nwp2.weight();
@@ -55,8 +113,8 @@ class Graph
 {
     private:
         int **_matrix;
-        list<adListNode> *_adList;                               //1
-        list<edgeListNode> _edgeList;
+        list<adListNode> *_adList;                           
+        list<edge> _edgeList;
         int _nv; // number of nodes
 
     public: 
@@ -99,33 +157,53 @@ int main()
     Graph mst(numOfNodes);
     map.minSpanTree(mst);
 
+    mst.printMatrix();
+    mst.printAdList();
+    mst.printEdgeList();
+
 
     return 0;
 }
 
+/**
+ * To generate a minimun spanning tree.
+ *
+ * @param[in, out] mst The graph containing the minimum spanning tree.
+ * @pre mst must will initialise with the same number of nodes as original graph.
+ */
 void Graph::minSpanTree(Graph mst)
 {
+
+    //construct unfs to check for cycle
+    unionFind cycleChecker(_nv);
     //constructing pq
-    priority_queue<edgeListNode> pq;
-    for (list<edgeListNode>::iterator it = _edgeList.begin(); it != _edgeList.end(); it++)
+    priority_queue<edge> pq;
+    for (list<edge>::iterator it = _edgeList.begin(); it != _edgeList.end(); it++)
     {
         pq.push(*it);
     }
     
     cout << endl;
     
-    while (!pq.empty())
+    int i = 1;
+
+    while (i < _nv)
     {
-        cout << "(" << (pq.top()).fromNode() << ", " << (pq.top()).toNode() << ", " << (pq.top()).weight() << ")" << endl;
+        edge temp = pq.top();
+        int src = temp.fromNode();
+        int dst = temp.toNode();
+        int wt = temp.weight();
+
+
+
+        if (!cycleChecker.isSameSet(src, dst))
+        {
+            cycleChecker.unionSet(src, dst);
+            mst.addEdge(src, dst, wt);
+            i++;
+        }
         pq.pop();
     }
-    
-
-    //loop
-        //extract min
-        //if it doesnt form a cycle
-            //addedge
-
 }
 
 
@@ -199,14 +277,20 @@ void Graph::printAdList()
     }
 }
 
+/**
+ * To print out the edge list to stdout.
+ */
 void Graph::printEdgeList()
 {
     cout << endl;
     cout << "Edge List: " << endl;
 
-    for (list<edgeListNode>::iterator it = _edgeList.begin(); it != _edgeList.end(); it++)
+    int i = 1;
+    for (list<edge>::iterator it = _edgeList.begin(); it != _edgeList.end(); it++)
     {
+        cout << i << " ";
         cout << "(" << (*it).fromNode() << ", " << (*it).toNode() << ", " << (*it).weight() << ")" << endl;
+        i++;
     }
 }
 
@@ -224,6 +308,6 @@ void Graph::addEdge(int row, int col, int w)
     _matrix[row][col] = w;
     adListNode newNode(col, w);
    _adList[row].push_back(newNode);
-   edgeListNode newNode1(row, col, w);
+   edge newNode1(row, col, w);
    _edgeList.push_back(newNode1);
 }
