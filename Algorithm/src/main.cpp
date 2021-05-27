@@ -153,8 +153,6 @@ int main()
     }
 
     map.printMatrix();
-    map.printAdList();
-    map.printEdgeList();
 
     //generate minimum spanning tree mst
     Graph mst(numOfNodes);
@@ -163,6 +161,7 @@ int main()
     bool *visited = new bool [numOfNodes];
     mst.dfs(0, 0, visited);
 
+    cout << "MST: ";
     mst.printAdList();
     mst.printOrder();
 
@@ -187,6 +186,7 @@ void Graph::dfs(int index, int visitedCount, bool *visited)
 
 void Graph::printOrder()
 {
+    cout << endl << "Order: ";
     for (int i = 0; i < _nv; i++)
     {
         cout << _order[i] << " ";
