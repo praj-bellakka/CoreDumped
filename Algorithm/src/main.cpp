@@ -228,7 +228,7 @@ void Graph::minSpanTree(Graph mst)
         if (!cycleChecker.isSameSet(src, dst))
         {
             cycleChecker.unionSet(src, dst);
-            mst.addEdge(dst, src, wt);
+            mst.addEdge(src, dst, wt);
             i++;
         }
         pq.pop();
@@ -337,8 +337,12 @@ void Graph::printEdgeList()
 void Graph::addEdge(int row, int col, int w)
 {
     _matrix[row][col] = w;
+
     adListNode newNode(col, w);
-   _adList[row].push_back(newNode);
-   edge newNode1(row, col, w);
-   _edgeList.push_back(newNode1);
+    _adList[row].push_back(newNode);
+    adListNode newNode1(row, w);
+    _adList[col].push_back(newNode1);
+
+   edge newNode2(row, col, w);
+   _edgeList.push_back(newNode2);
 }
