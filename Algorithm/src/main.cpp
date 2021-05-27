@@ -116,6 +116,7 @@ class Graph
         list<adListNode> *_adList;                           
         list<edge> _edgeList;
         int _nv; // number of nodes
+        int *_order;
 
     public: 
         int size() {return _nv;};
@@ -125,6 +126,8 @@ class Graph
         void printAdList();
         void printEdgeList();
         void minSpanTree(Graph mst);
+        void dfs(int index, int visitedCount, bool *visited);
+        void printOrder();
         ~Graph();
 };
 
@@ -157,13 +160,39 @@ int main()
     Graph mst(numOfNodes);
     map.minSpanTree(mst);
 
-    mst.printMatrix();
-    mst.printAdList();
-    mst.printEdgeList();
+    bool *visited = new bool [numOfNodes];
+    mst.dfs(0, 0, visited);
 
+    mst.printAdList();
+    mst.printOrder();
 
     return 0;
 }
+
+void Graph::dfs(int index, int visitedCount, bool *visited)
+{
+    _order[visitedCount] = index;
+    visited[index] = true;
+
+    for (list<adListNode>::iterator it = _adList[index].begin(); it != _adList[index].end(); it++)
+    {
+        int next = (*it).nodeIndex();
+        if (!visited[next])
+        {
+            visitedCount++;
+            dfs(next, visitedCount, visited);
+        }
+    }
+}
+
+void Graph::printOrder()
+{
+    for (int i = 0; i < _nv; i++)
+    {
+        cout << _order[i] << " ";
+    }
+}
+
 
 /**
  * To generate a minimun spanning tree.
@@ -199,7 +228,7 @@ void Graph::minSpanTree(Graph mst)
         if (!cycleChecker.isSameSet(src, dst))
         {
             cycleChecker.unionSet(src, dst);
-            mst.addEdge(src, dst, wt);
+            mst.addEdge(dst, src, wt);
             i++;
         }
         pq.pop();
@@ -226,6 +255,8 @@ Graph::Graph(int n)
     }
     //construct adjacency list
     _adList = new list<adListNode> [n];
+
+    _order = new int [n];
 
 
 }
