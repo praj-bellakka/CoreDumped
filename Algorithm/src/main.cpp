@@ -126,7 +126,7 @@ class Graph
         void printAdList();
         void printEdgeList();
         void minSpanTree(Graph mst);
-        void dfs(int index, int visitedCount, bool *visited);
+        void dfs(int index, int *visitedCount, bool *visited);
         void printOrder();
         ~Graph();
 };
@@ -159,7 +159,8 @@ int main()
     map.minSpanTree(mst);
 
     bool *visited = new bool [numOfNodes];
-    mst.dfs(0, 0, visited);
+    int visitedCount = 0;
+    mst.dfs(0, &visitedCount, visited);
 
     cout << "MST: ";
     mst.printAdList();
@@ -168,17 +169,17 @@ int main()
     return 0;
 }
 
-void Graph::dfs(int index, int visitedCount, bool *visited)
+void Graph::dfs(int index, int *visitedCount, bool *visited)
 {
-    _order[visitedCount] = index;
+    _order[*visitedCount] = index;
     visited[index] = true;
+    *visitedCount += 1;
 
     for (list<adListNode>::iterator it = _adList[index].begin(); it != _adList[index].end(); it++)
     {
         int next = (*it).nodeIndex();
         if (!visited[next])
         {
-            visitedCount++;
             dfs(next, visitedCount, visited);
         }
     }
