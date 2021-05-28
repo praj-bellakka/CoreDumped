@@ -1,11 +1,11 @@
 SHELL := /bin/sh
 FILES=main
 CC=g++
-CFLAGS= -fpermissive
+CXXFLAGS= -fpermissive
 
-all: compile
+all: 
+	$(CC) $(FILES).cpp $(CXXFLAGS) -o $(FILES)
 
-compile: $(FILES)
 
 
 clean: rm -f $(FILES)
