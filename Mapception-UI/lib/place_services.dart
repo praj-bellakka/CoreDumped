@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:http/http.dart';
-import 'package:location/location.dart';
 
 /* Using Google Places API for autocomplete function. 
 Extracted from: https://developers.google.com/maps/documentation/javascript/examples/places-autocomplete 
@@ -11,7 +10,6 @@ class Suggestion {
   final String placeId;
   final String description;
   final String placeIcon;
-
   Suggestion(this.placeId, this.description, this.placeIcon);
 
   @override
@@ -56,13 +54,11 @@ class PlaceApiProvider {
       final result = json.decode(response.body);
       if (result['status'] == 'OK') {
         // compose suggestions in a list
-        //debugPrint("reached here");
-        //print(result);
         //print(result['status']);
-        //print(result['predictions']);
         return result['predictions']
             //TODO: beautify the list, add a add button to include for algorithm
-            .map<Suggestion>((p) => Suggestion(p['place_id'], p['description'], p['icon']))
+            .map<Suggestion>(
+                (p) => Suggestion(p['place_id'], p['description'], p['icon']))
             .toList();
       }
       if (result['status'] == 'ZERO_RESULTS') {

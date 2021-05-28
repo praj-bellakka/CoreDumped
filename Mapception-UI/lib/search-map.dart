@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mapception/location_list.dart';
 import 'package:mapception/place_services.dart';
+import 'package:uuid/uuid.dart';
 
 // class Search_Places extends StatelessWidget {
 //   @override
@@ -87,12 +90,25 @@ class DataSearch extends SearchDelegate<Suggestion> {
                     ),
                     //trailing: tapped  ? Icon(Icons.add_box_outlined) : Icon(Icons.access_alarms),
                     trailing: IconButton(
-                      //icon: tapped ? Icon(Icons.add_box_outlined) : Icon(Icons.access_alarms),
-                      icon: Icon(Icons.add_box_outlined),
-                      onPressed: () {},
-                    ),
+                        //icon: tapped ? Icon(Icons.add_box_outlined) : Icon(Icons.access_alarms),
+                        icon: Icon(Icons.add_box_outlined),
+                        onPressed: () async {
+                          //get the coordinates from the location selected
+                          final placeDetails = await PlaceApiProvider(
+                                  sessionToken)
+                              .getPlaceDetails(snapshot.data[index].placeId);
+                          print(snapshot.data[index]);
+
+                          addToList(
+                              snapshot.data[index].placeId,
+                              snapshot.data[index].description,
+                              snapshot.data[index].description,
+                              LatLng(placeDetails.coordinates['lat'],
+                                  placeDetails.coordinates['lng']));
+                          printList();
+                        }),
                     onTap: () {
-                      tapped = true;
+                      //tapped = true;
                     },
                   ),
                   itemCount: snapshot.data.length,

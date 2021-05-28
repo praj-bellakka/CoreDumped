@@ -4,7 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:location/location.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mapception/location_list.dart';
 import 'package:mapception/place_services.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:uuid/uuid.dart';
 import 'search-map.dart';
 
@@ -41,7 +43,9 @@ class _MapScreenState extends State<MapScreen> {
   Circle circle; // adds a circle around the marker for visibility
   bool flag = false;
   Map _position;
+
   final _destinationController = TextEditingController();
+
   static final _initialCameraPosition = CameraPosition(
     target: LatLng(1.3521, 103.8198),
     zoom: 11.5,
@@ -140,12 +144,12 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final panelHeightOpen = MediaQuery.of(context).size.height *
+        0.8; //relative height of panel when fully opened
+    final panelHeightClosed = MediaQuery.of(context).size.height *
+        0.15; //relative height of panel when closed
     _getCurrentLocation();
     return Scaffold(
-        // appBar: AppBar(
-        //     title: Text('Mapception'),
-        //     backgroundColor: Colors.blue[400],
-        //   ),
         body: Stack(
           children: <Widget>[
             GoogleMap(
@@ -176,9 +180,7 @@ class _MapScreenState extends State<MapScreen> {
                             context: context,
                             delegate: DataSearch(sessionToken),
                           );
-                          debugPrint(result.description);
                           if (result != null) {
-                            print(result.placeId);
                             final placeDetails =
                                 await PlaceApiProvider(sessionToken)
                                     .getPlaceDetails(result.placeId);
@@ -187,12 +189,12 @@ class _MapScreenState extends State<MapScreen> {
                                   placeDetails.coordinates['lat'],
                                   placeDetails.coordinates['lng']);
                               //animate camera to location once json request has been received
-                              _gotoGivenPostion(_coord.latitude, _coord.longitude);
-                              _addMarker(
-                                  result.placeId,
-                                  _coord);
+                              _gotoGivenPostion(
+                                  _coord.latitude, _coord.longitude);
+                              _addMarker(result.placeId, _coord);
                               _destinationController.text = result.description;
                             });
+                            printList();
                           }
                           //showSearch(context: context, delegate: DataSearch());
                         },
@@ -211,6 +213,53 @@ class _MapScreenState extends State<MapScreen> {
                         )),
                   ),
                 ])),
+            SlidingUpPanel(
+              backdropEnabled: true,
+              maxHeight: panelHeightOpen,
+              minHeight: panelHeightClosed,
+              panel: Center(
+                child: ReorderableListView.builder(
+                  padding: EdgeInsets.all(10),
+                  itemCount: linkedData.length,
+                  itemBuilder: (BuildContext ctx, int index) {
+                    return Container(
+                      height: 50,
+                      margin: EdgeInsets.all(2),
+                      color: Colors.blueGrey,
+                      child: Center(child: Text('${mapList[index].address}')),
+                    );
+                  },
+                  onReorder: (oldIndex, newIndex) {
+                    setState(() {
+                      if (newIndex > oldIndex) {
+                        newIndex -= 1;
+                      }
+                      final item = mapList.removeAt(oldIndex);
+                      mapList.insert(newIndex, item);
+                    });
+                  },
+                ),
+              ),
+              /*panel: Center(
+                child: ListView.builder(
+                padding: EdgeInsets.all(10),
+                itemCount: linkedData.length,
+                itemBuilder: (BuildContext ctx, int index) {
+                  var mapList = linkedData.values.toList();
+                  return Container(
+                    height: 50,
+                    margin: EdgeInsets.all(2),
+                    color: Colors.blueGrey,
+                    child: Center(child: Text('${mapList[index].address}')),
+                  );
+                },
+              )),*/
+              collapsed: Container(
+                color: Colors.blueGrey,
+                child: Text("3"),
+              ),
+            )
+
             /*TODO: ADD PROFILE BUTTON*/
             /*Positioned(
             top: 70,
@@ -236,9 +285,8 @@ class _MapScreenState extends State<MapScreen> {
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: _gotoCurrentPosition
+          onPressed: _gotoCurrentPosition,
           // ignore: unnecessary_statements
-          ,
           child: Icon(Icons.location_pin),
           backgroundColor: Colors.cyan,
         ));
