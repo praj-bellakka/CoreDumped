@@ -36,6 +36,8 @@ class _MapScreenState extends State<MapScreen> {
   //Position _currentPosition; //object to hold location data
   GoogleMapController _controller;
   StreamSubscription _locationSubscription;
+  PanelController _panelController =
+      new PanelController(); //control the slide up menu panel
   //Geolocator geolocator = Geolocator();
   Marker marker; //adds the locator icoon to mark current location in real time
   List<Marker> _markers = <Marker>[]; //list of markers for locations picked
@@ -142,6 +144,12 @@ class _MapScreenState extends State<MapScreen> {
     ));
   }
 
+  //utility function to go to current position and add marker
+  void addMarkerAndGoPosition(double lat, double long, markerId) {
+    _gotoGivenPostion(lat, long);
+    _addMarker(markerId, LatLng(lat, long));
+  }
+
   @override
   Widget build(BuildContext context) {
     final panelHeightOpen = MediaQuery.of(context).size.height *
@@ -217,16 +225,57 @@ class _MapScreenState extends State<MapScreen> {
               backdropEnabled: true,
               maxHeight: panelHeightOpen,
               minHeight: panelHeightClosed,
+              color: Color(0xFF2D2F40),
+              borderRadius: BorderRadius.circular(30),
+              controller: _panelController,
               panel: Center(
                 child: ReorderableListView.builder(
                   padding: EdgeInsets.all(10),
-                  itemCount: linkedData.length,
-                  itemBuilder: (BuildContext ctx, int index) {
-                    return Container(
-                      height: 50,
-                      margin: EdgeInsets.all(2),
-                      color: Colors.blueGrey,
-                      child: Center(child: Text('${mapList[index].address}')),
+                  itemCount: mapList.length,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      color: Color.fromRGBO(64, 75, 96, .9),
+                      key: ValueKey(mapList[index]),
+                      child: ListTile(
+                        contentPadding: EdgeInsets.symmetric(
+                            horizontal: 20.0, vertical: 10.0),
+                        leading: Container(
+                          padding: EdgeInsets.only(right: 12.0),
+                          decoration: new BoxDecoration(
+                              border: new Border(
+                                  right: new BorderSide(
+                                      width: 1.0, color: Colors.white24))),
+                          child: Text("${index + 1} ",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w900,
+                                  fontSize: 25,
+                                  fontFamily: 'Open Sans')),
+                        ),
+                        title: Text(
+                          mapList[index].address,
+                          style: TextStyle(
+                              color: Colors.white, fontWeight: FontWeight.w600),
+                        ),
+                        trailing: IconButton(
+                          padding: EdgeInsets.only(left: 20),
+                          icon: Icon(
+                            Icons.keyboard_arrow_right,
+                            color: Colors.white,
+                            size: 30.0,
+                          ),
+                          onPressed: () {
+                            mapList.removeAt(index);
+                          },
+                        ),
+                        onTap: () {
+                          _panelController.close();
+                          addMarkerAndGoPosition(
+                              mapList[index].coordinates.latitude,
+                              mapList[index].coordinates.longitude,
+                              mapList[index].placeId);
+                        },
+                      ),
                     );
                   },
                   onReorder: (oldIndex, newIndex) {
@@ -240,20 +289,6 @@ class _MapScreenState extends State<MapScreen> {
                   },
                 ),
               ),
-              /*panel: Center(
-                child: ListView.builder(
-                padding: EdgeInsets.all(10),
-                itemCount: linkedData.length,
-                itemBuilder: (BuildContext ctx, int index) {
-                  var mapList = linkedData.values.toList();
-                  return Container(
-                    height: 50,
-                    margin: EdgeInsets.all(2),
-                    color: Colors.blueGrey,
-                    child: Center(child: Text('${mapList[index].address}')),
-                  );
-                },
-              )),*/
               collapsed: Container(
                 color: Colors.blueGrey,
                 child: Text("3"),
