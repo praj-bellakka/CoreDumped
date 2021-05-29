@@ -1,0 +1,14 @@
+[
+    {
+        "merged": "/Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/location/intermediates/res/merged/release/color/common_google_signin_btn_tint.xml",
+        "source": "/Users/praj/.gradle/caches/transforms-2/files-2.1/bc94b7f3958bee825a85f52519cf2c7d/jetified-play-services-base-16.0.1/res/color/common_google_signin_btn_tint.xml"
+    },
+    {
+        "merged": "/Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/location/intermediates/res/merged/release/color/common_google_signin_btn_text_dark.xml",
+        "source": "/Users/praj/.gradle/caches/transforms-2/files-2.1/bc94b7f3958bee825a85f52519cf2c7d/jetified-play-services-base-16.0.1/res/color/common_google_signin_btn_text_dark.xml"
+    },
+    {
+        "merged": "/Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/location/intermediates/res/merged/release/color/common_google_signin_btn_text_light.xml",
+        "source": "/Users/praj/.gradle/caches/transforms-2/files-2.1/bc94b7f3958bee825a85f52519cf2c7d/jetified-play-services-base-16.0.1/res/color/common_google_signin_btn_text_light.xml"
+    }
+]

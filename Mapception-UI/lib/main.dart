@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
+import 'package:geocoding/geocoding.dart' as geolocator;
 import 'package:location/location.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -52,6 +53,10 @@ class _MapScreenState extends State<MapScreen> {
     target: LatLng(1.3521, 103.8198),
     zoom: 11.5,
   );
+
+  static const double fabHeightClosed = 130.0;
+  double fabHeight = fabHeightClosed;
+
   //code to convert icon asset to bitmap
   Future<Uint8List> getMarker() async {
     ByteData bytedata =
@@ -144,6 +149,20 @@ class _MapScreenState extends State<MapScreen> {
     ));
   }
 
+  void _findLocationAndAddMarker(LatLng pos) async {
+    final sessionToken = Uuid().v4();
+    List<geolocator.Placemark> placemarks =
+        await geolocator.placemarkFromCoordinates(pos.latitude, pos.longitude);
+    //Assuming the first result is correct
+    var placeDetails = await PlaceApiProvider(sessionToken).fetchAddress(pos);
+    print(placeDetails[0]['place_id']);
+    //add marker
+    _addMarker(placeDetails[0]['place_id'], pos);
+    //add to list
+    addToList(placeDetails[0]['place_id'], placeDetails[0]['formatted_address'],
+        placeDetails[0]['formatted_address'], pos);
+  }
+
   //utility function to go to current position and add marker
   void addMarkerAndGoPosition(double lat, double long, markerId) {
     _gotoGivenPostion(lat, long);
@@ -156,147 +175,207 @@ class _MapScreenState extends State<MapScreen> {
         0.8; //relative height of panel when fully opened
     final panelHeightClosed = MediaQuery.of(context).size.height *
         0.15; //relative height of panel when closed
+    print(fabHeight);
     _getCurrentLocation();
     return Scaffold(
-        body: Stack(
-          children: <Widget>[
-            GoogleMap(
-              myLocationButtonEnabled: false,
-              zoomControlsEnabled: false,
-              initialCameraPosition: _initialCameraPosition,
-              markers: Set<Marker>.of(_markers),
-              circles: Set.of((circle != null) ? [circle] : []),
-              onMapCreated: (GoogleMapController controller) {
-                _controller = controller;
-              },
-            ),
-            Positioned(
-                top: 70.0,
-                right: 15.0,
-                left: 15.0,
-                child: Column(children: <Widget>[
-                  Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: TextField(
-                        onTap: () async {
-                          final sessionToken = Uuid().v4();
-                          final Suggestion result = await showSearch(
-                            context: context,
-                            delegate: DataSearch(sessionToken),
-                          );
-                          if (result != null) {
-                            final placeDetails =
-                                await PlaceApiProvider(sessionToken)
-                                    .getPlaceDetails(result.placeId);
-                            setState(() {
-                              LatLng _coord = LatLng(
-                                  placeDetails.coordinates['lat'],
-                                  placeDetails.coordinates['lng']);
-                              //animate camera to location once json request has been received
-                              _gotoGivenPostion(
-                                  _coord.latitude, _coord.longitude);
-                              _addMarker(result.placeId, _coord);
-                              _destinationController.text = result.description;
-                            });
-                            printList();
-                          }
-                          //showSearch(context: context, delegate: DataSearch());
-                        },
-                        controller: _destinationController,
-                        readOnly: true,
-                        decoration: InputDecoration(
-                          labelText: "Going to?",
-                          contentPadding:
-                              EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                          prefixIcon: Icon(Icons.search),
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          errorBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                        )),
+      body: Stack(
+        children: <Widget>[
+          GoogleMap(
+            myLocationButtonEnabled: false,
+            zoomControlsEnabled: false,
+            initialCameraPosition: _initialCameraPosition,
+            markers: Set<Marker>.of(_markers),
+            circles: Set.of((circle != null) ? [circle] : []),
+            onMapCreated: (GoogleMapController controller) {
+              _controller = controller;
+            },
+            onTap: (_position) async {
+              print(_position);
+              _findLocationAndAddMarker(_position);
+            },
+          ),
+          Positioned(
+              top: 70.0,
+              right: 15.0,
+              left: 15.0,
+              child: Column(children: <Widget>[
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(30),
                   ),
-                ])),
-            SlidingUpPanel(
-              backdropEnabled: true,
-              maxHeight: panelHeightOpen,
-              minHeight: panelHeightClosed,
-              color: Color(0xFF2D2F40),
-              borderRadius: BorderRadius.circular(30),
-              controller: _panelController,
-              panel: Center(
-                child: ReorderableListView.builder(
-                  padding: EdgeInsets.all(10),
-                  itemCount: mapList.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      color: Color.fromRGBO(64, 75, 96, .9),
-                      key: ValueKey(mapList[index]),
-                      child: ListTile(
-                        contentPadding: EdgeInsets.symmetric(
-                            horizontal: 20.0, vertical: 10.0),
-                        leading: Container(
-                          padding: EdgeInsets.only(right: 12.0),
-                          decoration: new BoxDecoration(
-                              border: new Border(
-                                  right: new BorderSide(
-                                      width: 1.0, color: Colors.white24))),
-                          child: Text("${index + 1} ",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 25,
-                                  fontFamily: 'Open Sans')),
+                  child: TextField(
+                      onTap: () async {
+                        final sessionToken = Uuid().v4();
+                        final Suggestion result = await showSearch(
+                          context: context,
+                          delegate: DataSearch(sessionToken),
+                        );
+                        if (result != null) {
+                          final placeDetails =
+                              await PlaceApiProvider(sessionToken)
+                                  .getPlaceDetails(result.placeId);
+                          setState(() {
+                            LatLng _coord = LatLng(
+                                placeDetails.coordinates['lat'],
+                                placeDetails.coordinates['lng']);
+                            //animate camera to location once json request has been received
+                            _gotoGivenPostion(
+                                _coord.latitude, _coord.longitude);
+                            _addMarker(result.placeId, _coord);
+                            _destinationController.text = result.description;
+                          });
+                          printList();
+                        }
+                        //showSearch(context: context, delegate: DataSearch());
+                      },
+                      controller: _destinationController,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        labelText: "Going to?",
+                        contentPadding:
+                            EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                        prefixIcon: Icon(Icons.search),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                      )),
+                ),
+              ])),
+          SlidingUpPanel(
+            backdropEnabled: true,
+            maxHeight: panelHeightOpen,
+            minHeight: panelHeightClosed,
+            color: Color(0xFF2D2F40),
+            borderRadius: BorderRadius.circular(30),
+            controller: _panelController,
+            panel: Center(
+              child: ReorderableListView.builder(
+                padding: EdgeInsets.all(10),
+                itemCount: mapList.length,
+                itemBuilder: (context, index) {
+                  if (index >= mapList.length) {
+                    //taken from stackoverflow to fix range error
+                    return const Offstage();
+                  }
+                  return Card(
+                    color: Color.fromRGBO(64, 75, 96, .9),
+                    key: ValueKey(mapList[index]),
+                    child: ListTile(
+                      contentPadding: EdgeInsets.symmetric(
+                          horizontal: 20.0, vertical: 10.0),
+                      leading: Container(
+                        padding: EdgeInsets.only(right: 12.0),
+                        decoration: new BoxDecoration(
+                            border: new Border(
+                                right: new BorderSide(
+                                    width: 1.0, color: Colors.white24))),
+                        child: Text("${index + 1} ",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 25,
+                                fontFamily: 'Open Sans')),
+                      ),
+                      title: Text(
+                        mapList[index].address,
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.w600),
+                      ),
+                      trailing: IconButton(
+                        padding: EdgeInsets.only(left: 20),
+                        icon: Icon(
+                          Icons.keyboard_arrow_right,
+                          color: Colors.white,
+                          size: 30.0,
                         ),
-                        title: Text(
-                          mapList[index].address,
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.w600),
-                        ),
-                        trailing: IconButton(
-                          padding: EdgeInsets.only(left: 20),
-                          icon: Icon(
-                            Icons.keyboard_arrow_right,
-                            color: Colors.white,
-                            size: 30.0,
-                          ),
-                          onPressed: () {
-                            mapList.removeAt(index);
-                          },
-                        ),
-                        onTap: () {
-                          _panelController.close();
-                          addMarkerAndGoPosition(
-                              mapList[index].coordinates.latitude,
-                              mapList[index].coordinates.longitude,
-                              mapList[index].placeId);
+                        onPressed: () {
+                          linkedData.remove(mapList[index]
+                              .placeId); //remove item from the linkedhashmap
+                          _markers.removeAt(index);
+                          mapList.removeAt(index); //remove item from the list
                         },
                       ),
-                    );
-                  },
-                  onReorder: (oldIndex, newIndex) {
-                    setState(() {
-                      if (newIndex > oldIndex) {
-                        newIndex -= 1;
-                      }
-                      final item = mapList.removeAt(oldIndex);
-                      mapList.insert(newIndex, item);
-                    });
-                  },
+                      onTap: () {
+                        _panelController.close();
+                        addMarkerAndGoPosition(
+                            mapList[index].coordinates.latitude,
+                            mapList[index].coordinates.longitude,
+                            mapList[index].placeId);
+                      },
+                    ),
+                  );
+                },
+                onReorder: (oldIndex, newIndex) {
+                  /*Logic to handle swapping of list items */
+                  setState(() {
+                    if (newIndex > oldIndex) {
+                      newIndex -= 1;
+                    }
+                    final item = mapList.removeAt(oldIndex);
+                    mapList.insert(newIndex, item);
+                    linkedData
+                        .clear(); /*recreate a linked hashmap for each swap operation*/
+                    mapList.forEach((element) => linkedData[element.placeId] =
+                        LocationList(
+                            placeId: element.placeId,
+                            address: element.address,
+                            condensedName: element.condensedName,
+                            coordinates: element.coordinates));
+                  });
+                },
+              ),
+            ),
+            collapsed: Container(
+              color: Colors.blueGrey,
+              child: ListTile(
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                tileColor: Colors.blueGrey[800],
+                leading: Container(
+                  padding: EdgeInsets.only(right: 12.0),
+                  decoration: new BoxDecoration(
+                      border: new Border(
+                          right: new BorderSide(
+                              width: 1.0, color: Colors.white24))),
+                  child: Text("${linkedData.length} ",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 25,
+                          fontFamily: 'Open Sans')),
                 ),
+                title: Text("Hi"),
               ),
-              collapsed: Container(
-                color: Colors.blueGrey,
-                child: Text("3"),
-              ),
-            )
+            ),
+            onPanelSlide: (position) => setState(() {
+              final panelScrollExtent = panelHeightOpen - panelHeightClosed;
+              fabHeight = position * panelScrollExtent + fabHeightClosed;
+            }),
+          ),
 
-            /*TODO: ADD PROFILE BUTTON*/
-            /*Positioned(
+          /*Set up a Floating action button */
+          Positioned(
+              right: 20,
+              bottom: fabHeight,
+              child: FloatingActionButton(
+                onPressed: () {
+                  if (_panelController.isPanelOpen) {
+                    _panelController.close();
+                    _gotoCurrentPosition();
+                  }
+                  _gotoCurrentPosition();
+                },
+                // ignore: unnecessary_statements
+                child: Icon(Icons.location_pin),
+                backgroundColor: Colors.cyan,
+              )),
+
+          /*TODO: ADD PROFILE BUTTON*/
+          /*Positioned(
             top: 70,
             right: 0,
             left: 80,
@@ -317,13 +396,8 @@ class _MapScreenState extends State<MapScreen> {
               )
             )
           ),*/
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _gotoCurrentPosition,
-          // ignore: unnecessary_statements
-          child: Icon(Icons.location_pin),
-          backgroundColor: Colors.cyan,
-        ));
+        ],
+      ),
+    );
   }
 }

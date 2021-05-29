@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:geocoding/geocoding.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 
 /* Using Google Places API for autocomplete function. 
@@ -56,13 +58,31 @@ class PlaceApiProvider {
         // compose suggestions in a list
         //print(result['status']);
         return result['predictions']
-            //TODO: beautify the list, add a add button to include for algorithm
             .map<Suggestion>(
                 (p) => Suggestion(p['place_id'], p['description'], p['icon']))
             .toList();
       }
       if (result['status'] == 'ZERO_RESULTS') {
         return [];
+      }
+      throw Exception(result['error_message']);
+    } else {
+      throw Exception('Failed to fetch suggestion');
+    }
+  }
+
+  Future<List> fetchAddress(LatLng pos) async {
+    final request =
+        'https://maps.googleapis.com/maps/api/geocode/json?&latlng=${pos.latitude},${pos.longitude}&key=$apiKey&sessiontoken=$sessionToken';
+    final response = await client.get(Uri.parse(request));
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      final result = json.decode(response.body);
+      // print(result['results'][0]);
+      if (result['status'] == 'OK') {
+        final jsonResult = result['results'];
+        return jsonResult;
+        //building the result from the returned details
       }
       throw Exception(result['error_message']);
     } else {
@@ -88,4 +108,10 @@ class PlaceApiProvider {
       throw Exception('Failed to fetch suggestion');
     }
   }
+
+  /*Future<PlaceDetails> getAddressFromCoordinates(
+      LatLng pos, String locale) async {
+    List<Placemark> placeMarks =
+        await placemarkFromCoordinates(pos.latitude, pos.longitude);
+  }*/
 }

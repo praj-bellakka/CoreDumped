@@ -1,0 +1,18 @@
+[
+    {
+        "merged": "/Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/location/intermediates/res/merged/release/layout-v21/notification_template_icon_group.xml",
+        "source": "/Users/praj/.gradle/caches/transforms-2/files-2.1/22596e141ed939448a45bb52248db646/core-1.3.2/res/layout-v21/notification_template_icon_group.xml"
+    },
+    {
+        "merged": "/Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/location/intermediates/res/merged/release/layout-v21/notification_template_custom_big.xml",
+        "source": "/Users/praj/.gradle/caches/transforms-2/files-2.1/22596e141ed939448a45bb52248db646/core-1.3.2/res/layout-v21/notification_template_custom_big.xml"
+    },
+    {
+        "merged": "/Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/location/intermediates/res/merged/release/layout-v21/notification_action_tombstone.xml",
+        "source": "/Users/praj/.gradle/caches/transforms-2/files-2.1/22596e141ed939448a45bb52248db646/core-1.3.2/res/layout-v21/notification_action_tombstone.xml"
+    },
+    {
+        "merged": "/Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/location/intermediates/res/merged/release/layout-v21/notification_action.xml",
+        "source": "/Users/praj/.gradle/caches/transforms-2/files-2.1/22596e141ed939448a45bb52248db646/core-1.3.2/res/layout-v21/notification_action.xml"
+    }
+]
