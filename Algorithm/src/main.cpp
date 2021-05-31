@@ -135,6 +135,7 @@ int main()
 {
     //read in number of nodes
     int numOfNodes;
+    cout << "Number of locations: ";
     cin >> numOfNodes;
 
     //create graph
