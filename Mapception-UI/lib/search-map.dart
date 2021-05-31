@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mapception/location_list.dart';
 import 'package:mapception/place_services.dart';
-import 'package:uuid/uuid.dart';
 
 // class Search_Places extends StatelessWidget {
 //   @override

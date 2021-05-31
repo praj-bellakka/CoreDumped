@@ -151,8 +151,6 @@ class _MapScreenState extends State<MapScreen> {
 
   void _findLocationAndAddMarker(LatLng pos) async {
     final sessionToken = Uuid().v4();
-    List<geolocator.Placemark> placemarks =
-        await geolocator.placemarkFromCoordinates(pos.latitude, pos.longitude);
     //Assuming the first result is correct
     var placeDetails = await PlaceApiProvider(sessionToken).fetchAddress(pos);
     print(placeDetails[0]['place_id']);
@@ -252,7 +250,9 @@ class _MapScreenState extends State<MapScreen> {
             color: Color(0xFF2D2F40),
             borderRadius: BorderRadius.circular(30),
             controller: _panelController,
-            panel: Center(
+            panel: Column(
+              children: <Widget>[
+              Expanded(
               child: ReorderableListView.builder(
                 padding: EdgeInsets.all(10),
                 itemCount: mapList.length,
@@ -295,7 +295,15 @@ class _MapScreenState extends State<MapScreen> {
                         onPressed: () {
                           linkedData.remove(mapList[index]
                               .placeId); //remove item from the linkedhashmap
-                          _markers.removeAt(index);
+                          setState(() {
+                            //find the marker to remove it
+                            Marker markerToRemove = _markers.firstWhere(
+                                (marker) =>
+                                    marker.markerId.value ==
+                                    "${mapList[index].placeId}",
+                                orElse: () => null);
+                            _markers.remove(markerToRemove); //remove marker
+                          });
                           mapList.removeAt(index); //remove item from the list
                         },
                       ),
@@ -328,6 +336,39 @@ class _MapScreenState extends State<MapScreen> {
                   });
                 },
               ),
+              ),
+              Container(
+                margin: EdgeInsets.all(10),
+                width: MediaQuery.of(context).size.width * 0.8,
+                height: 50,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Color.fromRGBO(255, 143, 158, 1),
+                      Color.fromRGBO(255, 188, 143, 1),
+                    ],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(20.0),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.pink.withOpacity(0.2),
+                      spreadRadius: 4,
+                      blurRadius: 10,
+                      offset: Offset(0, 3),
+                    )
+                  ]
+                ),
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(primary: Colors.transparent),
+                  child: Text("Generate Route!"),
+                )
+              ),
+              ]
             ),
             collapsed: Container(
               color: Colors.blueGrey,

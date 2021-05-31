@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart';
 
@@ -7,6 +6,10 @@ import 'package:http/http.dart';
 Extracted from: https://developers.google.com/maps/documentation/javascript/examples/places-autocomplete 
 */
 
+final String androidKey = 'AIzaSyAaa2p7_QrOhGFQS-DHndqEZZa5-BV7vRw';
+final String iosKey = '';
+//final apiKey = Platform.isAndroid ? androidKey : iosKey;
+final apiKey = androidKey;
 //To store the results
 class Suggestion {
   final String placeId;
@@ -41,10 +44,6 @@ class PlaceApiProvider {
 
   PlaceApiProvider(this.sessionToken);
 
-  static final String androidKey = 'AIzaSyAaa2p7_QrOhGFQS-DHndqEZZa5-BV7vRw';
-  static final String iosKey = '';
-  //final apiKey = Platform.isAndroid ? androidKey : iosKey;
-  final apiKey = androidKey;
 
   Future<List<Suggestion>> fetchSuggestions(String input) async {
     //api is now limited to Singapore places
