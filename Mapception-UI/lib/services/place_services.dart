@@ -92,7 +92,7 @@ class PlaceApiProvider {
   //get details from google map api using the place id
   Future<PlaceDetails> getPlaceDetails(String placeId) async {
     final requestUrl =
-        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$apiKey&sessiontoken=$sessionToken';
+        'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&fields=formatted_address,place_id,geometry&key=$apiKey&sessiontoken=$sessionToken';
     final response = await client.get(Uri.parse(requestUrl));
     if (response.statusCode == 200) {
       final result = json.decode(response.body);

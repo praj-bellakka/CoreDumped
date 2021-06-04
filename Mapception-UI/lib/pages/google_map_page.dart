@@ -167,6 +167,7 @@ class _MapScreenState extends State<MapScreen> {
             initialCameraPosition: _initialCameraPosition,
             markers: Set<Marker>.of(_markers),
             circles: Set.of((circle != null) ? [circle] : []),
+            polylines: polylines,
             onMapCreated: (GoogleMapController controller) {
               _controller = controller;
             },
@@ -345,9 +346,11 @@ class _MapScreenState extends State<MapScreen> {
                       ]),
                   child: ElevatedButton(
                     onPressed: () async {
-                      
-                      setPolyLines(mapList[0].coordinates, mapList[1].coordinates);
-                      
+                        for(int i = 0; i < mapList.length-1; i++ ) {
+                          var responseData = await setPolyLines(mapList[i].coordinates, mapList[i+1].coordinates, mapList[i].placeId);
+                          print(responseData);
+                        }
+
                       //print(mapList[0].coordinates);
                     },
                     style:
