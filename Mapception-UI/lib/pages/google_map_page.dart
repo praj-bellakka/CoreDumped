@@ -124,11 +124,11 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   //utility function to dynamically add markers
-  void _addMarker(markerId, coord) {
+  void _addMarker(markerId, coord, address) {
     _markers.add(Marker(
       markerId: MarkerId(markerId),
       position: coord,
-      infoWindow: InfoWindow(title: 'The title of the marker'),
+      infoWindow: InfoWindow(title: "$address"),
       draggable: false,
     ));
   }
@@ -139,16 +139,25 @@ class _MapScreenState extends State<MapScreen> {
     var placeDetails = await PlaceApiProvider(sessionToken).fetchAddress(pos);
     print(placeDetails[0]['place_id']);
     //add marker
-    _addMarker(placeDetails[0]['place_id'], pos);
+    _addMarker(
+        placeDetails[0]['place_id'], pos, placeDetails[0]['formatted_address']);
     //add to list
     addToList(placeDetails[0]['place_id'], placeDetails[0]['formatted_address'],
         placeDetails[0]['formatted_address'], pos);
   }
 
   //utility function to go to current position and add marker
-  void addMarkerAndGoPosition(double lat, double long, markerId) {
+  void addMarkerAndGoPosition(
+      double lat, double long, markerId, String address) {
     _gotoGivenPostion(lat, long);
-    _addMarker(markerId, LatLng(lat, long));
+    _addMarker(markerId, LatLng(lat, long), address);
+  }
+
+  //utility function to clear variable values
+  void clearVariables() {
+    totalDistance = 0;
+    totalDuration = 0;
+    polylines.clear();
   }
 
   @override
@@ -194,6 +203,18 @@ class _MapScreenState extends State<MapScreen> {
                           context: context,
                           delegate: DataSearch(sessionToken),
                         );
+                        print(mapList.length - clickedSearchItems);
+                        /*handle markers for those clicked by + button */
+                        for (int i = mapList.length - clickedSearchItems;
+                            i < mapList.length;
+                            i++) {
+                          setState(() {
+                            _addMarker(mapList[i].placeId,
+                                mapList[i].coordinates, mapList[i].address);
+                          });
+                        }
+                        print(mapList);
+                        clickedSearchItems = 0; //reset counter to 0
                         if (result != null) {
                           final placeDetails =
                               await PlaceApiProvider(sessionToken)
@@ -205,7 +226,8 @@ class _MapScreenState extends State<MapScreen> {
                             //animate camera to location once json request has been received
                             _gotoGivenPostion(
                                 _coord.latitude, _coord.longitude);
-                            _addMarker(result.placeId, _coord);
+                            _addMarker(
+                                result.placeId, _coord, result.description);
                             _destinationController.text = result.description;
                           });
                           printList();
@@ -295,7 +317,8 @@ class _MapScreenState extends State<MapScreen> {
                           addMarkerAndGoPosition(
                               mapList[index].coordinates.latitude,
                               mapList[index].coordinates.longitude,
-                              mapList[index].placeId);
+                              mapList[index].placeId,
+                              mapList[index].address);
                         },
                       ),
                     );
@@ -346,11 +369,33 @@ class _MapScreenState extends State<MapScreen> {
                       ]),
                   child: ElevatedButton(
                     onPressed: () async {
-                        for(int i = 0; i < mapList.length-1; i++ ) {
-                          var responseData = await setPolyLines(mapList[i].coordinates, mapList[i+1].coordinates, mapList[i].placeId);
-                          print(responseData);
+                      clearVariables();
+                      /*RUNNING ALGORITHM FOR TRAVELLING SALESMAN HERE! */
+                      //create storage 2d list
+                      var pathDurationPermutations =
+                          List<List<double>>.generate(
+                              mapList.length, (i) => List(mapList.length),
+                              growable: false);
+                      if (mapList.length > 2) {
+                        for (int i = 0; i < mapList.length - 1; i++) {
+                          for (int j = mapList.length - 1; j > i; i--) {
+                            var responseData = await setPolyLines(
+                                mapList[i].coordinates,
+                                mapList[j].coordinates,
+                                mapList[i].placeId);
+                            double durationValue = double.parse(
+                                responseData.journeyDuration.split(" ")[0]);
+                            double distValue =
+                                double.parse(responseData.dist.split(" ")[0]);
+                            totalDuration += durationValue;
+                            totalDistance += distValue;
+                            pathDurationPermutations[i][j] = durationValue;
+                          }
+                          //print("$totalDuration min $totalDistance km");
+                          print(pathDurationPermutations);
                         }
-
+                      }
+                      _panelController.close();
                       //print(mapList[0].coordinates);
                     },
                     style:
@@ -377,7 +422,12 @@ class _MapScreenState extends State<MapScreen> {
                           fontSize: 25,
                           fontFamily: 'Open Sans')),
                 ),
-                title: Text(""),
+                title: Text("$totalDuration min \n$totalDistance km",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w300,
+                        fontSize: 20,
+                        fontFamily: 'Open Sans')),
               ),
             ),
             onPanelSlide: (position) => setState(() {

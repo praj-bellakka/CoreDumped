@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mapception/pages/google_map_page.dart';
 import 'package:mapception/services/location_list.dart';
 import 'package:mapception/services/place_services.dart';
 
@@ -15,6 +16,10 @@ import 'package:mapception/services/place_services.dart';
 //     );
 //   }
 // }
+
+//number of indexes clicked
+int clickedSearchItems = 0;
+
 class DataSearch extends SearchDelegate<Suggestion> {
   final sessionToken;
   PlaceApiProvider apiClient;
@@ -57,7 +62,6 @@ class DataSearch extends SearchDelegate<Suggestion> {
   @override
   Widget buildSuggestions(BuildContext context) {
     // items to display when something is searched
-    bool tapped = false;
     return FutureBuilder(
       future: query == "" ? null : apiClient.fetchSuggestions(query),
       builder: (context, snapshot) => query == ''
@@ -97,14 +101,15 @@ class DataSearch extends SearchDelegate<Suggestion> {
                                   sessionToken)
                               .getPlaceDetails(snapshot.data[index].placeId);
                           print(snapshot.data[index]);
-
                           addToList(
                               snapshot.data[index].placeId,
                               snapshot.data[index].description,
                               snapshot.data[index].description,
                               LatLng(placeDetails.coordinates['lat'],
                                   placeDetails.coordinates['lng']));
+
                           printList();
+                          clickedSearchItems += 1;
                         }),
                     onTap: () {
                       //tapped = true;
