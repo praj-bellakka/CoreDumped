@@ -378,11 +378,12 @@ class _MapScreenState extends State<MapScreen> {
                               growable: false);
                       if (mapList.length > 2) {
                         for (int i = 0; i < mapList.length - 1; i++) {
-                          for (int j = mapList.length - 1; j > i; i--) {
-                            var responseData = await setPolyLines(
+                          for (int j = mapList.length - 1; j > i; j--) {
+                            var responseData = await findIndividualDirections(
                                 mapList[i].coordinates,
                                 mapList[j].coordinates,
-                                mapList[i].placeId);
+                                mapList[i].placeId,
+                                "from${i}to$j");
                             double durationValue = double.parse(
                                 responseData.journeyDuration.split(" ")[0]);
                             double distValue =
@@ -391,9 +392,10 @@ class _MapScreenState extends State<MapScreen> {
                             totalDistance += distValue;
                             pathDurationPermutations[i][j] = durationValue;
                           }
-                          //print("$totalDuration min $totalDistance km");
-                          print(pathDurationPermutations);
                         }
+                        await runAlgoAndSetPolylines();
+                        //print("$totalDuration min $totalDistance km");
+                        print(pathDurationPermutations);
                       }
                       _panelController.close();
                       //print(mapList[0].coordinates);

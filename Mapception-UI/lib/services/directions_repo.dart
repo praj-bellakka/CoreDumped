@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 
 PolylinePoints polylinePoints = PolylinePoints();
 Set<Polyline> polylines = {};
+Map<String, Polyline> tempPolylines = {};
 double totalDuration = 0;
 double totalDistance = 0;
 
@@ -34,14 +35,15 @@ class DirectionModel {
   }
 }
 
-Future<DirectionModel> setPolyLines(
-    LatLng source, LatLng dest, String placeId) async {
+Future<DirectionModel> findIndividualDirections(
+    LatLng source, LatLng dest, String placeId, String tempId) async {
   var baseUrl =
       "https://maps.googleapis.com/maps/api/directions/json?origin=${source.latitude},${source.longitude}&destination=${dest.latitude},${dest.longitude}&key=$apiKey";
   final response = await http.get(Uri.parse(baseUrl));
 
   //print(response.body);
   if (response.statusCode == 200) {
+    print(tempId);
     var jsonResult = DirectionModel.fromJson(jsonDecode(response.body));
     Polyline polyline = Polyline(
         polylineId: PolylineId(placeId),
@@ -51,8 +53,31 @@ Future<DirectionModel> setPolyLines(
             .decodePolyline(jsonResult.polyline)
             .map((e) => LatLng(e.latitude, e.longitude))
             .toList());
-    polylines.add(polyline);
+    tempPolylines[tempId] = polyline;
     return jsonResult;
   }
   print(response.body);
+  return null;
+}
+
+//this function will run the 2 approx algorithm, which will return a list of index in the correct order
+//Then, it will draw the polylines and update the main list
+void runAlgoAndSetPolylines() async {
+/*
+Add Algorithm feature here
+*/
+
+  List<int> indexes = [0, 2, 1];
+  for (int i = 0; i < indexes.length; i++) {
+    int from = i;
+    int to = i + 1;
+    print("from${from}to$to");
+    Polyline extractedPolyline = tempPolylines["from${from}to$to"];
+    if (extractedPolyline != null) {
+      print(extractedPolyline.toString());
+      polylines.add(extractedPolyline);
+    }
+  }
+  //clear temp storages
+  tempPolylines.clear();
 }
