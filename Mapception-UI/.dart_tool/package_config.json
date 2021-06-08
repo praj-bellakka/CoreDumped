@@ -242,6 +242,12 @@
       "languageVersion": "2.12"
     },
     {
+      "name": "step_progress_indicator",
+      "rootUri": "file:///Volumes/ssd/Flutter/flutter/.pub-cache/hosted/pub.dartlang.org/step_progress_indicator-1.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
       "name": "stream_channel",
       "rootUri": "file:///Volumes/ssd/Flutter/flutter/.pub-cache/hosted/pub.dartlang.org/stream_channel-2.1.0",
       "packageUri": "lib/",
@@ -302,7 +308,7 @@
       "languageVersion": "2.7"
     }
   ],
-  "generated": "2021-06-04T07:13:17.836806Z",
+  "generated": "2021-06-08T07:23:41.887843Z",
   "generator": "pub",
   "generatorVersion": "2.12.3"
 }

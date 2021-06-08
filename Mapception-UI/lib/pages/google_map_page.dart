@@ -7,6 +7,7 @@ import 'package:location/location.dart';
 import 'package:mapception/services/directions_repo.dart';
 import 'package:mapception/services/place_services.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:step_progress_indicator/step_progress_indicator.dart';
 import 'package:uuid/uuid.dart';
 
 import '../services/location_list.dart';
@@ -257,6 +258,161 @@ class _MapScreenState extends State<MapScreen> {
             borderRadius: BorderRadius.circular(30),
             controller: _panelController,
             panel: Column(children: <Widget>[
+              SizedBox(height: 10),
+              GestureDetector(
+                  //create drag handle
+                  child: Center(
+                    child: Container(
+                      width: 30,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    _panelController.isPanelOpen
+                        ? _panelController.close()
+                        : _panelController.open();
+                  }),
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  RichText(
+                      text: TextSpan(children: [
+                    WidgetSpan(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 2),
+                        child: Icon(Icons.directions_transit,
+                            color: Colors.pink[200]),
+                      ),
+                    ),
+                  ])),
+                  Column(
+                    children: [
+                      RichText(
+                          text: TextSpan(
+                              text: "${linkedData.length} Destinations",
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                      RichText(
+                          text: TextSpan(
+                              text: "Selected",
+                              style: TextStyle(color: Colors.grey[500]))),
+                    ],
+                  ),
+                  RichText(
+                      text: TextSpan(children: [
+                    WidgetSpan(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 2),
+                        child: Icon(Icons.timer, color: Colors.pink[200]),
+                      ),
+                    ),
+                  ])),
+                  Column(
+                    children: [
+                      RichText(
+                          text: TextSpan(
+                              text: "$totalDuration mins",
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                      RichText(
+                          text: TextSpan(
+                              text: "Total Time",
+                              style: TextStyle(color: Colors.grey[500]))),
+                    ],
+                  ),
+                  RichText(
+                      text: TextSpan(children: [
+                    WidgetSpan(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 2),
+                        child: Icon(Icons.directions_walk_rounded,
+                            color: Colors.pink[200]),
+                      ),
+                    ),
+                  ])),
+                  Column(
+                    children: [
+                      RichText(
+                          text: TextSpan(
+                              text: "$totalDistance km",
+                              style: TextStyle(fontWeight: FontWeight.bold))),
+                      RichText(
+                          text: TextSpan(
+                              text: "Total Distance",
+                              style: TextStyle(color: Colors.grey[500]))),
+                    ],
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              Container(
+                width: MediaQuery.of(context).size.width * 0.95,
+                height: 70,
+                decoration: BoxDecoration(
+                    //borderRadius: BorderRadius.circular(10),
+                    //color: Color.fromRGBO(64, 75, 96, .9),
+                    ),
+                padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                child: Row(
+                  children: [
+                    Align(
+                      alignment: Alignment(0, 0),
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 10, left: 10, bottom: 10),
+                        child: Text("At A Glance",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 25,
+                            ),
+                            textAlign: TextAlign.left),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    RichText(
+                        text: TextSpan(children: [
+                      WidgetSpan(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 2),
+                          child: Icon(Icons.location_city,
+                              color: Colors.pink[200]),
+                        ),
+                      ),
+                    ])),
+                    Column(
+                      children: [
+                        RichText(
+                            text: TextSpan(
+                                text: "Starting Point:",
+                                style: TextStyle(fontWeight: FontWeight.bold))),
+                        RichText(
+                            text: TextSpan(
+                                text: "Nil" ,
+                                style: TextStyle(color: Colors.grey[500]))),
+                      ],
+                    ),
+                  ]),
+              Container(
+                width: MediaQuery.of(context).size.width * 0.9,
+                padding: EdgeInsets.only(left: 10, right: 10),
+                child: StepProgressIndicator(
+                  totalSteps: linkedData.length + 3,
+                  currentStep: placesVisited + 1,
+                  size: 8,
+                  padding: 0,
+                  selectedColor: Colors.cyan,
+                  unselectedColor: Colors.cyan[900],
+                  roundedEdges: Radius.circular(10),
+                ),
+              ),
               Expanded(
                 child: ReorderableListView.builder(
                   padding: EdgeInsets.all(10),
@@ -482,3 +638,5 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 }
+
+//Drag Handle Widget

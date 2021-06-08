@@ -13,7 +13,7 @@ class LocationList {
 
 /*ORIGINAL VERSION OF MAPLIST. UNCOMMENT ONCE TESTING IS DONE!*/
 var mapList = [];
-
+int placesVisited = 0;
 /*THIS IS A DEBUG VERSION OF MAPLIST TO REDUCE API REQUESTS. CHANGE BACK TO ORIGINAL VERSION AFTER TESTING!*/
 // var mapList = [
 //   LocationList(
@@ -57,13 +57,13 @@ var mapList = [];
 //       condensedName: "Sentosa Gateway, Singapore",
 //       coordinates: LatLng(1.2607914, 103.8237317),
 //       placeId:
-//           "EhpTZW50b3NhIEdhdGV3YXksIFNpbmdhcG9yZSIuKiwKFAoSCTMWLoRXGdoxEeRWEDVI6eBjEhQKEgl1k4uKIxHaMRHE9atSz2l4iA"),    
+//           "EhpTZW50b3NhIEdhdGV3YXksIFNpbmdhcG9yZSIuKiwKFAoSCTMWLoRXGdoxEeRWEDVI6eBjEhQKEgl1k4uKIxHaMRHE9atSz2l4iA"),
 //           LocationList(
 //       address: "Sentosa Gateway, Singapore",
 //       condensedName: "Sentosa Gateway, Singapore",
 //       coordinates: LatLng(1.2607914, 103.8237317),
 //       placeId:
-//           "EhpTZW50b3NhIEdhdGV3YXksIFNpbmdhcG9yZSIuKiwKFAoSCTMWLoRXGdoxEeRWEDVI6eBjEhQKEgl1k4uKIxHaMRHE9atSz2l4iA"),    
+//           "EhpTZW50b3NhIEdhdGV3YXksIFNpbmdhcG9yZSIuKiwKFAoSCTMWLoRXGdoxEeRWEDVI6eBjEhQKEgl1k4uKIxHaMRHE9atSz2l4iA"),
 // ];
 
 /*List implementation

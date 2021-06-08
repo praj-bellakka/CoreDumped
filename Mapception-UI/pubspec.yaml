@@ -38,6 +38,7 @@ dependencies:
   uuid: ^3.0.4
   sliding_up_panel: ^2.0.0+1
   # onemapsg: ^1.0.0
+  step_progress_indicator: ^1.0.0
 
   
 dev_dependencies:
