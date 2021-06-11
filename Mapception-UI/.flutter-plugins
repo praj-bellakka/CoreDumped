@@ -6,3 +6,7 @@ geolocator_web=/Volumes/ssd/Flutter/flutter/.pub-cache/hosted/pub.dartlang.org/g
 google_maps_flutter=/Volumes/ssd/Flutter/flutter/.pub-cache/hosted/pub.dartlang.org/google_maps_flutter-2.0.5/
 location=/Volumes/ssd/Flutter/flutter/.pub-cache/hosted/pub.dartlang.org/location-4.1.1/
 location_web=/Volumes/ssd/Flutter/flutter/.pub-cache/hosted/pub.dartlang.org/location_web-3.0.0/
+path_provider=/Volumes/ssd/Flutter/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider-2.0.2/
+path_provider_linux=/Volumes/ssd/Flutter/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_linux-2.0.0/
+path_provider_macos=/Volumes/ssd/Flutter/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_macos-2.0.0/
+path_provider_windows=/Volumes/ssd/Flutter/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider_windows-2.0.1/

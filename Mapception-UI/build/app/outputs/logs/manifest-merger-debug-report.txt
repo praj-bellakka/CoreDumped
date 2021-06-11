@@ -8,6 +8,7 @@ MERGED from /Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/android/app
 MERGED from [:google_maps_flutter] /Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/google_maps_flutter/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-7:12
 MERGED from [:flutter_plugin_android_lifecycle] /Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/flutter_plugin_android_lifecycle/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-7:12
 MERGED from [:geocoding] /Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/geocoding/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-7:12
+MERGED from [:path_provider] /Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/path_provider/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-7:12
 MERGED from [:location] /Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/location/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-18:12
 MERGED from [:geolocator] /Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/geolocator/intermediates/library_manifest/debug/AndroidManifest.xml:2:1-7:12
 MERGED from [androidx.multidex:multidex:2.0.0] /Users/praj/.gradle/caches/transforms-2/files-2.1/e0c80cb72d282da5b4cd1966a30d3891/multidex-2.0.0/AndroidManifest.xml:17:1-22:12
@@ -132,6 +133,8 @@ MERGED from [:flutter_plugin_android_lifecycle] /Volumes/ssd/flutter-playground/
 MERGED from [:flutter_plugin_android_lifecycle] /Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/flutter_plugin_android_lifecycle/intermediates/library_manifest/debug/AndroidManifest.xml:5:5-44
 MERGED from [:geocoding] /Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/geocoding/intermediates/library_manifest/debug/AndroidManifest.xml:5:5-44
 MERGED from [:geocoding] /Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/geocoding/intermediates/library_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:path_provider] /Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/path_provider/intermediates/library_manifest/debug/AndroidManifest.xml:5:5-44
+MERGED from [:path_provider] /Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/path_provider/intermediates/library_manifest/debug/AndroidManifest.xml:5:5-44
 MERGED from [:location] /Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/location/intermediates/library_manifest/debug/AndroidManifest.xml:5:5-44
 MERGED from [:location] /Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/location/intermediates/library_manifest/debug/AndroidManifest.xml:5:5-44
 MERGED from [:geolocator] /Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/geolocator/intermediates/library_manifest/debug/AndroidManifest.xml:5:5-44

@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:mapception/services/directions_repo.dart';
 import 'package:mapception/services/place_services.dart';
+import 'package:mapception/services/writeToFile.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 import 'package:uuid/uuid.dart';
@@ -41,6 +42,10 @@ class _MapScreenState extends State<MapScreen> {
 
   static const double fabHeightClosed = 130.0;
   double fabHeight = fabHeightClosed;
+
+  String startLocationProgBar =
+      'Nil'; //controls the start location of the progress bar
+  String endLocationProgBar = 'Nil';
 
   //code to convert icon asset to bitmap
   Future<Uint8List> getMarker() async {
@@ -276,7 +281,140 @@ class _MapScreenState extends State<MapScreen> {
                         ? _panelController.close()
                         : _panelController.open();
                   }),
-              SizedBox(height: 10),
+              //
+              Container(
+                width: MediaQuery.of(context).size.width * 0.95,
+                height: 70,
+                decoration: BoxDecoration(
+                    //borderRadius: BorderRadius.circular(10),
+                    //color: Color.fromRGBO(64, 75, 96, .9),
+                    ),
+                padding: EdgeInsets.only(left: 10, right: 10),
+                child: Row(
+                  children: [
+                    Align(
+                      alignment: Alignment(0, 0),
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 10),
+                        child: Text("At A Glance",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 25,
+                            ),
+                            textAlign: TextAlign.left),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 200,
+                width: MediaQuery.of(context).size.width * 0.95,
+                child: Card(
+                  color: Color.fromRGBO(64, 75, 96, .9),
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height * 0.16,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text(
+                              "${linkedData.length - placesVisited}",
+                              style: TextStyle(
+                                color: Colors.teal[300],
+                                fontFamily: 'Karla',
+                                fontSize: 55,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              "/${linkedData.length} places to go",
+                              style: TextStyle(
+                                fontFamily: 'Karla',
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey[500],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            RichText(
+                                text: TextSpan(children: [
+                              WidgetSpan(
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 2),
+                                  child: Icon(Icons.location_city,
+                                      color: Colors.pink[200]),
+                                ),
+                              ),
+                            ])),
+                            Column(
+                              children: [
+                                RichText(
+                                    text: TextSpan(
+                                        text: "Starting Point:",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold))),
+                                RichText(
+                                    text: TextSpan(
+                                        text: startLocationProgBar,
+                                        style: TextStyle(
+                                            color: Colors.grey[500]))),
+                              ],
+                            ),
+                            RichText(
+                                text: TextSpan(children: [
+                              WidgetSpan(
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 2),
+                                  child: Icon(Icons.location_city,
+                                      color: Colors.pink[200]),
+                                ),
+                              ),
+                            ])),
+                            Column(
+                              children: [
+                                RichText(
+                                    text: TextSpan(
+                                        text: "Ending Point:",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold))),
+                                RichText(
+                                    text: TextSpan(
+                                        text: endLocationProgBar,
+                                        style:
+                                            TextStyle(color: Colors.grey[500])),
+                                    overflow: TextOverflow.clip),
+                              ],
+                            ),
+                          ]),
+                      SizedBox(height: 10),
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.9,
+                        padding: EdgeInsets.only(left: 10, right: 10),
+                        child: StepProgressIndicator(
+                          totalSteps: linkedData.length + 1,
+                          currentStep: placesVisited,
+                          size: 8,
+                          padding: 0,
+                          selectedColor: Colors.cyan,
+                          unselectedColor: Colors.cyan[900],
+                          roundedEdges: Radius.circular(10),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 15),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
@@ -347,72 +485,8 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                 ],
               ),
+
               SizedBox(height: 10),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.95,
-                height: 70,
-                decoration: BoxDecoration(
-                    //borderRadius: BorderRadius.circular(10),
-                    //color: Color.fromRGBO(64, 75, 96, .9),
-                    ),
-                padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
-                child: Row(
-                  children: [
-                    Align(
-                      alignment: Alignment(0, 0),
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 10, left: 10, bottom: 10),
-                        child: Text("At A Glance",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w900,
-                              fontSize: 25,
-                            ),
-                            textAlign: TextAlign.left),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    RichText(
-                        text: TextSpan(children: [
-                      WidgetSpan(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 2),
-                          child: Icon(Icons.location_city,
-                              color: Colors.pink[200]),
-                        ),
-                      ),
-                    ])),
-                    Column(
-                      children: [
-                        RichText(
-                            text: TextSpan(
-                                text: "Starting Point:",
-                                style: TextStyle(fontWeight: FontWeight.bold))),
-                        RichText(
-                            text: TextSpan(
-                                text: "Nil" ,
-                                style: TextStyle(color: Colors.grey[500]))),
-                      ],
-                    ),
-                  ]),
-              Container(
-                width: MediaQuery.of(context).size.width * 0.9,
-                padding: EdgeInsets.only(left: 10, right: 10),
-                child: StepProgressIndicator(
-                  totalSteps: linkedData.length + 3,
-                  currentStep: placesVisited + 1,
-                  size: 8,
-                  padding: 0,
-                  selectedColor: Colors.cyan,
-                  unselectedColor: Colors.cyan[900],
-                  roundedEdges: Radius.circular(10),
-                ),
-              ),
               Expanded(
                 child: ReorderableListView.builder(
                   padding: EdgeInsets.all(10),
@@ -535,24 +609,23 @@ class _MapScreenState extends State<MapScreen> {
                       if (mapList.length > 2) {
                         for (int i = 0; i < mapList.length - 1; i++) {
                           for (int j = mapList.length - 1; j > i; j--) {
-                            var responseData = await findIndividualDirections(
-                                mapList[i].coordinates,
-                                mapList[j].coordinates,
-                                mapList[i].placeId,
-                                "from${i}to$j");
-                            double durationValue = double.parse(
-                                responseData.journeyDuration.split(" ")[0]);
-                            double distValue =
-                                double.parse(responseData.dist.split(" ")[0]);
-                            totalDuration += durationValue;
-                            totalDistance += distValue;
+                            double durationValue =
+                                await generatePathFunction(i, j);
                             pathDurationPermutations[i][j] = durationValue;
                           }
                         }
+                        await saveFile(pathDurationPermutations);
                         await runAlgoAndSetPolylines();
-                        //print("$totalDuration min $totalDistance km");
-                        print(pathDurationPermutations);
+                      } else if (mapList.length == 2) {
+                        generatePathFunction(0, 1);
+                        runAlgoAndSetPolylines();
                       }
+                      startLocationProgBar =
+                          mapList[0].condensedName.split(',')[0];
+                      endLocationProgBar = mapList[mapList.length - 1]
+                          .condensedName
+                          .split(',')[0];
+                      flag = true;
                       _panelController.close();
                       //print(mapList[0].coordinates);
                     },
@@ -563,30 +636,8 @@ class _MapScreenState extends State<MapScreen> {
             ]),
             collapsed: Container(
               color: Colors.blueGrey,
-              child: ListTile(
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-                tileColor: Colors.blueGrey[800],
-                leading: Container(
-                  padding: EdgeInsets.only(right: 12.0),
-                  decoration: new BoxDecoration(
-                      border: new Border(
-                          right: new BorderSide(
-                              width: 1.0, color: Colors.white24))),
-                  child: Text("${linkedData.length} ",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 25,
-                          fontFamily: 'Open Sans')),
-                ),
-                title: Text("$totalDuration min \n$totalDistance km",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w300,
-                        fontSize: 20,
-                        fontFamily: 'Open Sans')),
-              ),
+              child:
+                  flag ? CollpasedMenuWithRoute() : CollpasedMenuWithoutRoute(),
             ),
             onPanelSlide: (position) => setState(() {
               final panelScrollExtent = panelHeightOpen - panelHeightClosed;
@@ -637,6 +688,80 @@ class _MapScreenState extends State<MapScreen> {
       ),
     );
   }
+
+  Future<double> generatePathFunction(int i, int j) async {
+    var responseData = await findIndividualDirections(mapList[i].coordinates,
+        mapList[j].coordinates, mapList[i].placeId, "from${i}to$j");
+    double durationValue =
+        double.parse(responseData.journeyDuration.split(" ")[0]);
+    double distValue = double.parse(responseData.dist.split(" ")[0]);
+    totalDuration += durationValue;
+    totalDistance += distValue;
+    return durationValue;
+  }
 }
 
-//Drag Handle Widget
+/* CollpasedMenuWithoutRoute displays the collapsed widget when route is not being generated
+    It contains basic info about selected route length & route duration
+*/
+class CollpasedMenuWithoutRoute extends StatelessWidget {
+  const CollpasedMenuWithoutRoute({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+      tileColor: Colors.blueGrey[800],
+      leading: Container(
+        padding: EdgeInsets.only(right: 12.0),
+        decoration: new BoxDecoration(
+            border: new Border(
+                right: new BorderSide(width: 1.0, color: Colors.white24))),
+        child: Text("${linkedData.length}",
+            style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+                fontSize: 25,
+                fontFamily: 'Open Sans')),
+      ),
+      title: Text("$totalDuration min \n$totalDistance km",
+          style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w300,
+              fontSize: 20,
+              fontFamily: 'Open Sans')),
+    );
+  }
+}
+
+/* CollpasedMenuWithoutRoute displays next route information
+    Displays when generate route is pressed
+*/
+class CollpasedMenuWithRoute extends StatelessWidget {
+  const CollpasedMenuWithRoute({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+      tileColor: Colors.blueGrey[800],
+      leading: Container(
+        padding: EdgeInsets.only(right: 12.0),
+        decoration: new BoxDecoration(
+            border: new Border(
+                right: new BorderSide(width: 1.0, color: Colors.white24))),
+        child: Icon(Icons.location_pin, color: Colors.white),
+      ),
+      title: Text("${mapList[0].condensedName.split(',')[0]}",
+          style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w300,
+              fontSize: 20,
+              fontFamily: 'Open Sans')),
+    );
+  }
+}

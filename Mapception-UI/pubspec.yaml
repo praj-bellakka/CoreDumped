@@ -39,6 +39,7 @@ dependencies:
   sliding_up_panel: ^2.0.0+1
   # onemapsg: ^1.0.0
   step_progress_indicator: ^1.0.0
+  path_provider: ^2.0.2
 
   
 dev_dependencies:
