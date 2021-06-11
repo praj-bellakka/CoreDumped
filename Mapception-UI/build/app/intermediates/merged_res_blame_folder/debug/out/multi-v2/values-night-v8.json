@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "/Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values-night-v8/values-night-v8.xml",
+            "outputFile": "C:\\Users\\leowy\\OneDrive\\Desktop\\CoreDumped\\Mapception-UI\\build\\app\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-night-v8\\values-night-v8.xml",
             "map": [
                 {
-                    "source": "/Volumes/ssd/flutter-playground/CoreDumped/Mapception-UI/android/app/src/main/res/values-night/styles.xml",
+                    "source": "C:\\Users\\leowy\\OneDrive\\Desktop\\CoreDumped\\Mapception-UI\\android\\app\\src\\main\\res\\values-night\\styles.xml",
                     "from": {
                         "startLines": "3,14",
                         "startColumns": "4,4",

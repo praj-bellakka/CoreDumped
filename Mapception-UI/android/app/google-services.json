@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "44291013706",
+    "project_id": "mapception-c014b",
+    "storage_bucket": "mapception-c014b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:44291013706:android:e86e8fb231e1abb5b6fab3",
+        "android_client_info": {
+          "package_name": "com.coredumped.mapception"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "44291013706-9888t1nmqmsva0fphk4g4i4koiql4rj1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiJb5vsvsZqOKZFjaS7_IvOmbFJePI1jE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "44291013706-9888t1nmqmsva0fphk4g4i4koiql4rj1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

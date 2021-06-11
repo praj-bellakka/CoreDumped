@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">44291013706-9888t1nmqmsva0fphk4g4i4koiql4rj1.apps.googleusercontent.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">44291013706</string>
+    <string name="google_api_key" translatable="false">AIzaSyBiJb5vsvsZqOKZFjaS7_IvOmbFJePI1jE</string>
+    <string name="google_app_id" translatable="false">1:44291013706:android:e86e8fb231e1abb5b6fab3</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyBiJb5vsvsZqOKZFjaS7_IvOmbFJePI1jE</string>
+    <string name="google_storage_bucket" translatable="false">mapception-c014b.appspot.com</string>
+    <string name="project_id" translatable="false">mapception-c014b</string>
+</resources>
