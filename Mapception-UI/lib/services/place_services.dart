@@ -10,16 +10,18 @@ final String androidKey = 'AIzaSyAaa2p7_QrOhGFQS-DHndqEZZa5-BV7vRw';
 final String iosKey = '';
 //final apiKey = Platform.isAndroid ? androidKey : iosKey;
 final apiKey = androidKey;
+
 //To store the results
 class Suggestion {
   final String placeId;
   final String description;
   final String placeIcon;
-  Suggestion(this.placeId, this.description, this.placeIcon);
+  final String shortName;
+  Suggestion(this.placeId, this.description, this.placeIcon, this.shortName);
 
   @override
   String toString() {
-    return 'Suggestion(description: $description, placeId: $placeId, placeIcon: $placeIcon)';
+    return 'Suggestion(description: $description, placeId: $placeId, placeIcon: $placeIcon, shortName: $shortName)';
   }
 }
 
@@ -27,13 +29,15 @@ class PlaceDetails {
   final coordinates;
   final zipCode;
   final name;
+  final shortName;
 
-  PlaceDetails({this.coordinates, this.zipCode, this.name});
+  PlaceDetails({this.coordinates, this.zipCode, this.name, this.shortName});
   factory PlaceDetails.fromJson(Map<dynamic, dynamic> json) {
     return PlaceDetails(
       coordinates: json['geometry']['location'],
       name: json['formatted_address'],
       zipCode: json['zipCode'],
+      shortName: json['name'],
     );
   }
 }
@@ -43,7 +47,6 @@ class PlaceApiProvider {
   final sessionToken;
 
   PlaceApiProvider(this.sessionToken);
-
 
   Future<List<Suggestion>> fetchSuggestions(String input) async {
     //api is now limited to Singapore places
@@ -58,7 +61,7 @@ class PlaceApiProvider {
         //print(result['status']);
         return result['predictions']
             .map<Suggestion>(
-                (p) => Suggestion(p['place_id'], p['description'], p['icon']))
+                (p) => Suggestion(p['place_id'], p['description'], p['icon'], p['name']))
             .toList();
       }
       if (result['status'] == 'ZERO_RESULTS') {

@@ -43,7 +43,7 @@ Future<DirectionModel> findIndividualDirections(
 
   //print(response.body);
   if (response.statusCode == 200) {
-    print(tempId);
+    // print(tempId);
     var jsonResult = DirectionModel.fromJson(jsonDecode(response.body));
     Polyline polyline = Polyline(
         polylineId: PolylineId(placeId),
@@ -66,9 +66,8 @@ void runAlgoAndSetPolylines() async {
 /*
 Add Algorithm feature here
 */
-
-  List<int> indexes = [0, 2, 1];
-  for (int i = 0; i < indexes.length; i++) {
+  List<int> indexes = [0, 1, 2];
+  for (int i = 0; i < tempPolylines.length; i++) {
     int from = i;
     int to = i + 1;
     print("from${from}to$to");

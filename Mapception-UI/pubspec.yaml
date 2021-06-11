@@ -43,7 +43,7 @@ dependencies:
   firebase_core: ^1.2.1
   cloud_firestore: ^2.2.1
   provider: ^5.0.0
-
+  path_provider: ^2.0.2
 
   
 dev_dependencies:
