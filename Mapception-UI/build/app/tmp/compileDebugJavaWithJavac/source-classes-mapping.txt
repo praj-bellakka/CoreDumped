@@ -1,4 +1,0 @@
-io/flutter/plugins/GeneratedPluginRegistrant.java
- io.flutter.plugins.GeneratedPluginRegistrant
-com/example/mapception/BuildConfig.java
- com.example.mapception.BuildConfig

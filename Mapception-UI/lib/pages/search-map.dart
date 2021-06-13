@@ -1,23 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:mapception/pages/google_map_page.dart';
 import 'package:mapception/services/location_list.dart';
 import 'package:mapception/services/place_services.dart';
 
-// class Search_Places extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text("hi"),
-
-//       )  ,
-//     );
-//   }
-// }
-
-//number of indexes clicked
 int clickedSearchItems = 0;
 
 class DataSearch extends SearchDelegate<Suggestion> {
