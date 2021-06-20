@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:typed_data';
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:mapception/services/algorithm.dart';
+import 'package:mapception/services/colourPalette.dart';
 import 'package:mapception/services/directions_repo.dart';
 import 'package:mapception/services/place_services.dart';
 import 'package:mapception/services/writeToFile.dart';
@@ -174,6 +176,10 @@ class _MapScreenState extends State<MapScreen> {
         0.15; //relative height of panel when closed
     _getCurrentLocation();
     return Scaffold(
+      // appBar: AppBar(
+      //   backgroundColor: Colors.transparent,
+      //   elevation: 0.0,
+      // ),
       body: Stack(
         children: <Widget>[
           GoogleMap(
@@ -614,7 +620,8 @@ class _MapScreenState extends State<MapScreen> {
                             pathDurationPermutations[i][j] = durationValue;
                           }
                         }
-                        await saveFile(pathDurationPermutations);
+                        //await saveFile(pathDurationPermutations);
+                        await RouteOptimizeAlgo(pathDurationPermutations);
                         await runAlgoAndSetPolylines();
                       } else if (mapList.length == 2) {
                         generatePathFunction(0, 1);

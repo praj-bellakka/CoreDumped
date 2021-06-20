@@ -104,7 +104,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           ScaffoldMessenger.of(context)
                               .showSnackBar(SnackBar(
                             content: Text(result == 'invalid-email' ? "Email address is badly formatted" : 
-                                          result == 'user-not-found' ? "There is no user associated with this email" : "Password has been reset!", 
+                                          result == 'user-not-found' ? "There is no user associated with this email" : "An email has been sent!", 
                               style: GoogleFonts.montserrat(color: result == null ? Colors.green[400] : Colors.red[400])),
                             duration: Duration(seconds: 4),
 
