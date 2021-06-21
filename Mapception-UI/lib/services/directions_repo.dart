@@ -47,8 +47,11 @@ Future<DirectionModel> findIndividualDirections(
     var jsonResult = DirectionModel.fromJson(jsonDecode(response.body));
     Polyline polyline = Polyline(
         polylineId: PolylineId(placeId),
-        color:
-            Color((Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0),
+        width: 5,
+        startCap: Cap.roundCap,
+        endCap: Cap.buttCap,
+        color: Color.fromRGBO(0, 51, 102, 1), //darkblue color
+            //Color((Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0),
         points: polylinePoints
             .decodePolyline(jsonResult.polyline)
             .map((e) => LatLng(e.latitude, e.longitude))
@@ -62,19 +65,25 @@ Future<DirectionModel> findIndividualDirections(
 
 //this function will run the 2 approx algorithm, which will return a list of index in the correct order
 //Then, it will draw the polylines and update the main list
-void runAlgoAndSetPolylines() async {
+void runAlgoAndSetPolylines(List<int> sortedList,
+    List<List<double>> durationMatrix, List<List<double>> distMatrix) async {
 /*
 Add Algorithm feature here
 */
-  List<int> indexes = [0, 1, 2];
-  for (int i = 0; i < tempPolylines.length; i++) {
-    int from = i;
-    int to = i + 1;
+  print(tempPolylines);
+  for (int i = 0; i < sortedList.length - 1; i++) {
+    int from = sortedList[i];
+    int to = sortedList[i + 1];
     print("from${from}to$to");
-    Polyline extractedPolyline = tempPolylines["from${from}to$to"];
+    totalDuration +=
+        from < to ? durationMatrix[from][to] : durationMatrix[to][from];
+    totalDistance += from < to ? num.parse((distMatrix[from][to]).toStringAsFixed(2)).toDouble() : num.parse((distMatrix[to][from]).toStringAsFixed(2)).toDouble();
+    Polyline extractedPolyline =
+        tempPolylines[from < to ? "from${from}to$to" : "from${to}to$from"];
     if (extractedPolyline != null) {
-      print(extractedPolyline.toString());
+      //print(extractedPolyline.points);
       polylines.add(extractedPolyline);
+      print('length of polylines is ${polylines.length}');
     }
   }
   //clear temp storages

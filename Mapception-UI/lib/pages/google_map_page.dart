@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:mapception/services/algorithm.dart';
@@ -12,6 +13,7 @@ import 'package:mapception/services/writeToFile.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 import 'package:uuid/uuid.dart';
+import 'dart:ui' as ui;
 
 import '../services/location_list.dart';
 import 'search-map.dart';
@@ -102,6 +104,31 @@ class _MapScreenState extends State<MapScreen> {
     )));
   }
 
+  /* Taken from https://stackoverflow.com/questions/56172621/place-a-custom-text-under-marker-icon-in-flutter-google-maps-plugin 
+      Allows creation of custom marker with text overlayed*/
+  Future<Uint8List> getBytesFromCanvas(String text) async {
+    final ui.PictureRecorder pictureRecorder = ui.PictureRecorder();
+    final Canvas canvas = Canvas(pictureRecorder);
+    final Paint paint1 = Paint()..color = Colors.black;
+    final int size = 100; //change this according to your app
+    canvas.drawCircle(Offset(size / 2, size / 2), size / 2.0, paint1);
+    TextPainter painter = TextPainter(textDirection: TextDirection.ltr);
+    painter.text = TextSpan(
+      text: text, //you can write your own text here or take from parameter
+      style: GoogleFonts.montserrat(
+          fontSize: size / 3, color: Colors.white, fontWeight: FontWeight.bold),
+    );
+    painter.layout();
+    painter.paint(
+      canvas,
+      Offset(size / 2 - painter.width / 2, size / 2 - painter.height / 2),
+    );
+
+    final img = await pictureRecorder.endRecording().toImage(size, size);
+    final data = await img.toByteData(format: ui.ImageByteFormat.png);
+    return data.buffer.asUint8List();
+  }
+
   void _getCurrentLocation() async {
     //print("executing _getCurrentLocation ");
     try {
@@ -132,13 +159,32 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   //utility function to dynamically add markers
-  void _addMarker(markerId, coord, address) {
+  void _addMarker(markerId, coord, address, Uint8List icon) {
     _markers.add(Marker(
       markerId: MarkerId(markerId),
       position: coord,
+      icon: icon == null ? BitmapDescriptor.defaultMarker : BitmapDescriptor.fromBytes(icon),
       infoWindow: InfoWindow(title: "$address"),
       draggable: false,
     ));
+  }
+
+  Future<void> _editMarkers(List sortedList) async {
+    for (var i = 0; i < sortedList.length; i++) {
+      //1. match marker with location
+      var extractedPlaceID = mapList[sortedList[i]].placeId;
+      print(extractedPlaceID);
+      _markers.forEach((element) {
+        print(element.markerId.value);
+      });
+      var extractedMarker = _markers.firstWhere(
+          (marker) => marker.markerId == MarkerId(extractedPlaceID));
+      print(extractedMarker);
+      var newMarkerIcon = await getBytesFromCanvas((sortedList[i] + 1).toString());
+      _markers.remove(extractedMarker);
+      _addMarker(extractedMarker.markerId.value, extractedMarker.position,
+          extractedMarker.infoWindow.title, newMarkerIcon);
+    }
   }
 
   void _findLocationAndAddMarker(LatLng pos) async {
@@ -147,8 +193,8 @@ class _MapScreenState extends State<MapScreen> {
     var placeDetails = await PlaceApiProvider(sessionToken).fetchAddress(pos);
     print(placeDetails[0]['place_id']);
     //add marker
-    _addMarker(
-        placeDetails[0]['place_id'], pos, placeDetails[0]['formatted_address']);
+    _addMarker(placeDetails[0]['place_id'], pos,
+        placeDetails[0]['formatted_address'], null);
     //add to list
     addToList(placeDetails[0]['place_id'], placeDetails[0]['formatted_address'],
         placeDetails[0]['formatted_address'], pos);
@@ -158,7 +204,7 @@ class _MapScreenState extends State<MapScreen> {
   void addMarkerAndGoPosition(
       double lat, double long, markerId, String address) {
     _gotoGivenPostion(lat, long);
-    _addMarker(markerId, LatLng(lat, long), address);
+    _addMarker(markerId, LatLng(lat, long), address, null);
   }
 
   //utility function to clear variable values
@@ -171,7 +217,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     final panelHeightOpen = MediaQuery.of(context).size.height *
-        0.8; //relative height of panel when fully opened
+        0.90; //relative height of panel when fully opened
     final panelHeightClosed = MediaQuery.of(context).size.height *
         0.15; //relative height of panel when closed
     _getCurrentLocation();
@@ -221,8 +267,11 @@ class _MapScreenState extends State<MapScreen> {
                             i < mapList.length;
                             i++) {
                           setState(() {
-                            _addMarker(mapList[i].placeId,
-                                mapList[i].coordinates, mapList[i].address);
+                            _addMarker(
+                                mapList[i].placeId,
+                                mapList[i].coordinates,
+                                mapList[i].address,
+                                null);
                           });
                         }
                         print(mapList);
@@ -238,8 +287,8 @@ class _MapScreenState extends State<MapScreen> {
                             //animate camera to location once json request has been received
                             _gotoGivenPostion(
                                 _coord.latitude, _coord.longitude);
-                            _addMarker(
-                                result.placeId, _coord, result.description);
+                            _addMarker(result.placeId, _coord,
+                                result.description, null);
                             _destinationController.text = result.description;
                           });
                           printList();
@@ -612,20 +661,37 @@ class _MapScreenState extends State<MapScreen> {
                           List<List<double>>.generate(
                               mapList.length, (i) => List(mapList.length),
                               growable: false);
+                      var pathDistPermutations = List<List<double>>.generate(
+                          mapList.length, (i) => List(mapList.length),
+                          growable: false);
                       if (mapList.length > 2) {
                         for (int i = 0; i < mapList.length - 1; i++) {
                           for (int j = mapList.length - 1; j > i; j--) {
-                            double durationValue =
+                            List returnedList =
                                 await generatePathFunction(i, j);
+                            double durationValue = returnedList[0];
+                            double distValue = returnedList[1];
                             pathDurationPermutations[i][j] = durationValue;
+                            pathDistPermutations[i][j] = distValue;
                           }
                         }
                         //await saveFile(pathDurationPermutations);
-                        await RouteOptimizeAlgo(pathDurationPermutations);
-                        await runAlgoAndSetPolylines();
+                        var sortedList =
+                            await RouteOptimizeAlgo(pathDurationPermutations);
+                        await runAlgoAndSetPolylines(sortedList,
+                            pathDurationPermutations, pathDistPermutations);
+                        /* edit markers */
+                        _editMarkers(sortedList);
+                        /*reorder mapList based on sorted index */
+                        for (int i = 1; i < sortedList.length; i++){
+                          mapList.insert(sortedList[i], mapList.removeAt(i));
+                        }
+                        //print(polylines);
+                        //print(_markers);
+                        //print(polylines.toList());
                       } else if (mapList.length == 2) {
                         generatePathFunction(0, 1);
-                        runAlgoAndSetPolylines();
+                        runAlgoAndSetPolylines(<int>[0, 1], null, null);
                       }
                       startLocationProgBar =
                           mapList[0].condensedName.split(',')[0];
@@ -696,15 +762,14 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
-  Future<double> generatePathFunction(int i, int j) async {
+  Future<List<double>> generatePathFunction(int i, int j) async {
     var responseData = await findIndividualDirections(mapList[i].coordinates,
         mapList[j].coordinates, mapList[i].placeId, "from${i}to$j");
     double durationValue =
         double.parse(responseData.journeyDuration.split(" ")[0]);
     double distValue = double.parse(responseData.dist.split(" ")[0]);
-    totalDuration += durationValue;
-    totalDistance += distValue;
-    return durationValue;
+    //return array of dist and duration values
+    return [durationValue, distValue];
   }
 }
 
@@ -733,7 +798,7 @@ class CollpasedMenuWithoutRoute extends StatelessWidget {
                 fontSize: 25,
                 fontFamily: 'Open Sans')),
       ),
-      title: Text("$totalDuration min \n$totalDistance km",
+      title: Text("$totalDuration min \n${totalDistance.toStringAsFixed(2)} km",
           style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w300,

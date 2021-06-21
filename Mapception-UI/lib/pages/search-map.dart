@@ -93,7 +93,8 @@ class DataSearch extends SearchDelegate<Suggestion> {
                               snapshot.data[index].description,
                               LatLng(placeDetails.coordinates['lat'],
                                   placeDetails.coordinates['lng']));
-
+                          final snackBar = SnackBar(content: Text('Location has been added to your list!'));
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
                           printList();
                           clickedSearchItems += 1;
                         }),
