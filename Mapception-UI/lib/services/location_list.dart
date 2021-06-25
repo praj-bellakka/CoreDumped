@@ -9,77 +9,25 @@ class LocationList {
   final LatLng coordinates;
   LocationList(
       {this.placeId, this.address, this.condensedName, this.coordinates});
+
+  Map<String, dynamic> toJson() => {
+        'placeId': placeId,
+        'address': address,
+        'condensedName': condensedName,
+        'coordinates': coordinates
+  };
+
+  
 }
 
 /*ORIGINAL VERSION OF MAPLIST. UNCOMMENT ONCE TESTING IS DONE!*/
-var mapList = [];
+List<LocationList> mapList = [];
 int placesVisited = 0;
-/*THIS IS A DEBUG VERSION OF MAPLIST TO REDUCE API REQUESTS. CHANGE BACK TO ORIGINAL VERSION AFTER TESTING!*/
-// var mapList = [
-//   LocationList(
-//       address: "Arab Street, Singapore",
-//       condensedName: "Arab Street, Singapore",
-//       coordinates: LatLng(1.3023026, 103.85816190000003),
-//       placeId:
-//           "EhZBcmFiIFN0cmVldCwgU2luZ2Fwb3JlIi4qLAoUChIJd20Ex7AZ2jERKkn67E-Gq0YSFAoSCXWTi4ojEdoxEcT1q1LPaXiI"),
-//   LocationList(
-//       address: "Yishun Street 51, Singapore",
-//       condensedName: "Yishun Street 51, Singapore",
-//       coordinates: LatLng(1.4163675, 103.84335900000002),
-//       placeId:
-//           "EhtZaXNodW4gU3RyZWV0IDUxLCBTaW5nYXBvcmUiLiosChQKEgnRKc7oPxTaMREewGKDvAGkCRIUChIJyY4rtGcX2jERIKTarqz3AAQ"),
-//   LocationList(
-//       address: "Marina Boulevard, Singapore",
-//       condensedName: "Marina Boulevard, Singapore",
-//       coordinates: LatLng(1.2808044, 103.8541596),
-//       placeId:
-//           "EhtNYXJpbmEgQm91bGV2YXJkLCBTaW5nYXBvcmUiLiosChQKEgnjIQa0DxnaMREoAd-aNdhaWxIUChIJdZOLiiMR2jERxPWrUs9peIg"),
-//   LocationList(
-//       address: "Sentosa Gateway, Singapore",
-//       condensedName: "Sentosa Gateway, Singapore",
-//       coordinates: LatLng(1.2607914, 103.8237317),
-//       placeId:
-//           "EhpTZW50b3NhIEdhdGV3YXksIFNpbmdhcG9yZSIuKiwKFAoSCTMWLoRXGdoxEeRWEDVI6eBjEhQKEgl1k4uKIxHaMRHE9atSz2l4iA"),
-//   LocationList(
-//       address: "Sentosa Gateway, Singapore",
-//       condensedName: "Sentosa Gateway, Singapore",
-//       coordinates: LatLng(1.2607914, 103.8237317),
-//       placeId:
-//           "EhpTZW50b3NhIEdhdGV3YXksIFNpbmdhcG9yZSIuKiwKFAoSCTMWLoRXGdoxEeRWEDVI6eBjEhQKEgl1k4uKIxHaMRHE9atSz2l4iA"),
-//           LocationList(
-//       address: "Sentosa Gateway, Singapore",
-//       condensedName: "Sentosa Gateway, Singapore",
-//       coordinates: LatLng(1.2607914, 103.8237317),
-//       placeId:
-//           "EhpTZW50b3NhIEdhdGV3YXksIFNpbmdhcG9yZSIuKiwKFAoSCTMWLoRXGdoxEeRWEDVI6eBjEhQKEgl1k4uKIxHaMRHE9atSz2l4iA"),
-//           LocationList(
-//       address: "Sentosa Gateway, Singapore",
-//       condensedName: "Sentosa Gateway, Singapore",
-//       coordinates: LatLng(1.2607914, 103.8237317),
-//       placeId:
-//           "EhpTZW50b3NhIEdhdGV3YXksIFNpbmdhcG9yZSIuKiwKFAoSCTMWLoRXGdoxEeRWEDVI6eBjEhQKEgl1k4uKIxHaMRHE9atSz2l4iA"),
-//           LocationList(
-//       address: "Sentosa Gateway, Singapore",
-//       condensedName: "Sentosa Gateway, Singapore",
-//       coordinates: LatLng(1.2607914, 103.8237317),
-//       placeId:
-//           "EhpTZW50b3NhIEdhdGV3YXksIFNpbmdhcG9yZSIuKiwKFAoSCTMWLoRXGdoxEeRWEDVI6eBjEhQKEgl1k4uKIxHaMRHE9atSz2l4iA"),
-// ];
 
-/*List implementation
-List<LocationList> locationList = List<LocationList>.empty(growable: true); */
+/*List implementation */
 //using a linkedhashmap to store the details; Using placeid as the key, LocationList as the value
 LinkedHashMap<String, LocationList> linkedData =
     LinkedHashMap<String, LocationList>();
-
-// var linkedData = {
-//   "EhZBcmFiIFN0cmVldCwgU2luZ2Fwb3JlIi4qLAoUChIJd20Ex7AZ2jERKkn67E-Gq0YSFAoSCXWTi4ojEdoxEcT1q1LPaXiI":
-//       LocationList(address: "1",),
-//   "EhtZaXNodW4gU3RyZWV0IDUxLCBTaW5nYXBvcmUiLiosChQKEgnRKc7oPxTaMREewGKDvAGkCRIUChIJyY4rtGcX2jERIKTarqz3AAQ": LocationList(address: "2",),
-//   "EhtNYXJpbmEgQm91bGV2YXJkLCBTaW5nYXBvcmUiLiosChQKEgnjIQa0DxnaMREoAd-aNdhaWxIUChIJdZOLiiMR2jERxPWrUs9peIg": LocationList(address: "3",),
-//   "EhpTZW50b3NhIEdhdGV3YXksIFNpbmdhcG9yZSIuKiwKFAoSCTMWLoRXGdoxEeRWEDVI6eBjEhQKEgl1k4uKIxHaMRHE9atSz2l4iA": LocationList(address: "4"),
-
-// };
 
 void addToList(
     var _placeId, var _address, var _condensedName, LatLng _coordinates) {

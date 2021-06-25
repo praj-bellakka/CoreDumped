@@ -67,9 +67,6 @@ Future<DirectionModel> findIndividualDirections(
 //Then, it will draw the polylines and update the main list
 void runAlgoAndSetPolylines(List<int> sortedList,
     List<List<double>> durationMatrix, List<List<double>> distMatrix) async {
-/*
-Add Algorithm feature here
-*/
   print(tempPolylines);
   for (int i = 0; i < sortedList.length - 1; i++) {
     int from = sortedList[i];

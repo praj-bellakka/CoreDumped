@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mapception/models/reusable_widgets.dart';
@@ -7,7 +9,9 @@ import 'package:mapception/services/colourPalette.dart';
 import 'google_map_page.dart';
 
 class Home extends StatelessWidget {
-  final AuthService _auth = AuthService(); //add this line
+  //final AuthService _auth = AuthService();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  //add this line
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,16 +56,29 @@ class Home extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 350,),
+              SizedBox(
+                height: 350,
+              ),
             ]),
             Positioned(
                 right: 20,
                 bottom: 0,
-                child: FloatingActionButton(onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MapScreen()),
-                  );
+                child: FloatingActionButton(onPressed: () async {
+                  var userId = _auth.currentUser.uid;
+                  print(userId);
+                  var dataBaseUserData = FirebaseDatabase.instance
+                      .reference()
+                      .child("Users")
+                      .child(userId);
+                  print(dataBaseUserData);
+
+                  print('hi');
+
+                  //print(response.toString());
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(builder: (context) => MapScreen()),
+                  // );
                 })),
           ]),
         ),

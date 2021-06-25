@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:mapception/pages/pop_up_tag_selector.dart';
 import 'package:mapception/services/algorithm.dart';
 import 'package:mapception/services/colourPalette.dart';
 import 'package:mapception/services/directions_repo.dart';
@@ -57,6 +58,9 @@ class _MapScreenState extends State<MapScreen> {
         await DefaultAssetBundle.of(context).load("assets/locator.png");
     return bytedata.buffer.asUint8List();
   }
+
+  var pathDurationPermutations;
+  var pathDistPermutations;
 
   void updateMarker(LocationData _locationData, Uint8List imageData) async {
     LatLng latlng = LatLng(_locationData.latitude, _locationData.longitude);
@@ -163,7 +167,9 @@ class _MapScreenState extends State<MapScreen> {
     _markers.add(Marker(
       markerId: MarkerId(markerId),
       position: coord,
-      icon: icon == null ? BitmapDescriptor.defaultMarker : BitmapDescriptor.fromBytes(icon),
+      icon: icon == null
+          ? BitmapDescriptor.defaultMarker
+          : BitmapDescriptor.fromBytes(icon),
       infoWindow: InfoWindow(title: "$address"),
       draggable: false,
     ));
@@ -180,7 +186,8 @@ class _MapScreenState extends State<MapScreen> {
       var extractedMarker = _markers.firstWhere(
           (marker) => marker.markerId == MarkerId(extractedPlaceID));
       print(extractedMarker);
-      var newMarkerIcon = await getBytesFromCanvas((sortedList[i] + 1).toString());
+      var newMarkerIcon =
+          await getBytesFromCanvas((sortedList[i] + 1).toString());
       _markers.remove(extractedMarker);
       _addMarker(extractedMarker.markerId.value, extractedMarker.position,
           extractedMarker.infoWindow.title, newMarkerIcon);
@@ -628,84 +635,138 @@ class _MapScreenState extends State<MapScreen> {
                   },
                 ),
               ),
-              Container(
-                  margin: EdgeInsets.all(10),
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  height: 50,
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Color.fromRGBO(255, 143, 158, 1),
-                          Color.fromRGBO(255, 188, 143, 1),
-                        ],
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
+              Row(
+                children: [
+                  SizedBox(width: 25),
+                  Container(
+                      height: 50,
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 2, color: Colors.white),
+                        borderRadius: BorderRadius.circular(32.0),
                       ),
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(20.0),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.pink.withOpacity(0.2),
-                          spreadRadius: 4,
-                          blurRadius: 10,
-                          offset: Offset(0, 3),
-                        )
-                      ]),
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      clearVariables();
-                      /*RUNNING ALGORITHM FOR TRAVELLING SALESMAN HERE! */
-                      //create storage 2d list
-                      var pathDurationPermutations =
-                          List<List<double>>.generate(
-                              mapList.length, (i) => List(mapList.length),
-                              growable: false);
-                      var pathDistPermutations = List<List<double>>.generate(
-                          mapList.length, (i) => List(mapList.length),
-                          growable: false);
-                      if (mapList.length > 2) {
-                        for (int i = 0; i < mapList.length - 1; i++) {
-                          for (int j = mapList.length - 1; j > i; j--) {
-                            List returnedList =
-                                await generatePathFunction(i, j);
-                            double durationValue = returnedList[0];
-                            double distValue = returnedList[1];
-                            pathDurationPermutations[i][j] = durationValue;
-                            pathDistPermutations[i][j] = distValue;
+                      child: Hero(
+                        tag: '_heroAddTag',
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.transparent,
+                            onPrimary: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(32.0),
+                            ),
+                          ),
+                          onPressed: () {
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //     builder: (context) => PopUpTagSelector(
+                            //       builder: (context) => AddTagPopupCard(),
+                            //       distMatrix: pathDistancePermutations,
+                            //       durationMatrix: pathDurationPermutations,
+                            //     )
+                            //   )
+                            // );
+                            Navigator.of(context).push(PopUpTagSelector(
+                              builder: (context) {
+                                // MaterialPageRoute
+                                return AddTagPopupCard(
+                                  distMatrix: pathDistPermutations,
+                                  durationMatrix: pathDurationPermutations,
+                                );
+                              },
+                            ));
+                          },
+                          child: Icon(Icons.save_alt_outlined),
+                        ),
+                      )),
+                  Container(
+                      margin: EdgeInsets.all(10),
+                      width: MediaQuery.of(context).size.width * 0.6,
+                      height: 50,
+                      decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Color.fromRGBO(255, 143, 158, 1),
+                              Color.fromRGBO(255, 188, 143, 1),
+                            ],
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                          ),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(20.0),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.pink.withOpacity(0.2),
+                              spreadRadius: 4,
+                              blurRadius: 10,
+                              offset: Offset(0, 3),
+                            )
+                          ]),
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          clearVariables();
+                          /*RUNNING ALGORITHM FOR TRAVELLING SALESMAN HERE! */
+                          //create storage 2d list
+                          pathDurationPermutations =
+                              List<List<double>>.generate(
+                                  mapList.length, (i) => List(mapList.length),
+                                  growable: false);
+                          pathDistPermutations =
+                              List<List<double>>.generate(
+                                  mapList.length, (i) => List(mapList.length),
+                                  growable: false);
+                          if (mapList.length >= 2) {
+                            for (int i = 0; i < mapList.length - 1; i++) {
+                              for (int j = mapList.length - 1; j > i; j--) {
+                                List returnedList =
+                                    await generatePathFunction(i, j);
+                                double durationValue = returnedList[0];
+                                double distValue = returnedList[1];
+                                pathDurationPermutations[i][j] = durationValue;
+                                pathDistPermutations[i][j] = distValue;
+                              }
+                            }
+                            //await saveFile(pathDurationPermutations);
+                            var sortedList = await RouteOptimizeAlgo(
+                                pathDurationPermutations);
+                            await runAlgoAndSetPolylines(sortedList,
+                                pathDurationPermutations, pathDistPermutations);
+                            /* edit markers */
+                            _editMarkers(sortedList);
+                            /*reorder mapList based on sorted index */
+                            for (int i = 1; i < sortedList.length; i++) {
+                              mapList.insert(
+                                  sortedList[i], mapList.removeAt(i));
+                            }
+                            //print(polylines);
+                            //print(_markers);
+                            //print(polylines.toList());
+                          } else if (mapList.length < 2) {
+                            //create error snackbar
+                            final snackBar = SnackBar(
+                                content: Text('Add at least 2 locations!',
+                                    style: GoogleFonts.montserrat(
+                                        color: Colors.red[500])));
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(snackBar);
+                            // generatePathFunction(0, 1);
+                            // runAlgoAndSetPolylines(<int>[0, 1], null, null);
                           }
-                        }
-                        //await saveFile(pathDurationPermutations);
-                        var sortedList =
-                            await RouteOptimizeAlgo(pathDurationPermutations);
-                        await runAlgoAndSetPolylines(sortedList,
-                            pathDurationPermutations, pathDistPermutations);
-                        /* edit markers */
-                        _editMarkers(sortedList);
-                        /*reorder mapList based on sorted index */
-                        for (int i = 1; i < sortedList.length; i++){
-                          mapList.insert(sortedList[i], mapList.removeAt(i));
-                        }
-                        //print(polylines);
-                        //print(_markers);
-                        //print(polylines.toList());
-                      } else if (mapList.length == 2) {
-                        generatePathFunction(0, 1);
-                        runAlgoAndSetPolylines(<int>[0, 1], null, null);
-                      }
-                      startLocationProgBar =
-                          mapList[0].condensedName.split(',')[0];
-                      endLocationProgBar = mapList[mapList.length - 1]
-                          .condensedName
-                          .split(',')[0];
-                      flag = true;
-                      _panelController.close();
-                      //print(mapList[0].coordinates);
-                    },
-                    style:
-                        ElevatedButton.styleFrom(primary: Colors.transparent),
-                    child: Text("Generate Route!"),
-                  )),
+                          startLocationProgBar =
+                              mapList[0].condensedName.split(',')[0];
+                          endLocationProgBar = mapList[mapList.length - 1]
+                              .condensedName
+                              .split(',')[0];
+                          flag = true;
+                          _panelController.close();
+                          //print(mapList[0].coordinates);
+                        },
+                        style: ElevatedButton.styleFrom(
+                            primary: Colors.transparent),
+                        child: Text("Generate Route!"),
+                      )),
+                ],
+              ),
             ]),
             collapsed: Container(
               color: Colors.blueGrey,
