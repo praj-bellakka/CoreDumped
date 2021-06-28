@@ -143,9 +143,9 @@ class _MapScreenState extends State<MapScreen> {
       if (_locationSubscription != null) {
         _locationSubscription.cancel();
       }
-
       _locationSubscription = _locationTracker.onLocationChanged
           .listen((LocationData newLocalData) {
+        if (!mounted) return;
         setState(() {
           _position = {
             "lat": newLocalData.latitude,
@@ -255,66 +255,78 @@ class _MapScreenState extends State<MapScreen> {
               right: 15.0,
               left: 15.0,
               child: Column(children: <Widget>[
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: TextField(
-                      onTap: () async {
-                        final sessionToken = Uuid().v4();
-                        final Suggestion result = await showSearch(
-                          context: context,
-                          delegate: DataSearch(sessionToken),
-                        );
-                        print(mapList.length - clickedSearchItems);
-                        /*handle markers for those clicked by + button */
-                        for (int i = mapList.length - clickedSearchItems;
-                            i < mapList.length;
-                            i++) {
-                          setState(() {
-                            _addMarker(
-                                mapList[i].placeId,
-                                mapList[i].coordinates,
-                                mapList[i].address,
-                                null);
-                          });
-                        }
-                        print(mapList);
-                        clickedSearchItems = 0; //reset counter to 0
-                        if (result != null) {
-                          final placeDetails =
-                              await PlaceApiProvider(sessionToken)
-                                  .getPlaceDetails(result.placeId);
-                          setState(() {
-                            LatLng _coord = LatLng(
-                                placeDetails.coordinates['lat'],
-                                placeDetails.coordinates['lng']);
-                            //animate camera to location once json request has been received
-                            _gotoGivenPostion(
-                                _coord.latitude, _coord.longitude);
-                            _addMarker(result.placeId, _coord,
-                                result.description, null);
-                            _destinationController.text = result.description;
-                          });
-                          printList();
-                        }
-                        //showSearch(context: context, delegate: DataSearch());
+                Stack(
+                  alignment: Alignment.centerRight,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: TextField(
+                          onTap: () async {
+                            final sessionToken = Uuid().v4();
+                            final Suggestion result = await showSearch(
+                              context: context,
+                              delegate: DataSearch(sessionToken),
+                            );
+                            print(mapList.length - clickedSearchItems);
+                            /*handle markers for those clicked by + button */
+                            for (int i = mapList.length - clickedSearchItems;
+                                i < mapList.length;
+                                i++) {
+                              setState(() {
+                                _addMarker(
+                                    mapList[i].placeId,
+                                    mapList[i].coordinates,
+                                    mapList[i].address,
+                                    null);
+                              });
+                            }
+                            print(mapList);
+                            clickedSearchItems = 0; //reset counter to 0
+                            if (result != null) {
+                              final placeDetails =
+                                  await PlaceApiProvider(sessionToken)
+                                      .getPlaceDetails(result.placeId);
+                              setState(() {
+                                LatLng _coord = LatLng(
+                                    placeDetails.coordinates['lat'],
+                                    placeDetails.coordinates['lng']);
+                                //animate camera to location once json request has been received
+                                _gotoGivenPostion(
+                                    _coord.latitude, _coord.longitude);
+                                _addMarker(result.placeId, _coord,
+                                    result.description, null);
+                                _destinationController.text =
+                                    result.description;
+                              });
+                              printList();
+                            }
+                            //showSearch(context: context, delegate: DataSearch());
+                          },
+                          controller: _destinationController,
+                          readOnly: true,
+                          decoration: InputDecoration(
+                            labelText: "Going to?",
+                            contentPadding:
+                                EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                            prefixIcon: Icon(Icons.search),
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            errorBorder: InputBorder.none,
+                            disabledBorder: InputBorder.none,
+                          )),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.settings_power),
+                      onPressed: () {
+                        Navigator.of(context).pop();
                       },
-                      controller: _destinationController,
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        labelText: "Going to?",
-                        contentPadding:
-                            EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                        prefixIcon: Icon(Icons.search),
-                        border: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        errorBorder: InputBorder.none,
-                        disabledBorder: InputBorder.none,
-                      )),
+                    )
+                  ],
                 ),
               ])),
           SlidingUpPanel(
@@ -711,10 +723,9 @@ class _MapScreenState extends State<MapScreen> {
                               List<List<double>>.generate(
                                   mapList.length, (i) => List(mapList.length),
                                   growable: false);
-                          pathDistPermutations =
-                              List<List<double>>.generate(
-                                  mapList.length, (i) => List(mapList.length),
-                                  growable: false);
+                          pathDistPermutations = List<List<double>>.generate(
+                              mapList.length, (i) => List(mapList.length),
+                              growable: false);
                           if (mapList.length >= 2) {
                             for (int i = 0; i < mapList.length - 1; i++) {
                               for (int j = mapList.length - 1; j > i; j--) {

@@ -1,17 +1,25 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mapception/models/reusable_widgets.dart';
 import 'package:mapception/services/auth.dart';
 import 'package:mapception/services/colourPalette.dart';
+import 'package:mapception/services/userData.dart';
 
 import 'google_map_page.dart';
 
-class Home extends StatelessWidget {
-  //final AuthService _auth = AuthService();
+
+class Home extends StatefulWidget {
+  // final AuthService _auth = AuthService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  //add this line
+
+  @override
+  _Home createState() => _Home();
+}
+
+class _Home extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,21 +72,20 @@ class Home extends StatelessWidget {
                 right: 20,
                 bottom: 0,
                 child: FloatingActionButton(onPressed: () async {
-                  var userId = _auth.currentUser.uid;
-                  print(userId);
-                  var dataBaseUserData = FirebaseDatabase.instance
-                      .reference()
-                      .child("Users")
-                      .child(userId);
-                  print(dataBaseUserData);
-
-                  print('hi');
-
+                  // var userId = _auth.currentUser.uid;
+                  // print(userId);
+                  var dataBaseUserData =
+                      databaseReference.child("Users").child(userId);
+                  readData();
+                  //createRecord();
+                  getValue();
+                  //var returned = await getData();
+                  //print(returned);
                   //print(response.toString());
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (context) => MapScreen()),
-                  // );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MapScreen()),
+                  );
                 })),
           ]),
         ),
@@ -108,3 +115,22 @@ class CategoriesScrollBar extends StatelessWidget {
     );
   }
 }
+
+Future<int> getValue() async {
+  var result =
+      (await FirebaseDatabase.instance.reference().child("Test/tesing").once())
+          .value;
+  print(result);
+  return result;
+}
+
+// void createRecord() async {
+//   print(databaseReference.path);
+//   databaseReference.child("14").set(
+//       {'title': 'Mastering EJB', 'description': 'Programming Guide for J2EE'});
+//   databaseReference.child("22").set({
+//     'title': 'Flutter in Action',
+//     'description': 'Complete Programming Guide to learn Flutter'
+//   });
+// }
+
