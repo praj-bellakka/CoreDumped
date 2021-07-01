@@ -60,14 +60,30 @@ final databaseReference = FirebaseDatabase(
             'https://mapception-c014b-default-rtdb.asia-southeast1.firebasedatabase.app')
     .reference();
 
-void readData() {
+List<dynamic> list = [];
+final dataBaseReferenceData = databaseReference.child('Users/$userId/');
+
+Future<dynamic> getUserData() async {
+  return await dataBaseReferenceData.once().then((result) {
+    final value = result.value;
+    print(value);
+    print(result.key);
+    return value;
+  });
+}
+
+void readData() async {
   databaseReference
       .child('Users/$userId/')
+      // .orderByChild('tag')
+      // .equalTo('School')
       .once()
       .then((DataSnapshot snapshot) {
-    var name = snapshot.value['-Md1QIIlYI5WPsQJhmti'];
+    print(snapshot.value);
+    list.add(snapshot.value);
     print(snapshot.key);
-    print(name);
-    print('Data : ${snapshot.value}');
+    // print(snapshot.value);
+    //print(name);
+    //print('Data : ${snapshot.value}');
   });
 }

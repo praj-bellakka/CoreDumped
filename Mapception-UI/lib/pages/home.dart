@@ -4,12 +4,12 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mapception/models/reusable_widgets.dart';
+import 'package:mapception/pages/route_view.dart';
 import 'package:mapception/services/auth.dart';
 import 'package:mapception/services/colourPalette.dart';
 import 'package:mapception/services/userData.dart';
 
 import 'google_map_page.dart';
-
 
 class Home extends StatefulWidget {
   // final AuthService _auth = AuthService();
@@ -64,29 +64,51 @@ class _Home extends State<Home> {
                   ),
                 ),
               ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "WIP",
+                  style: GoogleFonts.montserrat(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 20,
+                  ),
+                ),
+              ),
               SizedBox(
-                height: 350,
+                height: 300,
+              ),
+              TextButton(
+                child: Text("Sign out",
+                    style: GoogleFonts.montserrat(
+                        fontSize: 20, color: Colors.white)),
+                onPressed: () {
+                  AuthService _auth = new AuthService();
+                  _auth.signOut();
+                },
               ),
             ]),
             Positioned(
                 right: 20,
                 bottom: 0,
-                child: FloatingActionButton(onPressed: () async {
-                  // var userId = _auth.currentUser.uid;
-                  // print(userId);
-                  var dataBaseUserData =
-                      databaseReference.child("Users").child(userId);
-                  readData();
-                  //createRecord();
-                  getValue();
-                  //var returned = await getData();
-                  //print(returned);
-                  //print(response.toString());
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => MapScreen()),
-                  );
-                })),
+                child: FloatingActionButton(
+                    child: Icon(Icons.add),
+                    onPressed: () async {
+                      var dataBaseUserData =
+                          databaseReference.child("Users").child(userId);
+                      //readData();
+                      var result = await getUserData();
+                      print(result.length);
+                      //createRecord();
+                      // getValue();
+                      //var returned = await getData();
+                      //print(returned);
+                      //print(response.toString());
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(builder: (context) => MapScreen()),
+                      // );
+                    })),
           ]),
         ),
       ),
@@ -104,9 +126,16 @@ class CategoriesScrollBar extends StatelessWidget {
         margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
         child: Row(
           children: [
-            ReusableCategoryWidget(
-              tagName: 'All',
-              numOfItems: 3,
+            InkWell(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (context)=> RouteView()
+                ));
+              },
+              child: ReusableCategoryWidget(
+                tagName: 'All',
+                numOfItems: 3,
+              ),
             ),
             ReusableCategoryWidget(tagName: 'Daily Routine', numOfItems: 5),
           ],
@@ -133,4 +162,3 @@ Future<int> getValue() async {
 //     'description': 'Complete Programming Guide to learn Flutter'
 //   });
 // }
-
