@@ -32,9 +32,53 @@ class _RouteView extends State<RouteView> {
   Widget _buildRouteItem({Map route}) {
     return Container(
         height: 100,
-        width: 100,
-        color: Colors.white,
-        child: Text(route['name']));
+        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Colors.white,
+        ),
+        padding: EdgeInsets.all(10),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ReusableTitleWidget(
+                  color: Colors.black,
+                  title: route['name'],
+                  fontsize: 20,
+                ),
+                Text(
+                  route['tag'],
+                  style: GoogleFonts.montserrat(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13.0,
+                    color: Colors.grey[500],
+                  ),
+                )
+              ],
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.location_on,
+                  size: 30,
+                ),
+                Text(route['totalDistance'] == null ? "? km" : "${route['totalDistance'].toStringAsFixed(2)} km", style: TextStyle(fontSize: 15)),
+                SizedBox(width: 20,),
+                Icon(
+                  Icons.timer,
+                  size: 30,
+                ),
+                Text(route['totalDuration'] == null ? "? min" : "${route['totalDuration'].toStringAsFixed(2)} min", style: TextStyle(fontSize: 15))
+
+              
+              ],
+            )
+          ],
+        ));
   }
 
   @override
@@ -46,16 +90,10 @@ class _RouteView extends State<RouteView> {
       ),
       backgroundColor: backgroundColorMain,
       body: Column(children: [
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Text(
-            "All Routes",
-            style: GoogleFonts.montserrat(
-              color: Colors.white,
-              fontWeight: FontWeight.w900,
-              fontSize: 40,
-            ),
-          ),
+        ReusableTitleWidget(
+          color: Colors.white,
+          title: "All Routes",
+          fontsize: 40,
         ),
         FirebaseAnimatedList(
           scrollDirection: Axis.vertical,
