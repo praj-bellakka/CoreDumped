@@ -10,7 +10,6 @@ import 'package:mapception/services/algorithm.dart';
 import 'package:mapception/services/colourPalette.dart';
 import 'package:mapception/services/directions_repo.dart';
 import 'package:mapception/services/place_services.dart';
-import 'package:mapception/services/writeToFile.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
 import 'package:uuid/uuid.dart';

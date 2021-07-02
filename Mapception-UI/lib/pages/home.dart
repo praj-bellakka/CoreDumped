@@ -129,7 +129,7 @@ class CategoriesScrollBar extends StatelessWidget {
             InkWell(
               onTap: () {
                 Navigator.push(context, MaterialPageRoute(
-                  builder: (context)=> RouteView()
+                  builder: (context)=> RouteView(tagName: 'All')
                 ));
               },
               child: ReusableCategoryWidget(
@@ -137,7 +137,14 @@ class CategoriesScrollBar extends StatelessWidget {
                 numOfItems: 3,
               ),
             ),
-            ReusableCategoryWidget(tagName: 'Daily Routine', numOfItems: 5),
+            InkWell(
+              onTap: () {
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (context)=> RouteView(tagName: 'Daily Routine')
+                ));
+              },
+              child: ReusableCategoryWidget(tagName: 'Daily Routine', numOfItems: 5),
+            ),
           ],
         ),
       ),
