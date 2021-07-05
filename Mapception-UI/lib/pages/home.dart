@@ -104,10 +104,10 @@ class _Home extends State<Home> {
                       //var returned = await getData();
                       //print(returned);
                       //print(response.toString());
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(builder: (context) => MapScreen()),
-                      // );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MapScreen()),
+                      );
                     })),
           ]),
         ),

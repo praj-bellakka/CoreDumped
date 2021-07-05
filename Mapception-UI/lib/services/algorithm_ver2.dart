@@ -2,10 +2,163 @@
 import 'package:graph_collection/graph.dart';
 
 void main() {
-  var numOfNodes = 5;
-  var inputs = <int>[101, 21, 31, 41, 51, 61, 71, 81, 91, 101];
+  // var numOfNodes = 5;
+  // var inputs = <int>[101, 21, 31, 41, 51, 61, 71, 81, 91, 101];
 
-  //create undirected weight graph
+  // List<List<double>> inputs2 = [
+  //   [null, 101.0, 21.0, 31, 41],
+  //   [null, null, 51, 61, 71],
+  //   [null, null, null, 81, 91],
+  //   [null, null, null, null, 101],
+  //   [null, null, null, null, null]
+  // ];
+  // RouteOptimizeAlgo(inputs2);
+  // print("/////break///\n\n\n\n");
+  // //create undirected weight graph
+  // var FullGraph = UndirectedValueGraph();
+  // for (var i = 0; i < numOfNodes; i++) {
+  //   for (var j = 0; j < i; j++) {
+  //     var w = inputs.first;
+  //     FullGraph.setBy<int>(i, j, w);
+  //     inputs.removeAt(0);
+  //   }
+  // }
+  // //debugger: get the weight of the edges end check the links
+  // print('edges weight:');
+  // for (var i = 0; i < numOfNodes; i++) {
+  //   for (var j = 0; j < i; j++) {
+  //     print(FullGraph.getBy<int>(i, j).val);
+  //   }
+  // }
+  // print('\n\nfull graph:');
+  // printGraph(FullGraph, numOfNodes);
+  // print('\n\n');
+
+  // //create MST
+  // var mstGraph = UndirectedValueGraph();
+  // mstGraph = kruskalsAlgo(FullGraph, numOfNodes);
+  // //debugger: check the MST
+  // print('MST:');
+  // printGraph(mstGraph, numOfNodes);
+
+  // //find odd nodes
+  // print('\n\nodd nodes: '); //debugger
+  // var oddNodes = [];
+  // for (var i = 0; i < numOfNodes; i++) {
+  //   if (mstGraph.links(i).length % 2 != 0) {
+  //     oddNodes.add(i);
+  //     print(i); //debugger: print odd nodes
+  //   }
+  // }
+
+  // //form a full graph with the odd edges
+  // var oddGraph = UndirectedValueGraph();
+  // for (var i = 0; i < oddNodes.length; i++) {
+  //   oddGraph.add(oddNodes[i]);
+  //   for (var j = i - 1; j > -1; j--) {
+  //     int a = oddNodes[i];
+  //     int b = oddNodes[j];
+  //     int w = FullGraph.getBy<int>(a, b).val;
+  //     oddGraph.setBy<int>(a, b, w);
+  //   }
+  // }
+  // //debugger: check for odd graph
+  // print('\n\nodd Graph:');
+  // print(oddGraph.items);
+  // for (var i = 0; i < numOfNodes; i++) {
+  //   print(oddGraph.links(i));
+  // }
+
+  // //sort the edges
+  // var edgeList = [];
+  // for (var i = 0; i < numOfNodes; i++) {
+  //   for (var j = 0; j < i; j++) {
+  //     int weight = oddGraph.getBy<int>(i, j).val;
+  //     //check if the edge exist (when weight != null)
+  //     if (weight != null) {
+  //       var newEdge = Edge(from: i, to: j, weight: weight);
+  //       edgeList.add(newEdge);
+  //     }
+  //   }
+  // }
+  // edgeList.sort((curr, next) => curr.weight.compareTo(next.weight));
+  // //debugger: check sorted edges
+  // print('\n\nsorted edges');
+  // for (var i = 0; i < 6; i++) {
+  //   print(edgeList[i].weight);
+  // }
+
+  // //construct a graph w min edge
+  // var checked = <bool>[];
+  // for (var i = 0; i < numOfNodes; i++) {
+  //   var tmp = false;
+  //   checked.add(tmp);
+  // }
+  // var finalGraph = UndirectedValueGraph();
+  // for (var i = 0; i < numOfNodes; i++) {
+  //   finalGraph.add(i);
+  // }
+  // for (var i = 0; i < edgeList.length; i++) {
+  //   int a = edgeList[i].toNode();
+  //   int b = edgeList[i].fromNode();
+  //   if (checked[a] == false && checked[b] == false) {
+  //     int w = FullGraph.getBy<int>(a, b).val;
+  //     finalGraph.setBy<int>(a, b, w);
+  //     checked[a] = true;
+  //     checked[b] = true;
+  //   }
+  // }
+
+  // print('\n\nfinal graph:');
+  // printGraph(finalGraph, numOfNodes);
+
+  // //union the mst w the graph
+  // for (var i = 0; i < numOfNodes; i++) {
+  //   for (var j = i; j > -1; j--) {
+  //     var a = mstGraph.hasEdgeBy<int>(i, j);
+  //     var b = finalGraph.hasEdgeBy<int>(i, j);
+  //     //print(a);
+  //     if (a && !b) /*exist in mst but not exist in final graph*/
+  //     {
+  //       var w = FullGraph.getBy<int>(i, j);
+  //       finalGraph.setBy<int>(i, j, w);
+  //     }
+  //   }
+  // }
+
+  // print('\n\nunion graph:');
+  // printGraph(finalGraph, numOfNodes);
+
+  // //calculate euler tour
+  // var Euler = EulerTour(finalGraph);
+  // print('\n\nEuler Tour:');
+  // var eulerTour = Euler.getEuler();
+  // print(eulerTour);
+
+  // //remove duplicate edges
+  // var finalList = removeDuplicates(eulerTour, numOfNodes);
+  // print('\n\n1.5-approximate output:');
+  // print(finalList);
+
+  // //two approx
+  // var twoApproximate = twoApprox(mstGraph, numOfNodes);
+  // print('\n\n2-approximate output:');
+  // print(twoApproximate);
+}
+
+Future<List<int>> RouteOptimizeAlgo(List<List<double>> arrayOfDurations) async {
+  //Get input
+  var inputs = new List.empty(growable: true);
+  for (int i = 0; i < arrayOfDurations.length; i++) {
+    for (int j = 0; j < arrayOfDurations.length; j++) {
+      if (arrayOfDurations[i][j] != null) {
+        inputs.add(arrayOfDurations[i][j].toInt());
+      }
+    }
+  }
+  print(inputs);
+  print('\n');
+  int numOfNodes = arrayOfDurations.length;
   var FullGraph = UndirectedValueGraph();
   for (var i = 0; i < numOfNodes; i++) {
     for (var j = 0; j < i; j++) {
@@ -130,11 +283,11 @@ void main() {
   var finalList = removeDuplicates(eulerTour, numOfNodes);
   print('\n\n1.5-approximate output:');
   print(finalList);
-
+  return finalList;
   //two approx
-  var twoApproximate = twoApprox(mstGraph, numOfNodes);
-  print('\n\n2-approximate output:');
-  print(twoApproximate);
+  // var twoApproximate = twoApprox(mstGraph, numOfNodes);
+  // print('\n\n2-approximate output:');
+  // print(twoApproximate);
 }
 
 List twoApprox(UndirectedValueGraph graph, int n) {

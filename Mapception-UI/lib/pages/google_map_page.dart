@@ -6,8 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:mapception/pages/pop_up_tag_selector.dart';
-import 'package:mapception/services/algorithm.dart';
-import 'package:mapception/services/colourPalette.dart';
+import 'package:mapception/services/algorithm_ver2.dart';
 import 'package:mapception/services/directions_repo.dart';
 import 'package:mapception/services/place_services.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -736,7 +735,8 @@ class _MapScreenState extends State<MapScreen> {
                                 pathDistPermutations[i][j] = distValue;
                               }
                             }
-                            //await saveFile(pathDurationPermutations);
+
+                          //1.5 approx algo
                             var sortedList = await RouteOptimizeAlgo(
                                 pathDurationPermutations);
                             await runAlgoAndSetPolylines(sortedList,
