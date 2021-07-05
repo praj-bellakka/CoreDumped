@@ -727,6 +727,7 @@ class _MapScreenState extends State<MapScreen> {
                           if (mapList.length >= 2) {
                             for (int i = 0; i < mapList.length - 1; i++) {
                               for (int j = mapList.length - 1; j > i; j--) {
+                                print("generated path $i to $j\n");
                                 List returnedList =
                                     await generatePathFunction(i, j);
                                 double durationValue = returnedList[0];
@@ -736,7 +737,7 @@ class _MapScreenState extends State<MapScreen> {
                               }
                             }
 
-                          //1.5 approx algo
+                            //1.5 approx algo
                             var sortedList = await RouteOptimizeAlgo(
                                 pathDurationPermutations);
                             await runAlgoAndSetPolylines(sortedList,
@@ -759,8 +760,6 @@ class _MapScreenState extends State<MapScreen> {
                                         color: Colors.red[500])));
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(snackBar);
-                            // generatePathFunction(0, 1);
-                            // runAlgoAndSetPolylines(<int>[0, 1], null, null);
                           }
                           startLocationProgBar =
                               mapList[0].condensedName.split(',')[0];
