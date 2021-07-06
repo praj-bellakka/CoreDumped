@@ -57,6 +57,7 @@ class ReusableTitleWidget extends StatelessWidget {
         '$title',
         style: GoogleFonts.montserrat(
             fontSize: fontsize, fontWeight: FontWeight.w800, color: color),
+        overflow: TextOverflow.clip,
       ),
     );
   }

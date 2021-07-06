@@ -1,13 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mapception/models/reusable_widgets.dart';
 import 'package:mapception/services/colourPalette.dart';
-import 'package:mapception/services/userData.dart';
-
-import 'google_map_page.dart';
 
 /* Page that displays the route data dynamically 
 */
@@ -27,8 +21,7 @@ class DetailedRouteView extends StatefulWidget {
 class _DetailedRouteView extends State<DetailedRouteView> {
   @override
   Widget build(BuildContext context) {
-    print(widget.routeList['mapList'][0]['address']);
-    print(widget.routeList['mapList'].length);
+    print(widget.routeList['tagname']);
     return Scaffold(
       backgroundColor: backgroundColorMain,
       appBar: AppBar(
@@ -44,10 +37,15 @@ class _DetailedRouteView extends State<DetailedRouteView> {
           ),
           SizedBox(height: 10),
           ReusableSubtitleWidget(
-              text:
-                  "The details of this saved route is presented below! You can choose to reuse this route by clicking on the button below",
-              fontsize: 15, justification: TextAlign.justify,),
-          ListView.builder(
+            text:
+                "The details of this saved route is presented below! You can choose to reuse this route by clicking on the button below",
+            fontsize: 15,
+            justification: TextAlign.justify,
+          ),
+          SizedBox(height: 10),
+          DetailsCardWidget(totalDist: widget.routeList['totalDistance'], totalDuration: widget.routeList['totalDuration'],),
+          Expanded(
+            child: ListView.builder(
               shrinkWrap: true,
               padding: EdgeInsets.symmetric(horizontal: 10),
               itemCount: widget.routeList['mapList'].length,
@@ -55,6 +53,7 @@ class _DetailedRouteView extends State<DetailedRouteView> {
                 return ListCardWidget(
                     content: widget.routeList['mapList'][index], index: index);
               })
+          ),
         ],
       ),
     );
@@ -76,19 +75,93 @@ class ListCardWidget extends StatelessWidget {
       height: 100,
       child: Row(
         children: [
-          Icon(Icons.location_pin, size: 40, color: Colors.pink),
+          RawMaterialButton(
+            shape: CircleBorder(),
+            fillColor: Colors.white,
+            padding: EdgeInsets.all(10),
+            onPressed: () {},
+            enableFeedback: false,
+            constraints: BoxConstraints(minWidth: 70),
+            child: Icon(Icons.location_pin, size: 30, color: Colors.black)
+          ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               SizedBox(height: 10),
-              ReusableTitleWidget(title: content['address'].split(',')[0], color: Colors.black, fontsize: 20,),
+              ReusableTitleWidget(
+                title: content['address'].split(',')[0],
+                color: Colors.black,
+                fontsize: 20,
+              ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  ReusableTitleWidget(title: "Coordinates: ", color: Colors.grey[700], fontsize: 16),
-                  ReusableSubtitleWidget(text: "${content['coordinates'][0].toStringAsFixed(4)} , ${content['coordinates'][1].toStringAsFixed(4)}", justification: TextAlign.left,)
+                  ReusableTitleWidget(
+                      title: "Coordinates:",
+                      color: Colors.grey[700],
+                      fontsize: 16),
+                  ReusableSubtitleWidget(
+                    text:
+                        "${content['coordinates'][0].toStringAsFixed(4)} , ${content['coordinates'][1].toStringAsFixed(4)}",
+                    justification: TextAlign.left,
+                  )
                 ],
               )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class DetailsCardWidget extends StatelessWidget {
+  final totalDist;
+  final totalDuration;
+  final tagName;
+
+  const DetailsCardWidget(
+      {Key key, this.totalDist, this.totalDuration, this.tagName})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 150,
+      margin: EdgeInsets.all(20),
+      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 5),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        color: Colors.orange[200]
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              RawMaterialButton(
+                shape: CircleBorder(),
+                fillColor: Colors.white,
+                padding: EdgeInsets.all(10),
+                onPressed: () {},
+                enableFeedback: false,
+                child: Icon(Icons.directions_walk, size: 30, color: Colors.black)
+              ),
+              ReusableTitleWidget(title: "Distance: ", fontsize: 20, color: Colors.black,),
+              ReusableTitleWidget(title: "$totalDist km", fontsize: 18, color: Colors.grey[800],)
+            ],
+          ),
+          SizedBox(height:20),
+          Row(
+            children: [
+              RawMaterialButton(
+                shape: CircleBorder(),
+                fillColor: Colors.white,
+                padding: EdgeInsets.all(10),
+                onPressed: () {},
+                child: Icon(Icons.timer, size: 30, color: Colors.black)
+              ),
+              ReusableTitleWidget(title: "Duration: ", fontsize: 20, color: Colors.black,),
+              ReusableTitleWidget(title: "$totalDuration min", fontsize: 18, color: Colors.grey[800],)
             ],
           )
         ],
