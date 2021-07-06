@@ -595,7 +595,7 @@ class _MapScreenState extends State<MapScreen> {
                         trailing: IconButton(
                           padding: EdgeInsets.only(left: 20),
                           icon: Icon(
-                            Icons.keyboard_arrow_right,
+                            Icons.delete_outline,
                             color: Colors.white,
                             size: 30.0,
                           ),

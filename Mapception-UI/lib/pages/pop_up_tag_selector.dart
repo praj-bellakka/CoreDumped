@@ -71,7 +71,7 @@ class AddTagPopupCard extends StatefulWidget {
 }
 
 class _AddTagPopupCard extends State<AddTagPopupCard> {
-  static final List<String> items = <String>['Work', 'Play', 'Delivery'];
+  static final List<String> items = <String>['Work', 'Delivery', 'Road Trip'];
   String value = items.first;
 
   final myTextController = TextEditingController();
@@ -169,7 +169,7 @@ class _AddTagPopupCard extends State<AddTagPopupCard> {
                       thickness: 0.2,
                     ),
                     FlatButton(
-                      onPressed: () {
+                      onPressed: () async {
                         //print(widget.distMatrix);
                         RouteStructure newDataInstance = RouteStructure(
                             tag: value,
@@ -182,12 +182,12 @@ class _AddTagPopupCard extends State<AddTagPopupCard> {
                             listOfPolylines: polylines.toList());
                         //print(newDataInstance);
                         String encodedJson = jsonEncode(newDataInstance);
-                        print(encodedJson);
-                        client.post(
+                        //print(encodedJson);
+                        await client.post(
                             Uri.parse(
                                 "https://mapception-c014b-default-rtdb.asia-southeast1.firebasedatabase.app/Users/${auth.currentUser.uid}.json"),
                             body: encodedJson);
-                        print('sent');
+                        Navigator.pop(context);
                       },
                       child: const Text('Save'),
                     ),

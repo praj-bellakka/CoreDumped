@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mapception/models/reusable_widgets.dart';
+import 'package:mapception/pages/detailed_route_view.dart';
 import 'package:mapception/services/colourPalette.dart';
 import 'package:mapception/services/userData.dart';
 
@@ -53,35 +53,47 @@ class _RouteView extends State<RouteView> {
     if (data.value != null) return true;
     return false;
   }
+
   Widget _buildEmptyList() {
     return Container(
       //height: MediaQuery.of(context).size.height * 0.7,
       //width: MediaQuery.of(context).size.width * 1,
       child: Center(
-        //widthFactor: 10.0,
-        //heightFactor: 10,
-        child: Column(
-          children: [
-            Image(image: AssetImage('assets/flamenco-list-is-empty.png'), width: 400, height: 400),
-            Text("No Routes Found", style: GoogleFonts.montserrat(fontSize: 25.0, color: Colors.grey[200], fontWeight: FontWeight.w700)),
-            TextButton(
-              // style: ButtonStyle(
+          //widthFactor: 10.0,
+          //heightFactor: 10,
+          child: Column(
+        children: [
+          Image(
+              image: AssetImage('assets/flamenco-list-is-empty.png'),
+              width: 400,
+              height: 400),
+          Text("No Routes Found",
+              style: GoogleFonts.montserrat(
+                  fontSize: 25.0,
+                  color: Colors.grey[200],
+                  fontWeight: FontWeight.w700)),
+          TextButton(
+            // style: ButtonStyle(
 
-              // )
-              child: Text("Go to maps!", 
-                style: GoogleFonts.montserrat(fontSize: 20.0, color: signInButtonColour, fontWeight: FontWeight.w700)),
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(
-                  builder: (context)=> MapScreen(),
-                ));
-              }, 
-            )
-
-          ],
-        )
-      ),
+            // )
+            child: Text("Go to maps!",
+                style: GoogleFonts.montserrat(
+                    fontSize: 20.0,
+                    color: signInButtonColour,
+                    fontWeight: FontWeight.w700)),
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MapScreen(),
+                  ));
+            },
+          )
+        ],
+      )),
     );
   }
+
   Widget _buildRouteItem({Map route}) {
     return Container(
         height: 100,
@@ -165,10 +177,19 @@ class _RouteView extends State<RouteView> {
                 query: _ref,
                 itemBuilder: (BuildContext context, DataSnapshot snapshot,
                     Animation<double> animation, int index) {
-                  print(snapshot);
+                  // print(snapshot);
                   Map route = snapshot.value;
-                  print(route);
-                  return _buildRouteItem(route: route);
+                  // print(route.values);
+                  return InkWell(
+                    onTap: () {
+                      //enter detailed view of route when contianer is pressed
+                      Navigator.push(context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailedRouteView(routeList: route, routeName: route['name']),
+                        )
+                      );
+                    },
+                    child: _buildRouteItem(route: route));
                 },
               ),
       ]),

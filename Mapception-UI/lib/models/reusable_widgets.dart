@@ -18,36 +18,30 @@ class ReusableCategoryWidget extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.all(Radius.circular(20)),
           color: Colors.white,
-          //boxShadow: 
+          //boxShadow:
         ),
         padding: EdgeInsets.symmetric(horizontal: 10),
         child: Column(
           children: [
             Align(
-              alignment: Alignment.centerLeft,
-              child: Text("$tagName",
-                style: GoogleFonts.montserrat(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.black)
-              )
-            ),
+                alignment: Alignment.centerLeft,
+                child: Text("$tagName",
+                    style: GoogleFonts.montserrat(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.black))),
             Align(
               alignment: Alignment.centerLeft,
               child: Text("$numOfItems items",
-                style: GoogleFonts.montserrat(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.grey)
-              ),
+                  style: GoogleFonts.montserrat(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      color: Colors.grey)),
             )
-
           ],
-          
         ));
   }
 }
-
 
 class ReusableTitleWidget extends StatelessWidget {
   final title;
@@ -63,6 +57,28 @@ class ReusableTitleWidget extends StatelessWidget {
         '$title',
         style: GoogleFonts.montserrat(
             fontSize: fontsize, fontWeight: FontWeight.w800, color: color),
+      ),
+    );
+  }
+}
+
+class ReusableSubtitleWidget extends StatelessWidget {
+  final text;
+  final double fontsize;
+  final justification;
+  ReusableSubtitleWidget({this.text, this.fontsize, this.justification});
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(left: 20, right: 20),
+      alignment: Alignment.centerLeft,
+      child: Text(
+        '$text',
+        style: GoogleFonts.montserrat(
+            fontSize: fontsize,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey[500]),
+        textAlign: justification,
       ),
     );
   }
