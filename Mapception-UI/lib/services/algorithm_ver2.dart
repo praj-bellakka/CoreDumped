@@ -228,9 +228,9 @@ Future<List<int>> RouteOptimizeAlgo(List<List<double>> arrayOfDurations) async {
   edgeList.sort((curr, next) => curr.weight.compareTo(next.weight));
   //debugger: check sorted edges
   print('\n\nsorted edges');
-  for (var i = 0; i < 6; i++) {
-    print(edgeList[i].weight);
-  }
+  // for (var i = 0; i < 6; i++) {
+  //   print(edgeList[i].weight);
+  // }
 
   //construct a graph w min edge
   var checked = <bool>[];
@@ -280,7 +280,7 @@ Future<List<int>> RouteOptimizeAlgo(List<List<double>> arrayOfDurations) async {
   print(eulerTour);
 
   //remove duplicate edges
-  var finalList = removeDuplicates(eulerTour, numOfNodes);
+  List<int> finalList = removeDuplicates(eulerTour, numOfNodes).toList();
   print('\n\n1.5-approximate output:');
   print(finalList);
   return finalList;
@@ -503,8 +503,8 @@ void printGraph(UndirectedValueGraph graph, int n) {
   }
 }
 
-List removeDuplicates(List lst, int n) {
-  var finalList = [];
+List<int> removeDuplicates(List lst, int n) {
+  List<int> finalList = [];
   var checked = [];
   for (var i = 0; i < n; i++) {
     var tmp = false;

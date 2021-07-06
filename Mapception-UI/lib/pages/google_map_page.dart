@@ -185,7 +185,7 @@ class _MapScreenState extends State<MapScreen> {
           (marker) => marker.markerId == MarkerId(extractedPlaceID));
       print(extractedMarker);
       var newMarkerIcon =
-          await getBytesFromCanvas((sortedList[i] + 1).toString());
+          await getBytesFromCanvas((i+1).toString());
       _markers.remove(extractedMarker);
       _addMarker(extractedMarker.markerId.value, extractedMarker.position,
           extractedMarker.infoWindow.title, newMarkerIcon);

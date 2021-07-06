@@ -37,6 +37,7 @@ class DirectionModel {
 
 Future<DirectionModel> findIndividualDirections(
     LatLng source, LatLng dest, String placeId, String tempId) async {
+  print("$source, $dest");
   var baseUrl =
       "https://maps.googleapis.com/maps/api/directions/json?origin=${source.latitude},${source.longitude}&destination=${dest.latitude},${dest.longitude}&key=$apiKey";
   final response = await http.get(Uri.parse(baseUrl));
@@ -45,13 +46,14 @@ Future<DirectionModel> findIndividualDirections(
   if (response.statusCode == 200) {
     // print(tempId);
     var jsonResult = DirectionModel.fromJson(jsonDecode(response.body));
+    print(jsonResult.polyline);
     Polyline polyline = Polyline(
-        polylineId: PolylineId(placeId),
+        polylineId: PolylineId(tempId),
         width: 5,
         startCap: Cap.roundCap,
         endCap: Cap.buttCap,
         color: Color.fromRGBO(0, 51, 102, 1), //darkblue color
-            //Color((Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0),
+        //Color((Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0),
         points: polylinePoints
             .decodePolyline(jsonResult.polyline)
             .map((e) => LatLng(e.latitude, e.longitude))
@@ -74,11 +76,14 @@ void runAlgoAndSetPolylines(List<int> sortedList,
     print("from${from}to$to");
     totalDuration +=
         from < to ? durationMatrix[from][to] : durationMatrix[to][from];
-    totalDistance += from < to ? num.parse((distMatrix[from][to]).toStringAsFixed(2)).toDouble() : num.parse((distMatrix[to][from]).toStringAsFixed(2)).toDouble();
+    totalDistance += from < to
+        ? num.parse((distMatrix[from][to]).toStringAsFixed(2)).toDouble()
+        : num.parse((distMatrix[to][from]).toStringAsFixed(2)).toDouble();
     Polyline extractedPolyline =
         tempPolylines[from < to ? "from${from}to$to" : "from${to}to$from"];
     if (extractedPolyline != null) {
-      //print(extractedPolyline.points);
+      print(extractedPolyline.points);
+      print(extractedPolyline.mapsId);
       polylines.add(extractedPolyline);
       print('length of polylines is ${polylines.length}');
     }
