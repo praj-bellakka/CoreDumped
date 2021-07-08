@@ -283,11 +283,13 @@ Future<List<int>> RouteOptimizeAlgo(List<List<double>> arrayOfDurations) async {
   List<int> finalList = removeDuplicates(eulerTour, numOfNodes).toList();
   print('\n\n1.5-approximate output:');
   print(finalList);
+
+  var twoApproximate = twoApprox(mstGraph, numOfNodes);
+  print('\n\n2-approximate output:');
+  print(twoApproximate);
+
   return finalList;
   //two approx
-  // var twoApproximate = twoApprox(mstGraph, numOfNodes);
-  // print('\n\n2-approximate output:');
-  // print(twoApproximate);
 }
 
 List twoApprox(UndirectedValueGraph graph, int n) {

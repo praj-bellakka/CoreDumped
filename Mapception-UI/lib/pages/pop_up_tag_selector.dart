@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mapception/models/reusable_widgets.dart';
 import 'package:mapception/services/colourPalette.dart';
 import 'package:mapception/services/directions_repo.dart';
 import 'package:mapception/services/location_list.dart';
@@ -77,6 +78,9 @@ class _AddTagPopupCard extends State<AddTagPopupCard> {
   final myTextController = TextEditingController();
   var client = http.Client();
   final FirebaseAuth auth = FirebaseAuth.instance;
+
+  //date selected defaults to the current date
+  DateTime selectedDate = DateTime.now();
 
   @override
   void dispose() {
@@ -168,6 +172,31 @@ class _AddTagPopupCard extends State<AddTagPopupCard> {
                       color: Colors.white,
                       thickness: 0.2,
                     ),
+                    Row(
+                        //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Text(
+                            'Task date: ',
+                            style: GoogleFonts.montserrat(
+                                fontWeight: FontWeight.w500),
+                          ),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          TextButton(
+                            style: ElevatedButton.styleFrom(
+                                onSurface: Colors.black, primary: Colors.black),
+                            child: ReusableSubtitleWidget(
+                              text: "Select date",
+                              fontsize: 20,
+                              justification: TextAlign.justify,
+                            ),
+                            onPressed: () {
+                              _selectDate(context);
+                            },
+                          )
+                        ]),
+                    SizedBox(height: 10),
                     FlatButton(
                       onPressed: () async {
                         //print(widget.distMatrix);
@@ -175,6 +204,7 @@ class _AddTagPopupCard extends State<AddTagPopupCard> {
                             tag: value,
                             name: myTextController.value.text,
                             mapList: mapList,
+                            date: selectedDate.millisecondsSinceEpoch,
                             totalDuration: totalDuration,
                             totalDistance: totalDistance,
                             durationMatrixOfLocations: widget.durationMatrix,
@@ -189,7 +219,9 @@ class _AddTagPopupCard extends State<AddTagPopupCard> {
                             body: encodedJson);
                         Navigator.pop(context);
                       },
-                      child: const Text('Save'),
+                      child: const Text('Save',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w800, fontSize: 20)),
                     ),
                   ],
                 ),
@@ -201,10 +233,33 @@ class _AddTagPopupCard extends State<AddTagPopupCard> {
     );
   }
 
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    throw UnimplementedError();
+  bool _enableDays(DateTime day) {
+    if ((day.isAfter(DateTime.now().subtract(Duration(days: 1))) &&
+        day.isBefore(DateTime.now().add(Duration(days: 365))))) {
+      return true;
+    }
+    return false;
+  }
+
+  //logic to handle datepicker
+  _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate, // Refer step 1
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2023),
+      //only allow day from up to 1 year from current date
+      selectableDayPredicate: _enableDays,
+    );
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        selectedDate = picked;
+      });
+    print(selectedDate);
+     // final snackBar = SnackBar(
+    //       content: Text('Date saved!',
+    //           style: GoogleFonts.montserrat(color: Colors.white)));
+    //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
 

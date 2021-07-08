@@ -11,6 +11,7 @@ class RouteStructure {
   final tag;
   final name;
   final mapList; //list of LocationList details
+  final date;
   final double totalDuration;
   final double totalDistance;
   final List<List<double>>
@@ -24,6 +25,7 @@ class RouteStructure {
       {this.tag,
       this.name,
       this.mapList,
+      this.date,
       this.totalDuration,
       this.totalDistance,
       this.durationMatrixOfLocations,
@@ -34,6 +36,7 @@ class RouteStructure {
       : tag = json['tag'],
         name = json['name'],
         mapList = json['mapList'],
+        date = json['date'],
         totalDuration = json['totalDuration'],
         totalDistance = json['totalDistance'],
         durationMatrixOfLocations = json['durationMatrixOfLocations'],
@@ -44,6 +47,7 @@ class RouteStructure {
         'tag': tag,
         'name': name,
         'mapList': mapList,
+        'date' : date,
         'totalDuration': totalDuration,
         'totalDistance': totalDistance,
         'durationMatrixOfLocations': durationMatrixOfLocations,
