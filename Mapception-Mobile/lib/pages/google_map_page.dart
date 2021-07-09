@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:mapception/pages/home.dart';
 import 'package:mapception/pages/pop_up_tag_selector.dart';
 import 'package:mapception/services/algorithm_ver2.dart';
 import 'package:mapception/services/directions_repo.dart';
@@ -78,11 +79,39 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
-    //mapList = widget.dbRouteList[0] != null ? widget.dbRouteList : [];
-    print(widget.dbRouteList);
+    if (widget.dbRouteList != null) {
+      for (var item in widget.dbRouteList) {
+        addToList(item['placeId'], item['address'], item['condensedName'],
+            LatLng(item['coordinates'][0], item['coordinates'][1]));
+        _addMarker(
+            item['placeId'],
+            LatLng(item['coordinates'][0], item['coordinates'][1]),
+            item['address'],
+            null);
+
+        // LocationList _location = new LocationList(
+        //   condensedName: item['condensedName'],
+        //   address: item['address'],
+        //   placeId: item['placeId'],
+        //   coordinates: LatLng(item['coordinates'][0], item['coordinates'][1]),
+        // );
+        // mapList.add(_location);
+      }
+
+      //Display snackbar for user to regenerate route
+      Future<Null>.delayed(Duration.zero, () {
+        final _snackBar = SnackBar(
+            content: Text('Swipe up panel and regenerate route!',
+                style: GoogleFonts.montserrat(color: Colors.red[500])));
+        ScaffoldMessenger.of(context).showSnackBar(_snackBar);
+      });
+    }
+    // mapList = widget.dbRouteList != null ? widget.dbRouteList : [];
+    print(mapList);
   }
 
   void updateMarker(LocationData _locationData, Uint8List imageData) async {
+    if (!mounted) return;
     LatLng latlng = LatLng(_locationData.latitude, _locationData.longitude);
     this.setState(() {
       _markers.add(Marker(
@@ -242,7 +271,9 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-        //print(widget.dbRouteList.fromJson());
+    // print(widget.dbRouteList);
+    // final ll = LocationList.fromJson(widget.dbRouteList[0]);
+    // print(ll);
 
     final panelHeightOpen = MediaQuery.of(context).size.height *
         0.90; //relative height of panel when fully opened
@@ -344,7 +375,10 @@ class _MapScreenState extends State<MapScreen> {
                     IconButton(
                       icon: Icon(Icons.settings_power),
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (context) => Home()),
+                            (Route<dynamic> route) => false);
                       },
                     )
                   ],

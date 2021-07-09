@@ -26,8 +26,8 @@ class _DetailedRouteView extends State<DetailedRouteView> {
   @override
   Widget build(BuildContext context) {
     final newlist = Map<String, dynamic>.from(widget.routeList);
-    RouteStructure newlist2 =RouteStructure.fromJson(newlist);
-    print(newlist2);
+    RouteStructure newlist2 = RouteStructure.fromJson(newlist); //extracts data into the desired structure 
+    //print(newlist2.mapList);
     return Scaffold(
         backgroundColor: backgroundColorMain,
         appBar: AppBar(
@@ -81,7 +81,7 @@ class _DetailedRouteView extends State<DetailedRouteView> {
                           dbTotalDistance: widget.routeList['totalDistance'],
                           dbTotalDuration: widget.routeList['totalDuration'],
                           dbMarkers: listOfPolylines,
-                          dbRouteList: mapList,
+                          dbRouteList: newlist2.mapList,
                         ),
                       ),
                       (Route<dynamic> route) => false);

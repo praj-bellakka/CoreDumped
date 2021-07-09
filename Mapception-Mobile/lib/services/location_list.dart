@@ -15,9 +15,16 @@ class LocationList {
         'address': address,
         'condensedName': condensedName,
         'coordinates': coordinates
-  };
+      };
 
-  
+  factory LocationList.fromJson(Map<String, dynamic> json) {
+    return LocationList(
+      placeId: json['placeId'],
+      address: json['address'],
+      condensedName: json['condensedName'],
+      coordinates: json['coordinates'],
+    );
+  }
 }
 
 /*ORIGINAL VERSION OF MAPLIST. UNCOMMENT ONCE TESTING IS DONE!*/
