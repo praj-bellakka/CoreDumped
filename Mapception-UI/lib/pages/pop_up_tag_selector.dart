@@ -207,9 +207,10 @@ class _AddTagPopupCard extends State<AddTagPopupCard> {
                             date: selectedDate.millisecondsSinceEpoch,
                             totalDuration: totalDuration,
                             totalDistance: totalDistance,
-                            durationMatrixOfLocations: widget.durationMatrix,
-                            distMatrixOfLocations: widget.distMatrix,
-                            listOfPolylines: polylines.toList());
+                            // durationMatrixOfLocations: widget.durationMatrix,
+                            // distMatrixOfLocations: widget.distMatrix,
+                            // listOfPolylines: polylines.toList()
+                            );
                         //print(newDataInstance);
                         String encodedJson = jsonEncode(newDataInstance);
                         //print(encodedJson);

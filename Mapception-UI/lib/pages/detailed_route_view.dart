@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mapception/models/reusable_widgets.dart';
+import 'package:mapception/pages/google_map_page.dart';
 import 'package:mapception/services/colourPalette.dart';
+import 'package:mapception/services/userData.dart';
 
 /* Page that displays the route data dynamically 
 */
 
 class DetailedRouteView extends StatefulWidget {
   //takes in data from firebase that was called in the previous page
-  final routeList;
+  final routeList; //takes in all the details from firebase
   final routeName;
-
-  const DetailedRouteView({Key key, this.routeList, this.routeName})
-      : super(key: key);
+  const DetailedRouteView({
+    Key key,
+    this.routeList,
+    this.routeName,
+  }) : super(key: key);
 
   @override
   _DetailedRouteView createState() => _DetailedRouteView();
@@ -21,42 +25,93 @@ class DetailedRouteView extends StatefulWidget {
 class _DetailedRouteView extends State<DetailedRouteView> {
   @override
   Widget build(BuildContext context) {
-    print(widget.routeList['tagname']);
+    final newlist = Map<String, dynamic>.from(widget.routeList);
+    RouteStructure newlist2 =RouteStructure.fromJson(newlist);
+    print(newlist2);
     return Scaffold(
-      backgroundColor: backgroundColorMain,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      body: Column(
-        children: [
-          ReusableTitleWidget(
-            title: widget.routeName,
-            fontsize: 35,
-            color: Colors.white,
+        backgroundColor: backgroundColorMain,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              ReusableTitleWidget(
+                title: widget.routeName,
+                fontsize: 35,
+                color: Colors.white,
+              ),
+              SizedBox(height: 10),
+              ReusableSubtitleWidget(
+                text:
+                    "The details of this saved route is presented below! You can choose to reuse this route by clicking on the button below",
+                fontsize: 15,
+                justification: TextAlign.justify,
+              ),
+              SizedBox(height: 10),
+              DetailsCardWidget(
+                totalDist: widget.routeList['totalDistance'],
+                totalDuration: widget.routeList['totalDuration'],
+              ),
+              Expanded(
+                  flex: 0,
+                  child: ListView.builder(
+                      shrinkWrap: true,
+                      primary: false,
+                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      itemCount: widget.routeList['mapList'].length,
+                      itemBuilder: (context, index) {
+                        return ListCardWidget(
+                            content: widget.routeList['mapList'][index],
+                            index: index);
+                      })),
+              InkWell(
+                onTap: () {
+                  // var distMatrixOfLocations =
+                  //     widget.routeList['distMatrixOfLocations'];
+                  // var durationMatrixOfLocations =
+                  //     widget.routeList['durationMatrixOfLocations'];
+                  var listOfPolylines = widget.routeList['listOfPolylines'];
+                  var mapList = widget.routeList['mapList'];
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MapScreen(
+                          dbTotalDistance: widget.routeList['totalDistance'],
+                          dbTotalDuration: widget.routeList['totalDuration'],
+                          dbMarkers: listOfPolylines,
+                          dbRouteList: mapList,
+                        ),
+                      ),
+                      (Route<dynamic> route) => false);
+
+                  print(mapList);
+                },
+                child: Container(
+                  height: 60,
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  margin: EdgeInsets.symmetric(vertical: 15, horizontal: 30),
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 5),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Colors.green[200]),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "Use Route",
+                      style: GoogleFonts.montserrat(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-          SizedBox(height: 10),
-          ReusableSubtitleWidget(
-            text:
-                "The details of this saved route is presented below! You can choose to reuse this route by clicking on the button below",
-            fontsize: 15,
-            justification: TextAlign.justify,
-          ),
-          SizedBox(height: 10),
-          DetailsCardWidget(totalDist: widget.routeList['totalDistance'], totalDuration: widget.routeList['totalDuration'],),
-          Expanded(
-            child: ListView.builder(
-              shrinkWrap: true,
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              itemCount: widget.routeList['mapList'].length,
-              itemBuilder: (context, index) {
-                return ListCardWidget(
-                    content: widget.routeList['mapList'][index], index: index);
-              })
-          ),
-        ],
-      ),
-    );
+        ));
   }
 }
 
@@ -69,21 +124,20 @@ class ListCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     print(content);
     return Container(
-      margin: EdgeInsets.all(10),
+      margin: EdgeInsets.symmetric(vertical: 7, horizontal: 10),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10), color: Colors.white),
-      height: 100,
+      height: 85,
       child: Row(
         children: [
           RawMaterialButton(
-            shape: CircleBorder(),
-            fillColor: Colors.white,
-            padding: EdgeInsets.all(10),
-            onPressed: () {},
-            enableFeedback: false,
-            constraints: BoxConstraints(minWidth: 70),
-            child: Icon(Icons.location_pin, size: 30, color: Colors.black)
-          ),
+              shape: CircleBorder(),
+              fillColor: Colors.white,
+              padding: EdgeInsets.all(10),
+              onPressed: () {},
+              enableFeedback: false,
+              constraints: BoxConstraints(minWidth: 70),
+              child: Icon(Icons.location_pin, size: 30, color: Colors.black)),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.start,
@@ -131,37 +185,50 @@ class DetailsCardWidget extends StatelessWidget {
       margin: EdgeInsets.all(20),
       padding: EdgeInsets.symmetric(vertical: 15, horizontal: 5),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        color: Colors.orange[200]
-      ),
+          borderRadius: BorderRadius.circular(15), color: Colors.orange[200]),
       child: Column(
         children: [
           Row(
             children: [
               RawMaterialButton(
-                shape: CircleBorder(),
-                fillColor: Colors.white,
-                padding: EdgeInsets.all(10),
-                onPressed: () {},
-                enableFeedback: false,
-                child: Icon(Icons.directions_walk, size: 30, color: Colors.black)
+                  shape: CircleBorder(),
+                  fillColor: Colors.white,
+                  padding: EdgeInsets.all(10),
+                  onPressed: () {},
+                  enableFeedback: false,
+                  child: Icon(Icons.directions_walk,
+                      size: 30, color: Colors.black)),
+              ReusableTitleWidget(
+                title: "Distance: ",
+                fontsize: 20,
+                color: Colors.black,
               ),
-              ReusableTitleWidget(title: "Distance: ", fontsize: 20, color: Colors.black,),
-              ReusableTitleWidget(title: "$totalDist km", fontsize: 18, color: Colors.grey[800],)
+              ReusableTitleWidget(
+                title: "$totalDist km",
+                fontsize: 18,
+                color: Colors.grey[800],
+              )
             ],
           ),
-          SizedBox(height:20),
+          SizedBox(height: 20),
           Row(
             children: [
               RawMaterialButton(
-                shape: CircleBorder(),
-                fillColor: Colors.white,
-                padding: EdgeInsets.all(10),
-                onPressed: () {},
-                child: Icon(Icons.timer, size: 30, color: Colors.black)
+                  shape: CircleBorder(),
+                  fillColor: Colors.white,
+                  padding: EdgeInsets.all(10),
+                  onPressed: () {},
+                  child: Icon(Icons.timer, size: 30, color: Colors.black)),
+              ReusableTitleWidget(
+                title: "Duration: ",
+                fontsize: 20,
+                color: Colors.black,
               ),
-              ReusableTitleWidget(title: "Duration: ", fontsize: 20, color: Colors.black,),
-              ReusableTitleWidget(title: "$totalDuration min", fontsize: 18, color: Colors.grey[800],)
+              ReusableTitleWidget(
+                title: "$totalDuration min",
+                fontsize: 18,
+                color: Colors.grey[800],
+              )
             ],
           )
         ],

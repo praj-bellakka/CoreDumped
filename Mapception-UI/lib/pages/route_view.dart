@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mapception/models/reusable_widgets.dart';
 import 'package:mapception/pages/detailed_route_view.dart';
 import 'package:mapception/services/colourPalette.dart';
+import 'package:mapception/services/location_list.dart';
 import 'package:mapception/services/userData.dart';
 
 import 'google_map_page.dart';
@@ -158,41 +159,51 @@ class _RouteView extends State<RouteView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
-      backgroundColor: backgroundColorMain,
-      body: Column(children: [
-        ReusableTitleWidget(
-          color: Colors.white,
-          title: "${widget.tagName} Routes",
-          fontsize: 40,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
         ),
-        emptyList == false
-            ? _buildEmptyList()
-            : FirebaseAnimatedList(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                query: _ref,
-                itemBuilder: (BuildContext context, DataSnapshot snapshot,
-                    Animation<double> animation, int index) {
-                  // print(snapshot);
-                  Map route = snapshot.value;
-                  // print(route.values);
-                  return InkWell(
-                    onTap: () {
-                      //enter detailed view of route when contianer is pressed
-                      Navigator.push(context,
-                        MaterialPageRoute(
-                          builder: (context) => DetailedRouteView(routeList: route, routeName: route['name']),
-                        )
-                      );
+        backgroundColor: backgroundColorMain,
+        body: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(children: [
+            ReusableTitleWidget(
+              color: Colors.white,
+              title: "${widget.tagName} Routes",
+              fontsize: 40,
+            ),
+            emptyList == false
+                ? _buildEmptyList()
+                : FirebaseAnimatedList(
+                    scrollDirection: Axis.vertical,
+                    shrinkWrap: true,
+                    primary: false,
+                    query: _ref,
+                    itemBuilder: (BuildContext context, DataSnapshot snapshot,
+                        Animation<double> animation, int index) {
+                      var route = snapshot.value;
+                      // print(route);
+                      // final List list = route.map((o) => RouteStructure.fromJson(o)).toList();
+                      //RouteStructure obj = RouteStructure.fromJson(route);
+                      // for (var route in route['mapList']) {
+                      //   LocationList obj = route.fromJson();
+                      //   print(route);
+                      // }
+                      return InkWell(
+                          onTap: () {
+                            //enter detailed view of route when contianer is pressed
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DetailedRouteView(
+                                      routeList: route,
+                                      routeName: route['name']),
+                                ));
+                          },
+                          child: _buildRouteItem(route: route));
                     },
-                    child: _buildRouteItem(route: route));
-                },
-              ),
-      ]),
-    );
+                  ),
+          ]),
+        ));
   }
 }

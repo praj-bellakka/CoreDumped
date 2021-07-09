@@ -18,6 +18,20 @@ import '../services/location_list.dart';
 import 'search-map.dart';
 
 class MapScreen extends StatefulWidget {
+  //Page takes in a list of saved parameters if entered from Detailed route view
+  final dbTotalDistance;
+  final dbMarkers;
+  final dbTotalDuration;
+  final dbRouteList;
+
+  const MapScreen(
+      {Key key,
+      this.dbTotalDistance,
+      this.dbMarkers,
+      this.dbTotalDuration,
+      this.dbRouteList})
+      : super(key: key);
+
   @override
   _MapScreenState createState() => _MapScreenState();
 }
@@ -59,6 +73,14 @@ class _MapScreenState extends State<MapScreen> {
 
   var pathDurationPermutations;
   var pathDistPermutations;
+
+  //initialise key variables with database instance if applicable
+  @override
+  void initState() {
+    super.initState();
+    //mapList = widget.dbRouteList[0] != null ? widget.dbRouteList : [];
+    print(widget.dbRouteList);
+  }
 
   void updateMarker(LocationData _locationData, Uint8List imageData) async {
     LatLng latlng = LatLng(_locationData.latitude, _locationData.longitude);
@@ -184,8 +206,7 @@ class _MapScreenState extends State<MapScreen> {
       var extractedMarker = _markers.firstWhere(
           (marker) => marker.markerId == MarkerId(extractedPlaceID));
       print(extractedMarker);
-      var newMarkerIcon =
-          await getBytesFromCanvas((i+1).toString());
+      var newMarkerIcon = await getBytesFromCanvas((i + 1).toString());
       _markers.remove(extractedMarker);
       _addMarker(extractedMarker.markerId.value, extractedMarker.position,
           extractedMarker.infoWindow.title, newMarkerIcon);
@@ -221,6 +242,8 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
+        //print(widget.dbRouteList.fromJson());
+
     final panelHeightOpen = MediaQuery.of(context).size.height *
         0.90; //relative height of panel when fully opened
     final panelHeightClosed = MediaQuery.of(context).size.height *
