@@ -12,11 +12,10 @@ class DetailedRouteView extends StatefulWidget {
   //takes in data from firebase that was called in the previous page
   final routeList; //takes in all the details from firebase
   final routeName;
-  const DetailedRouteView({
-    Key key,
-    this.routeList,
-    this.routeName,
-  }) : super(key: key);
+  final itemKey;
+  const DetailedRouteView(
+      {Key key, this.routeList, this.routeName, this.itemKey})
+      : super(key: key);
 
   @override
   _DetailedRouteView createState() => _DetailedRouteView();
@@ -26,13 +25,28 @@ class _DetailedRouteView extends State<DetailedRouteView> {
   @override
   Widget build(BuildContext context) {
     final newlist = Map<String, dynamic>.from(widget.routeList);
-    RouteStructure newlist2 = RouteStructure.fromJson(newlist); //extracts data into the desired structure 
+    RouteStructure newlist2 = RouteStructure.fromJson(
+        newlist); //extracts data into the desired structure
     //print(newlist2.mapList);
     return Scaffold(
         backgroundColor: backgroundColorMain,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
+          actions: <Widget>[
+            IconButton(
+              padding: EdgeInsets.only(top: 5),
+              icon: Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                //delete saved route when pressed
+                dataBaseReferenceData.child('${widget.itemKey}').remove();
+                Navigator.pop(context);
+              },
+            )
+          ],
         ),
         body: SingleChildScrollView(
           child: Column(

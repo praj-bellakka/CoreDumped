@@ -6,7 +6,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mapception/models/reusable_widgets.dart';
 import 'package:mapception/pages/detailed_route_view.dart';
 import 'package:mapception/services/colourPalette.dart';
-import 'package:mapception/services/location_list.dart';
 import 'package:mapception/services/userData.dart';
 
 import 'google_map_page.dart';
@@ -182,7 +181,7 @@ class _RouteView extends State<RouteView> {
                     itemBuilder: (BuildContext context, DataSnapshot snapshot,
                         Animation<double> animation, int index) {
                       var route = snapshot.value;
-                      // print(route);
+                      String itemKey = snapshot.key;
                       // final List list = route.map((o) => RouteStructure.fromJson(o)).toList();
                       //RouteStructure obj = RouteStructure.fromJson(route);
                       // for (var route in route['mapList']) {
@@ -197,7 +196,8 @@ class _RouteView extends State<RouteView> {
                                 MaterialPageRoute(
                                   builder: (context) => DetailedRouteView(
                                       routeList: route,
-                                      routeName: route['name']),
+                                      routeName: route['name'],
+                                      itemKey: itemKey),
                                 ));
                           },
                           child: _buildRouteItem(route: route));

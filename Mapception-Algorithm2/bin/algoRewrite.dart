@@ -1,4 +1,5 @@
 // @dart=2.10
+
 import 'package:graph_collection/graph.dart';
 
 void main() {
