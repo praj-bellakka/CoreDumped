@@ -46,6 +46,7 @@ dependencies:
   graph_collection: ^1.1.2
   json_annotation: ^3.1.1
   http: ^0.13.3
+  intl: ^0.17.0 #convert timestamps to date 
 
   
 dev_dependencies:

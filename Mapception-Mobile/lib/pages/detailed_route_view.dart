@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:mapception/models/reusable_widgets.dart';
 import 'package:mapception/pages/google_map_page.dart';
 import 'package:mapception/services/colourPalette.dart';
@@ -22,6 +23,20 @@ class DetailedRouteView extends StatefulWidget {
 }
 
 class _DetailedRouteView extends State<DetailedRouteView> {
+  //formatted date
+  DateTime date;
+  var formattedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.routeList['date'] != null) {
+      date = new DateTime.fromMillisecondsSinceEpoch(widget.routeList['date']);
+      formattedDate = DateFormat('EEE M/d/y').format(date);
+    } else
+      formattedDate = 'No deadline';
+  }
+
   @override
   Widget build(BuildContext context) {
     final newlist = Map<String, dynamic>.from(widget.routeList);
@@ -67,6 +82,7 @@ class _DetailedRouteView extends State<DetailedRouteView> {
               DetailsCardWidget(
                 totalDist: widget.routeList['totalDistance'],
                 totalDuration: widget.routeList['totalDuration'],
+                formattedDate: formattedDate,
               ),
               Expanded(
                   flex: 0,
@@ -187,15 +203,20 @@ class DetailsCardWidget extends StatelessWidget {
   final totalDist;
   final totalDuration;
   final tagName;
+  final formattedDate;
 
   const DetailsCardWidget(
-      {Key key, this.totalDist, this.totalDuration, this.tagName})
+      {Key key,
+      this.totalDist,
+      this.totalDuration,
+      this.tagName,
+      this.formattedDate})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 150,
+      height: 200,
       margin: EdgeInsets.all(20),
       padding: EdgeInsets.symmetric(vertical: 15, horizontal: 5),
       decoration: BoxDecoration(
@@ -208,6 +229,32 @@ class DetailsCardWidget extends StatelessWidget {
                   shape: CircleBorder(),
                   fillColor: Colors.white,
                   padding: EdgeInsets.all(10),
+                  onPressed: () {},
+                  constraints: BoxConstraints(maxWidth: 100, minWidth: 70),
+                  enableFeedback: false,
+                  child: Icon(Icons.date_range, size: 30, color: Colors.black)),
+              ReusableTitleWidget(
+                title: "Task date:",
+                fontsize: 20,
+                color: Colors.black,
+              ),
+              ReusableTitleWidget(
+                title: "$formattedDate",
+                fontsize: 18,
+                color: Colors.grey[800],
+              )
+            ],
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Row(
+            children: [
+              RawMaterialButton(
+                  shape: CircleBorder(),
+                  fillColor: Colors.white,
+                  padding: EdgeInsets.all(10),
+                  constraints: BoxConstraints(maxWidth: 100, minWidth: 70),
                   onPressed: () {},
                   enableFeedback: false,
                   child: Icon(Icons.directions_walk,
@@ -224,13 +271,14 @@ class DetailsCardWidget extends StatelessWidget {
               )
             ],
           ),
-          SizedBox(height: 20),
+          SizedBox(height: 10),
           Row(
             children: [
               RawMaterialButton(
                   shape: CircleBorder(),
                   fillColor: Colors.white,
                   padding: EdgeInsets.all(10),
+                  constraints: BoxConstraints(maxWidth: 100, minWidth: 70),
                   onPressed: () {},
                   child: Icon(Icons.timer, size: 30, color: Colors.black)),
               ReusableTitleWidget(
