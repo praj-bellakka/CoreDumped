@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:mapception/models/reusable_widgets.dart';
 import 'package:mapception/pages/home.dart';
 import 'package:mapception/pages/pop_up_tag_selector.dart';
 import 'package:mapception/services/algorithm_ver2.dart';
@@ -266,6 +267,7 @@ class _MapScreenState extends State<MapScreen> {
   void clearVariables() {
     totalDistance = 0;
     totalDuration = 0;
+    placesVisited = 0;
     polylines.clear();
   }
 
@@ -278,7 +280,7 @@ class _MapScreenState extends State<MapScreen> {
     final panelHeightOpen = MediaQuery.of(context).size.height *
         0.90; //relative height of panel when fully opened
     final panelHeightClosed = MediaQuery.of(context).size.height *
-        0.15; //relative height of panel when closed
+        0.16; //relative height of panel when closed
     _getCurrentLocation();
     return Scaffold(
       // appBar: AppBar(
@@ -835,9 +837,9 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ]),
             collapsed: Container(
-              color: Colors.blueGrey,
+              color: Colors.blueGrey[800],
               child:
-                  flag ? CollpasedMenuWithRoute() : CollpasedMenuWithoutRoute(),
+                  flag ? CollapsedMenuWithRoute() : CollapsedMenuWithoutRoute(),
             ),
             onPanelSlide: (position) => setState(() {
               final panelScrollExtent = panelHeightOpen - panelHeightClosed;
@@ -861,29 +863,6 @@ class _MapScreenState extends State<MapScreen> {
                 child: Icon(Icons.location_pin),
                 backgroundColor: Colors.cyan,
               )),
-
-          /*TODO: ADD PROFILE BUTTON*/
-          /*Positioned(
-            top: 70,
-            right: 0,
-            left: 80,
-            child: Container(
-              child:Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(40),
-                      image: DecorationImage(
-                        image: AssetImage('assets/locator.png'),
-                      ), 
-                    ),
-                  )
-                ]
-              )
-            )
-          ),*/
         ],
       ),
     );
@@ -903,64 +882,128 @@ class _MapScreenState extends State<MapScreen> {
 /* CollpasedMenuWithoutRoute displays the collapsed widget when route is not being generated
     It contains basic info about selected route length & route duration
 */
-class CollpasedMenuWithoutRoute extends StatelessWidget {
-  const CollpasedMenuWithoutRoute({
+class CollapsedMenuWithoutRoute extends StatelessWidget {
+  const CollapsedMenuWithoutRoute({
     Key key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-      tileColor: Colors.blueGrey[800],
-      leading: Container(
-        padding: EdgeInsets.only(right: 12.0),
-        decoration: new BoxDecoration(
-            border: new Border(
-                right: new BorderSide(width: 1.0, color: Colors.white24))),
-        child: Text("${linkedData.length}",
-            style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w900,
-                fontSize: 25,
-                fontFamily: 'Open Sans')),
-      ),
-      title: Text("$totalDuration min \n${totalDistance.toStringAsFixed(2)} km",
-          style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w300,
-              fontSize: 20,
-              fontFamily: 'Open Sans')),
-    );
+        contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+        tileColor: Colors.blueGrey[800],
+        leading: Container(
+          padding: EdgeInsets.only(right: 12.0),
+          decoration: new BoxDecoration(
+              border: new Border(
+                  right: new BorderSide(width: 1.0, color: Colors.white24))),
+          child: Text("${linkedData.length}",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 25,
+                  fontFamily: 'Open Sans')),
+        ),
+        title: Column(children: [
+          GestureDetector(
+              //create drag handle
+              child: Center(
+                child: Container(
+                  margin: EdgeInsets.only(bottom: 10),
+                  width: 30,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+              onTap: () {}),
+          Icon(Icons.add_location, color: Colors.grey[400], size: 25),
+          Text(
+              "Use the searchbar to add stops\nor tap at the location on the map ",
+              style: TextStyle(
+                  color: Colors.grey[400],
+                  fontWeight: FontWeight.w300,
+                  fontSize: 15,
+                  fontFamily: 'Open Sans')),
+        ]));
   }
 }
 
 /* CollpasedMenuWithoutRoute displays next route information
     Displays when generate route is pressed
+    It contains:
+     Start button, which directs to default navigation app
+     Done Button, which displays the next stop on the list (if it's not last)
 */
-class CollpasedMenuWithRoute extends StatelessWidget {
-  const CollpasedMenuWithRoute({
-    Key key,
-  }) : super(key: key);
+class CollapsedMenuWithRoute extends StatefulWidget {
+  @override
+  _CollapsedMenuWithRoute createState() => _CollapsedMenuWithRoute();
+}
 
+class _CollapsedMenuWithRoute extends State<CollapsedMenuWithRoute> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-      tileColor: Colors.blueGrey[800],
-      leading: Container(
-        padding: EdgeInsets.only(right: 12.0),
-        decoration: new BoxDecoration(
-            border: new Border(
-                right: new BorderSide(width: 1.0, color: Colors.white24))),
-        child: Icon(Icons.location_pin, color: Colors.white),
-      ),
-      title: Text("${mapList[0].condensedName.split(',')[0]}",
-          style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w300,
-              fontSize: 20,
-              fontFamily: 'Open Sans')),
-    );
+        contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+        tileColor: Colors.blueGrey[800],
+        leading: Container(
+          padding: EdgeInsets.only(right: 12.0),
+          decoration: new BoxDecoration(
+              border: new Border(
+                  right: new BorderSide(width: 1.0, color: Colors.white24))),
+          child: Icon(Icons.location_pin, color: Colors.white),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ReusableSubtitleWidget(
+              text: "Destination ${placesVisited + 1}",
+              fontsize: 15,
+              justification: TextAlign.start,
+            ),
+            Text("${mapList[placesVisited].condensedName.split(',')[0]}",
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w300,
+                    fontSize: 20,
+                    fontFamily: 'Open Sans')),
+            //Contains start and done button
+            Row(
+              children: [
+                InkWell(
+                    onTap: () {
+                      //increment visited places
+                      //setState() {
+                      if (placesVisited < mapList.length - 1) {
+                        placesVisited += 1;
+                      } else {
+                        print(placesVisited);
+                      }
+                      //}
+                    },
+                    child: Container(
+                      margin: EdgeInsets.all(10),
+                      width: 100,
+                      height: 40,
+                      decoration: BoxDecoration(
+                          color: Colors.pink[200],
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Icon(Icons.done_outline_outlined,
+                              size: 20, color: Colors.white),
+                          Text("Done",
+                              style: GoogleFonts.montserrat(
+                                  color: Colors.white, fontSize: 15)),
+                        ],
+                      ),
+                    )),
+              ],
+            )
+          ],
+        ));
   }
 }
