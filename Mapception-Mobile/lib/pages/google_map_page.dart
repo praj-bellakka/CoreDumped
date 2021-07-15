@@ -611,7 +611,7 @@ class _MapScreenState extends State<MapScreen> {
                     children: [
                       RichText(
                           text: TextSpan(
-                              text: "$totalDistance km",
+                              text: "${totalDistance.toStringAsFixed(2)} km",
                               style: TextStyle(fontWeight: FontWeight.bold))),
                       RichText(
                           text: TextSpan(
@@ -846,8 +846,9 @@ class _MapScreenState extends State<MapScreen> {
             ]),
             collapsed: Container(
               color: Colors.blueGrey[800],
-              child:
-                  flag && placesVisited > 0 ? CollapsedMenuWithRoute() : CollapsedMenuWithoutRoute(),
+              child: flag && placesVisited > 0
+                  ? CollapsedMenuWithRoute()
+                  : CollapsedMenuWithoutRoute(),
             ),
             onPanelSlide: (position) => setState(() {
               final panelScrollExtent = panelHeightOpen - panelHeightClosed;
