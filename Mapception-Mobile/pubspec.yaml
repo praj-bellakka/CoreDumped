@@ -47,6 +47,8 @@ dependencies:
   json_annotation: ^3.1.1
   http: ^0.13.3
   intl: ^0.17.0 #convert timestamps to date 
+  url_launcher: ^6.0.9 #launch urls
+  android_intent_plus: ^1.0.2 #directly launch navigation on android
 
   
 dev_dependencies:

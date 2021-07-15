@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,9 +14,11 @@ import 'package:mapception/services/directions_repo.dart';
 import 'package:mapception/services/place_services.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:ui' as ui;
-
+import 'package:android_intent_plus/android_intent.dart';
+import 'package:android_intent_plus/flag.dart';
 import '../services/location_list.dart';
 import 'search-map.dart';
 
@@ -108,6 +111,7 @@ class _MapScreenState extends State<MapScreen> {
       });
     }
     // mapList = widget.dbRouteList != null ? widget.dbRouteList : [];
+    placesVisited = 0;
     print(mapList);
   }
 
@@ -453,7 +457,7 @@ class _MapScreenState extends State<MapScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Text(
-                              "${linkedData.length - placesVisited}",
+                              "${linkedData.length - placesVisited >= 0 ? linkedData.length - placesVisited : 0}",
                               style: TextStyle(
                                 color: Colors.teal[300],
                                 fontFamily: 'Karla',
@@ -531,7 +535,8 @@ class _MapScreenState extends State<MapScreen> {
                         width: MediaQuery.of(context).size.width * 0.9,
                         padding: EdgeInsets.only(left: 10, right: 10),
                         child: StepProgressIndicator(
-                          totalSteps: linkedData.length + 1,
+                          totalSteps:
+                              linkedData.length == 0 ? 1 : linkedData.length,
                           currentStep: placesVisited,
                           size: 8,
                           padding: 0,
@@ -671,6 +676,9 @@ class _MapScreenState extends State<MapScreen> {
                               _markers.remove(markerToRemove); //remove marker
                             });
                             mapList.removeAt(index); //remove item from the list
+                            placesVisited > 0
+                                ? placesVisited -= 1
+                                : placesVisited;
                           },
                         ),
                         onTap: () {
@@ -839,7 +847,7 @@ class _MapScreenState extends State<MapScreen> {
             collapsed: Container(
               color: Colors.blueGrey[800],
               child:
-                  flag ? CollapsedMenuWithRoute() : CollapsedMenuWithoutRoute(),
+                  flag && placesVisited > 0 ? CollapsedMenuWithRoute() : CollapsedMenuWithoutRoute(),
             ),
             onPanelSlide: (position) => setState(() {
               final panelScrollExtent = panelHeightOpen - panelHeightClosed;
@@ -959,11 +967,13 @@ class _CollapsedMenuWithRoute extends State<CollapsedMenuWithRoute> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ReusableSubtitleWidget(
-              text: "Destination ${placesVisited + 1}",
+              text:
+                  "Destination ${(placesVisited < mapList.length - 1 ? placesVisited : mapList.length - 1) + 1}",
               fontsize: 15,
               justification: TextAlign.start,
             ),
-            Text("${mapList[placesVisited].condensedName.split(',')[0]}",
+            Text(
+                "${mapList[placesVisited < mapList.length - 1 ? placesVisited : mapList.length - 1].condensedName.split(',')[0]}",
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w300,
@@ -975,18 +985,14 @@ class _CollapsedMenuWithRoute extends State<CollapsedMenuWithRoute> {
                 InkWell(
                     onTap: () {
                       //increment visited places
-                      //setState() {
-                      if (placesVisited < mapList.length - 1) {
+                      if (placesVisited < mapList.length) {
                         placesVisited += 1;
-                      } else {
-                        print(placesVisited);
                       }
-                      //}
                     },
                     child: Container(
                       margin: EdgeInsets.all(10),
                       width: 100,
-                      height: 40,
+                      height: MediaQuery.of(context).size.height * 0.05,
                       decoration: BoxDecoration(
                           color: Colors.pink[200],
                           borderRadius: BorderRadius.circular(10)),
@@ -1001,9 +1007,57 @@ class _CollapsedMenuWithRoute extends State<CollapsedMenuWithRoute> {
                         ],
                       ),
                     )),
+
+                //Navigate button
+                InkWell(
+                    onTap: () {
+                      //launch navigation
+                      _launchMap();
+                    },
+                    child: Container(
+                      margin: EdgeInsets.all(10),
+                      width: 110,
+                      height: MediaQuery.of(context).size.height * 0.05,
+                      decoration: BoxDecoration(
+                          color: Colors.blue[300],
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Icon(Icons.navigation, size: 20, color: Colors.white),
+                          Text("Navigate",
+                              style: GoogleFonts.montserrat(
+                                  color: Colors.white, fontSize: 15)),
+                        ],
+                      ),
+                    )),
               ],
             )
           ],
         ));
   }
+}
+
+//Code to launch urls
+void _launchMap() async {
+  final _srcLat = mapList[placesVisited].coordinates.latitude;
+  final _srcLong = mapList[placesVisited].coordinates.longitude;
+  final _destLat = mapList[placesVisited + 1].coordinates.latitude;
+  final _destLong = mapList[placesVisited + 1].coordinates.longitude;
+
+  final String googleMapsUrl =
+      "https://www.google.com/maps/dir/?api=1&origin=$_srcLat,$_srcLong&destination=$_destLat,$_destLong&travelmode=driving&dir_action=navigate";
+  //final String appleMapsUrl = "https://maps.apple.com/?q=$lat,$lng";
+  print(googleMapsUrl);
+  //Launches intent only on android
+  if (Platform.isAndroid) {
+    final AndroidIntent intent = AndroidIntent(
+      action: 'action_view',
+      data: Uri.encodeFull("google.navigation:q=Taronga+Zoo,+Sydney+Australia"),
+      //data: Uri.encodeFull("https://www.google.com/maps/dir/?api=1&origin=$_srcLat,$_srcLong&destination=$_destLat,$_destLong&travelmode=driving&dir_action=navigate"),
+      package: 'com.google.android.apps.maps',
+    );
+    intent.launch();
+  } else
+    await launch(googleMapsUrl);
 }
