@@ -1,3 +1,5 @@
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mapception/models/reusable_widgets.dart';
@@ -5,6 +7,7 @@ import 'package:mapception/pages/profile.dart';
 import 'package:mapception/pages/route_view.dart';
 import 'package:mapception/services/auth.dart';
 import 'package:mapception/services/colourPalette.dart';
+import 'package:mapception/services/userData.dart';
 
 import 'google_map_page.dart';
 
@@ -14,9 +17,11 @@ class Home extends StatefulWidget {
 }
 
 class _Home extends State<Home> {
+  Query _ref;
   @override
   void initState() {
     super.initState();
+    _ref = databaseReference.child('sendData/$userId/');
     //amount = getUserAmount();
   }
 
@@ -29,7 +34,7 @@ class _Home extends State<Home> {
         child: SingleChildScrollView(
           child: Stack(children: [
             Column(children: [
-              SizedBox(height:10),
+              SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -45,16 +50,17 @@ class _Home extends State<Home> {
                     ),
                   ),
                   RawMaterialButton(
-                    shape: CircleBorder(),
-                    fillColor: Colors.pink[600],
-                    padding: EdgeInsets.all(10),
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (builder) => Profile()));
-                    },
-                    enableFeedback: false,
-                    constraints: BoxConstraints(minWidth: 70),
-                    child: Icon(Icons.supervised_user_circle_outlined, size: 30, color: Colors.white)
-                  ),
+                      shape: CircleBorder(),
+                      fillColor: Colors.pink[600],
+                      padding: EdgeInsets.all(10),
+                      onPressed: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (builder) => Profile()));
+                      },
+                      enableFeedback: false,
+                      constraints: BoxConstraints(minWidth: 70),
+                      child: Icon(Icons.supervised_user_circle_outlined,
+                          size: 30, color: Colors.white)),
                 ],
               ),
               Align(
@@ -105,6 +111,22 @@ class _Home extends State<Home> {
                 },
               ),
             ]),
+            SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(children: [
+                  FirebaseAnimatedList(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      primary: false,
+                      query: _ref,
+                      itemBuilder: (BuildContext context, DataSnapshot snapshot,
+                          Animation<double> animation, int index) {
+                        var route = snapshot.value;
+                        String itemKey = snapshot.key;
+                        print(route['mapList']);
+                        return null;
+                      })
+                ])),
             Positioned(
                 right: 20,
                 bottom: 0,
@@ -191,7 +213,3 @@ class CategoriesScrollBar extends StatelessWidget {
     );
   }
 }
-
-
-
-

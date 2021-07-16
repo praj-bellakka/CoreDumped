@@ -272,7 +272,10 @@ class _MapScreenState extends State<MapScreen> {
     totalDistance = 0;
     totalDuration = 0;
     placesVisited = 0;
+    flag = false;
     polylines.clear();
+    startLocationProgBar = 'Nil';
+    endLocationProgBar = 'Nil';
   }
 
   @override
@@ -679,6 +682,10 @@ class _MapScreenState extends State<MapScreen> {
                             placesVisited > 0
                                 ? placesVisited -= 1
                                 : placesVisited;
+                            //if no items left, clear all stored data
+                            if (linkedData.length == 0) {
+                              clearVariables();
+                            }
                           },
                         ),
                         onTap: () {
@@ -816,6 +823,14 @@ class _MapScreenState extends State<MapScreen> {
                               mapList.insert(
                                   sortedList[i], mapList.removeAt(i));
                             }
+
+                            startLocationProgBar =
+                                mapList[0].condensedName.split(',')[0];
+                            endLocationProgBar = mapList[mapList.length - 1]
+                                .condensedName
+                                .split(',')[0];
+                            flag = true;
+
                             //print(polylines);
                             //print(_markers);
                             //print(polylines.toList());
@@ -828,12 +843,6 @@ class _MapScreenState extends State<MapScreen> {
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(snackBar);
                           }
-                          startLocationProgBar =
-                              mapList[0].condensedName.split(',')[0];
-                          endLocationProgBar = mapList[mapList.length - 1]
-                              .condensedName
-                              .split(',')[0];
-                          flag = true;
                           _panelController.close();
                           //print(mapList[0].coordinates);
                         },
@@ -846,9 +855,8 @@ class _MapScreenState extends State<MapScreen> {
             ]),
             collapsed: Container(
               color: Colors.blueGrey[800],
-              child: flag && placesVisited > 0
-                  ? CollapsedMenuWithRoute()
-                  : CollapsedMenuWithoutRoute(),
+              child:
+                  flag ? CollapsedMenuWithRoute() : CollapsedMenuWithoutRoute(),
             ),
             onPanelSlide: (position) => setState(() {
               final panelScrollExtent = panelHeightOpen - panelHeightClosed;
@@ -955,7 +963,7 @@ class _CollapsedMenuWithRoute extends State<CollapsedMenuWithRoute> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-        contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+        contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10.0),
         tileColor: Colors.blueGrey[800],
         leading: Container(
           padding: EdgeInsets.only(right: 12.0),
@@ -1032,6 +1040,22 @@ class _CollapsedMenuWithRoute extends State<CollapsedMenuWithRoute> {
                         ],
                       ),
                     )),
+                //Undo button
+                if (placesVisited > 0)
+                InkWell(
+                  onTap: () {
+                    //revert back to previous location when pressed.
+                    placesVisited -= 1;
+                  },
+                  child: Container(
+                    margin: EdgeInsets.all(5),
+                    width: 30,
+                    height: MediaQuery.of(context).size.height * 0.05,
+                    decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(10)),
+                    child:
+                        Icon(Icons.undo, size: 20, color: Colors.white))),
               ],
             )
           ],

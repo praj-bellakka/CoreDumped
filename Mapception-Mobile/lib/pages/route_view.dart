@@ -3,6 +3,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:mapception/models/reusable_widgets.dart';
 import 'package:mapception/pages/detailed_route_view.dart';
 import 'package:mapception/services/colourPalette.dart';
@@ -28,6 +29,17 @@ class RouteView extends StatefulWidget {
 class _RouteView extends State<RouteView> {
   Query _ref;
   bool emptyList;
+  List<String> dropDown = <String>["Name", "Duration", "Distance", "Date"];
+  String sortMethod = 'Name'; //default sorting method
+
+  int buildCompareName(DataSnapshot a, DataSnapshot b) {
+    return a.value['name'].toString().compareTo(b.value['name'].toString());
+  }
+  int buildCompareDist(DataSnapshot a, DataSnapshot b) {
+    return a.value['totalDistance'].compareTo(b.value['totalDistance']);
+  }
+
+
   @override
   void initState() {
     super.initState();
@@ -94,7 +106,7 @@ class _RouteView extends State<RouteView> {
     );
   }
 
-  Widget _buildRouteItem({Map route}) {
+  Widget _buildRouteItem({Map route, String date}) {
     return Container(
         height: 100,
         margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -138,7 +150,7 @@ class _RouteView extends State<RouteView> {
                         : " ${route['totalDistance'].toStringAsFixed(2)} km",
                     style: TextStyle(fontSize: 15)),
                 SizedBox(
-                  width: 20,
+                  width: 15,
                 ),
                 Icon(
                   Icons.timer,
@@ -148,7 +160,15 @@ class _RouteView extends State<RouteView> {
                     route['totalDuration'] == null
                         ? "? min"
                         : " ${route['totalDuration'].toStringAsFixed(2)} min",
-                    style: TextStyle(fontSize: 15))
+                    style: TextStyle(fontSize: 15)),
+                SizedBox(
+                  width: 15,
+                ),
+                Icon(
+                  Icons.calendar_today,
+                  size: 25,
+                ),
+                Text(" ${date}", style: TextStyle(fontSize: 15))
               ],
             )
           ],
@@ -161,6 +181,27 @@ class _RouteView extends State<RouteView> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
+          // actions: [
+          //   DropdownButton<String>(
+          //     //dropdownColor: Colors.red,
+          //     underline: Container(),
+          //     items: dropDown.map<DropdownMenuItem<String>>((String value) {
+          //       return DropdownMenuItem<String>(
+          //         value: value,
+          //         child: Text(
+          //           value,
+          //         ),
+          //       );
+          //     }).toList(),
+          //     onChanged: (String value) {
+          //       setState(() {
+          //         sortMethod =
+          //             value; //change the sort method to the chosen value
+          //       });
+          //     },
+          //     icon: Icon(Icons.filter_alt, color: Colors.white),
+          //   )
+          // ],
         ),
         backgroundColor: backgroundColorMain,
         body: SingleChildScrollView(
@@ -178,6 +219,33 @@ class _RouteView extends State<RouteView> {
                     shrinkWrap: true,
                     primary: false,
                     query: _ref,
+                    // sort: (a , b) {
+                    //   if (sortMethod == 'Name') {
+                    //    return a.value['name'].toString().compareTo(b.value['name'].toString());
+                    //  } else {
+                    //    return a.value['totalDistance']
+                    //           .compareTo(b.value['totalDistance']);
+                    //   }
+                    
+                    // (a, b) {
+                      //Sort by name
+                      // switch (sortMethod) {
+                        // case 'Name':
+                        //   return buildCompareTo(a, b);
+                        //   break;
+                        // case 'Distance':
+                        //   return a.value['totalDistance']
+                        //       .compareTo(b.value['totalDistance']);
+                        //   break;
+                        // case 'Duration':
+                        //   return a.value['totalDuration']
+                        //       .compareTo(b.value['totalDuration']);
+                        //   break;
+                      // }
+                      // return a.value['tag']
+                      //     .toString()
+                      //     .compareTo(b.value['tag'].toString());
+                    // },
                     itemBuilder: (BuildContext context, DataSnapshot snapshot,
                         Animation<double> animation, int index) {
                       var route = snapshot.value;
@@ -188,6 +256,15 @@ class _RouteView extends State<RouteView> {
                       //   LocationList obj = route.fromJson();
                       //   print(route);
                       // }
+                      DateTime date;
+                      var formattedDate;
+                      if (route['date'] != null) {
+                        date = new DateTime.fromMillisecondsSinceEpoch(
+                            route['date']);
+                        formattedDate = DateFormat('yMMMd').format(date);
+                      } else
+                        formattedDate = '∞';
+
                       return InkWell(
                           onTap: () {
                             //enter detailed view of route when contianer is pressed
@@ -200,7 +277,8 @@ class _RouteView extends State<RouteView> {
                                       itemKey: itemKey),
                                 ));
                           },
-                          child: _buildRouteItem(route: route));
+                          child: _buildRouteItem(
+                              route: route, date: formattedDate));
                     },
                   ),
           ]),
