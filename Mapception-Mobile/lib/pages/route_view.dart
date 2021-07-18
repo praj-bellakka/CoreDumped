@@ -28,29 +28,36 @@ class RouteView extends StatefulWidget {
 
 class _RouteView extends State<RouteView> {
   Query _ref;
+  Query _refSentAgenda; //this query is for data input through the web app
   bool emptyList;
-  List<String> dropDown = <String>["Name", "Duration", "Distance", "Date"];
-  String sortMethod = 'Name'; //default sorting method
+  // List<String> dropDown = <String>["Name", "Duration", "Distance", "Date"];
+  // String sortMethod = 'Name'; //default sorting method
 
-  int buildCompareName(DataSnapshot a, DataSnapshot b) {
-    return a.value['name'].toString().compareTo(b.value['name'].toString());
-  }
-  int buildCompareDist(DataSnapshot a, DataSnapshot b) {
-    return a.value['totalDistance'].compareTo(b.value['totalDistance']);
-  }
+  // int buildCompareName(DataSnapshot a, DataSnapshot b) {
+  //   return a.value['name'].toString().compareTo(b.value['name'].toString());
+  // }
 
+  // int buildCompareDist(DataSnapshot a, DataSnapshot b) {
+  //   return a.value['totalDistance'].compareTo(b.value['totalDistance']);
+  // }
 
   @override
   void initState() {
     super.initState();
     /* Search database by tag name
+      If Accessed throught the upcoming agenda tag, query sent data.
       If All route is specified, order by name, else query relevant tag name */
+
     widget.tagName == 'All'
         ? _ref = databaseReference.child('Users/$userId/').orderByChild('name')
-        : _ref = databaseReference
-            .child('Users/$userId/')
-            .orderByChild('tag')
-            .equalTo(widget.tagName);
+        : widget.tagName == 'Sent Agenda'
+            ? _refSentAgenda = databaseReference.child('sendData/$userId/')
+            : _ref = databaseReference
+                .child('Users/$userId/')
+                .orderByChild('tag')
+                .equalTo(widget.tagName);
+
+    //check if no data exists
     checkEmptyList().then((value) => setState(() {
           emptyList = value;
         }));
@@ -61,8 +68,14 @@ class _RouteView extends State<RouteView> {
   */
 
   Future<bool> checkEmptyList() async {
-    var data = await _ref.once();
-    if (data.value != null) return true;
+    print(widget.tagName);
+    if (widget.tagName != 'Sent Agenda') {
+      var data = await _ref.once();
+      if (data.value != null) return true;
+    } else {
+      var data = await _refSentAgenda.once();
+      if (data.value != null) return true;
+    }
     return false;
   }
 
@@ -125,52 +138,66 @@ class _RouteView extends State<RouteView> {
                   title: route['name'],
                   fontsize: 20,
                 ),
-                Text(
-                  route['tag'],
-                  style: GoogleFonts.montserrat(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13.0,
-                    color: Colors.grey[500],
-                  ),
-                )
+                //does not display if it is receiving location details
+                if (widget.tagName != 'Sent Agenda')
+                  Text(
+                    route['tag'],
+                    style: GoogleFonts.montserrat(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13.0,
+                      color: Colors.grey[500],
+                    ),
+                  )
               ],
             ),
             SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
+            if (widget.tagName != 'Sent Agenda')
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  SizedBox(width: 15),
+                  Icon(
+                    Icons.location_on,
+                    size: 25,
+                  ),
+                  Text(
+                      route['totalDistance'] == null
+                          ? "? km"
+                          : " ${route['totalDistance'].toStringAsFixed(2)} km",
+                      style: TextStyle(fontSize: 15)),
+                  SizedBox(
+                    width: 15,
+                  ),
+                  Icon(
+                    Icons.timer,
+                    size: 25,
+                  ),
+                  Text(
+                      route['totalDuration'] == null
+                          ? "? min"
+                          : " ${route['totalDuration'].toStringAsFixed(2)} min",
+                      style: TextStyle(fontSize: 15)),
+                  SizedBox(
+                    width: 15,
+                  ),
+                  Icon(
+                    Icons.calendar_today,
+                    size: 25,
+                  ),
+                  Text(" ${date}", style: TextStyle(fontSize: 15))
+                ],
+              ),
+            if (widget.tagName == 'Sent Agenda')
+              Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                 SizedBox(width: 15),
                 Icon(
                   Icons.location_on,
                   size: 25,
                 ),
-                Text(
-                    route['totalDistance'] == null
-                        ? "? km"
-                        : " ${route['totalDistance'].toStringAsFixed(2)} km",
-                    style: TextStyle(fontSize: 15)),
-                SizedBox(
-                  width: 15,
-                ),
-                Icon(
-                  Icons.timer,
-                  size: 25,
-                ),
-                Text(
-                    route['totalDuration'] == null
-                        ? "? min"
-                        : " ${route['totalDuration'].toStringAsFixed(2)} min",
-                    style: TextStyle(fontSize: 15)),
-                SizedBox(
-                  width: 15,
-                ),
-                Icon(
-                  Icons.calendar_today,
-                  size: 25,
-                ),
-                Text(" ${date}", style: TextStyle(fontSize: 15))
-              ],
-            )
+                Text("${route['numberOfLocations']} destinations",
+                    style: GoogleFonts.montserrat(
+                        fontSize: 18, fontWeight: FontWeight.w500)),
+              ]),
           ],
         ));
   }
@@ -209,7 +236,9 @@ class _RouteView extends State<RouteView> {
           child: Column(children: [
             ReusableTitleWidget(
               color: Colors.white,
-              title: "${widget.tagName} Routes",
+              title: widget.tagName == "Sent Agenda"
+                  ? "${widget.tagName}"
+                  : "${widget.tagName} Routes",
               fontsize: 40,
             ),
             emptyList == false
@@ -218,7 +247,8 @@ class _RouteView extends State<RouteView> {
                     scrollDirection: Axis.vertical,
                     shrinkWrap: true,
                     primary: false,
-                    query: _ref,
+                    query:
+                        widget.tagName != 'Sent Agenda' ? _ref : _refSentAgenda,
                     // sort: (a , b) {
                     //   if (sortMethod == 'Name') {
                     //    return a.value['name'].toString().compareTo(b.value['name'].toString());
@@ -226,29 +256,31 @@ class _RouteView extends State<RouteView> {
                     //    return a.value['totalDistance']
                     //           .compareTo(b.value['totalDistance']);
                     //   }
-                    
+
                     // (a, b) {
-                      //Sort by name
-                      // switch (sortMethod) {
-                        // case 'Name':
-                        //   return buildCompareTo(a, b);
-                        //   break;
-                        // case 'Distance':
-                        //   return a.value['totalDistance']
-                        //       .compareTo(b.value['totalDistance']);
-                        //   break;
-                        // case 'Duration':
-                        //   return a.value['totalDuration']
-                        //       .compareTo(b.value['totalDuration']);
-                        //   break;
-                      // }
-                      // return a.value['tag']
-                      //     .toString()
-                      //     .compareTo(b.value['tag'].toString());
+                    //Sort by name
+                    // switch (sortMethod) {
+                    // case 'Name':
+                    //   return buildCompareTo(a, b);
+                    //   break;
+                    // case 'Distance':
+                    //   return a.value['totalDistance']
+                    //       .compareTo(b.value['totalDistance']);
+                    //   break;
+                    // case 'Duration':
+                    //   return a.value['totalDuration']
+                    //       .compareTo(b.value['totalDuration']);
+                    //   break;
+                    // }
+                    // return a.value['tag']
+                    //     .toString()
+                    //     .compareTo(b.value['tag'].toString());
                     // },
                     itemBuilder: (BuildContext context, DataSnapshot snapshot,
                         Animation<double> animation, int index) {
                       var route = snapshot.value;
+                      print(route);
+                      print(widget.tagName);
                       String itemKey = snapshot.key;
                       // final List list = route.map((o) => RouteStructure.fromJson(o)).toList();
                       //RouteStructure obj = RouteStructure.fromJson(route);
@@ -274,6 +306,7 @@ class _RouteView extends State<RouteView> {
                                   builder: (context) => DetailedRouteView(
                                       routeList: route,
                                       routeName: route['name'],
+                                      tagName: 'Sent Agenda',
                                       itemKey: itemKey),
                                 ));
                           },

@@ -14,8 +14,9 @@ class DetailedRouteView extends StatefulWidget {
   final routeList; //takes in all the details from firebase
   final routeName;
   final itemKey;
+  final tagName;
   const DetailedRouteView(
-      {Key key, this.routeList, this.routeName, this.itemKey})
+      {Key key, this.routeList, this.routeName, this.itemKey, this.tagName})
       : super(key: key);
 
   @override
@@ -37,11 +38,16 @@ class _DetailedRouteView extends State<DetailedRouteView> {
       formattedDate = 'No deadline';
   }
 
+  var newlist2;
   @override
   Widget build(BuildContext context) {
     final newlist = Map<String, dynamic>.from(widget.routeList);
-    RouteStructure newlist2 = RouteStructure.fromJson(
-        newlist); //extracts data into the desired structure
+    if (widget.tagName != 'Sent Agenda')
+      newlist2 = RouteStructure.fromJson(
+          newlist); //extracts data into the desired structure
+    else
+      newlist2 = RouteStructureWeb.fromJson(newlist);
+
     //print(newlist2.mapList);
     return Scaffold(
         backgroundColor: backgroundColorMain,
@@ -72,18 +78,25 @@ class _DetailedRouteView extends State<DetailedRouteView> {
                 color: Colors.white,
               ),
               SizedBox(height: 10),
+              /* The text is specific to whether if it is a saved route or a sent location list */
               ReusableSubtitleWidget(
-                text:
-                    "The details of this saved route is presented below! You can choose to reuse this route by clicking on the button below",
+                text: widget.tagName != 'Sent Agenda'
+                    ? "The details of this saved route is presented below! You can choose to reuse this route by clicking on the button below"
+                    : "Your boss has sent the following destinations to follow. Some additional notes have been added below. Click on the 'Use Route' button to continue!",
                 fontsize: 15,
                 justification: TextAlign.justify,
               ),
               SizedBox(height: 10),
-              DetailsCardWidget(
-                totalDist: widget.routeList['totalDistance'],
-                totalDuration: widget.routeList['totalDuration'],
-                formattedDate: formattedDate,
-              ),
+              widget.tagName != 'Sent Agenda'
+                  ? DetailsCardWidget(
+                      totalDist: widget.routeList['totalDistance'],
+                      totalDuration: widget.routeList['totalDuration'],
+                      formattedDate: formattedDate,
+                    )
+                  : InformationCardWidget(
+                      numOfLocations: widget.routeList['numberOfLocations'],
+                      information: widget.routeList['information'],
+                    ),
               Expanded(
                   flex: 0,
                   child: ListView.builder(
@@ -292,6 +305,59 @@ class DetailsCardWidget extends StatelessWidget {
                 color: Colors.grey[800],
               )
             ],
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class InformationCardWidget extends StatelessWidget {
+  final numOfLocations;
+  final information;
+
+  const InformationCardWidget({Key key, this.numOfLocations, this.information})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 200,
+      margin: EdgeInsets.all(20),
+      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 5),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15), color: Colors.orange[200]),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              RawMaterialButton(
+                  shape: CircleBorder(),
+                  fillColor: Colors.white,
+                  padding: EdgeInsets.all(10),
+                  onPressed: () {},
+                  constraints: BoxConstraints(maxWidth: 100, minWidth: 70),
+                  enableFeedback: false,
+                  child:
+                      Icon(Icons.location_pin, size: 30, color: Colors.black)),
+              ReusableTitleWidget(
+                title: "No. of Destinations:",
+                fontsize: 20,
+                color: Colors.black,
+              ),
+              ReusableTitleWidget(
+                title: "$numOfLocations",
+                fontsize: 18,
+                color: Colors.grey[800],
+              )
+            ],
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          Row(
+            children: [
+              Expanded(child: Text(information))],
           )
         ],
       ),

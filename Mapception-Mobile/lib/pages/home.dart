@@ -21,7 +21,6 @@ class _Home extends State<Home> {
   @override
   void initState() {
     super.initState();
-    _ref = databaseReference.child('sendData/$userId/');
     //amount = getUserAmount();
   }
 
@@ -87,46 +86,11 @@ class _Home extends State<Home> {
                   ),
                 ),
               ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "WIP",
-                  style: GoogleFonts.montserrat(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 20,
-                  ),
-                ),
-              ),
+              CategoriesScrollBarBottom(),
               SizedBox(
                 height: 200,
               ),
-              TextButton(
-                child: Text("Sign out",
-                    style: GoogleFonts.montserrat(
-                        fontSize: 20, color: Colors.white)),
-                onPressed: () {
-                  AuthService _auth = new AuthService();
-                  _auth.signOut();
-                },
-              ),
             ]),
-            SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(children: [
-                  FirebaseAnimatedList(
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      primary: false,
-                      query: _ref,
-                      itemBuilder: (BuildContext context, DataSnapshot snapshot,
-                          Animation<double> animation, int index) {
-                        var route = snapshot.value;
-                        String itemKey = snapshot.key;
-                        print(route['mapList']);
-                        return null;
-                      })
-                ])),
             Positioned(
                 right: 20,
                 bottom: 0,
@@ -170,7 +134,6 @@ class CategoriesScrollBar extends StatelessWidget {
               child: ReusableCategoryWidget(
                 imagePath: 'assets/all-route.jpeg',
                 tagName: 'All',
-                numOfItems: 3,
               ),
             ),
             InkWell(
@@ -181,7 +144,7 @@ class CategoriesScrollBar extends StatelessWidget {
                         builder: (context) => RouteView(tagName: 'Work')));
               },
               child: ReusableCategoryWidget(
-                  tagName: 'Work', numOfItems: 5, imagePath: 'assets/work.jpg'),
+                  tagName: 'Work', imagePath: 'assets/work.jpg'),
             ),
             InkWell(
               onTap: () {
@@ -192,7 +155,6 @@ class CategoriesScrollBar extends StatelessWidget {
               },
               child: ReusableCategoryWidget(
                   tagName: 'Delivery',
-                  numOfItems: 5,
                   imagePath: 'assets/delivery.jpg'),
             ),
             InkWell(
@@ -204,7 +166,6 @@ class CategoriesScrollBar extends StatelessWidget {
               },
               child: ReusableCategoryWidget(
                   tagName: 'Road Trip',
-                  numOfItems: 5,
                   imagePath: 'assets/road-trip1.jpg'),
             ),
           ],
@@ -213,3 +174,30 @@ class CategoriesScrollBar extends StatelessWidget {
     );
   }
 }
+
+
+class CategoriesScrollBarBottom extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        margin: EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+        child: Row(
+          children: [
+            InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => RouteView(tagName: 'Sent Agenda')));
+              },
+              child: ReusableCategoryWidget(
+                imagePath: 'assets/boss.jpg',
+                tagName: 'Sent by boss',
+              ),
+            ),
+          ],
+        ),
+    );
+  }
+}
+

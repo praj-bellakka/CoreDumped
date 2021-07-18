@@ -6,8 +6,11 @@ import 'package:google_fonts/google_fonts.dart';
 class ReusableCategoryWidget extends StatelessWidget {
   final imagePath;
   final tagName;
-  final numOfItems;
-  const ReusableCategoryWidget({this.imagePath, this.tagName, this.numOfItems});
+  // final numOfItems;
+  const ReusableCategoryWidget({
+    this.imagePath,
+    this.tagName,
+  }); //this.numOfItems});
 
   @override
   Widget build(BuildContext context) {
@@ -16,34 +19,33 @@ class ReusableCategoryWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-              height: MediaQuery.of(context).size.height * 0.2,
-              width: MediaQuery.of(context).size.width * 0.5,
-              margin: EdgeInsets.symmetric(horizontal: 10),
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(
-                    imagePath
-                  ),
-                  fit: BoxFit.fill,
-                ),
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black54,
-                    blurRadius: 5,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
+            height: MediaQuery.of(context).size.height * 0.2,
+            width: MediaQuery.of(context).size.width * 0.5,
+            margin: EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(imagePath),
+                fit: BoxFit.fill,
               ),
-              padding: EdgeInsets.all(8),
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black54,
+                  blurRadius: 5,
+                  offset: const Offset(0, 5),
+                ),
+              ],
+            ),
+            padding: EdgeInsets.all(8),
           ),
-
-          SizedBox(height: 10,),
+          SizedBox(
+            height: 10,
+          ),
           Container(
-            padding: EdgeInsets.only(left:15),
+              padding: EdgeInsets.only(left: 15),
               child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Align(
                     alignment: Alignment.centerLeft,
@@ -55,19 +57,18 @@ class ReusableCategoryWidget extends StatelessWidget {
                           color: Colors.white),
                     ),
                   ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "$numOfItems items",
-                      style: GoogleFonts.montserrat(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey[400]),
-                    ),
-                  )
+                  // Align(
+                  //   alignment: Alignment.centerLeft,
+                  //   child: Text(
+                  //     "$numOfItems items",
+                  //     style: GoogleFonts.montserrat(
+                  //         fontSize: 15,
+                  //         fontWeight: FontWeight.w500,
+                  //         color: Colors.grey[400]),
+                  //   ),
+                  // )
                 ],
-              )
-          )
+              ))
         ],
       ),
     );
@@ -114,4 +115,3 @@ class ReusableSubtitleWidget extends StatelessWidget {
     );
   }
 }
-

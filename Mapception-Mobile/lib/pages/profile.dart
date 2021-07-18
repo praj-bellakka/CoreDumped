@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mapception/models/reusable_widgets.dart';
+import 'package:mapception/services/auth.dart';
 import 'package:mapception/services/colourPalette.dart';
 import 'package:mapception/services/userData.dart';
 
@@ -56,7 +57,18 @@ class _Profile extends State<Profile> {
                 ],
               ),
             )
-          )
+          ),
+          SizedBox(height:20),
+          TextButton(
+            child: Text("Sign out",
+                style: GoogleFonts.montserrat(
+                fontSize: 20, color: Colors.white, fontWeight: FontWeight.w700)),
+            onPressed: () {
+              AuthService _auth = new AuthService();
+              _auth.signOut();
+            },
+          ),
+
         ],
       ),
       
