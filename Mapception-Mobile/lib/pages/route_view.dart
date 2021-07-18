@@ -306,7 +306,7 @@ class _RouteView extends State<RouteView> {
                                   builder: (context) => DetailedRouteView(
                                       routeList: route,
                                       routeName: route['name'],
-                                      tagName: 'Sent Agenda',
+                                      tagName: widget.tagName,
                                       itemKey: itemKey),
                                 ));
                           },

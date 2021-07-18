@@ -63,7 +63,10 @@ class _DetailedRouteView extends State<DetailedRouteView> {
               ),
               onPressed: () {
                 //delete saved route when pressed
-                dataBaseReferenceData.child('${widget.itemKey}').remove();
+                if (widget.tagName != 'Sent Agenda')
+                  dataBaseReferenceData.child('${widget.itemKey}').remove();
+                else
+                  dataBaseReferenceBossData.child('${widget.itemKey}').remove();
                 Navigator.pop(context);
               },
             )
@@ -356,8 +359,7 @@ class InformationCardWidget extends StatelessWidget {
             height: 15,
           ),
           Row(
-            children: [
-              Expanded(child: Text(information))],
+            children: [Expanded(child: Text(information))],
           )
         ],
       ),
