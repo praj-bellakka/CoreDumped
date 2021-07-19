@@ -49,6 +49,7 @@ dependencies:
   intl: ^0.17.0 #convert timestamps to date 
   url_launcher: ^6.0.9 #launch urls
   android_intent_plus: ^1.0.2 #directly launch navigation on android
+  # test: ^1.17.10 #unit testing
 
   
 dev_dependencies:

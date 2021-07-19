@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mapception/models/reusable_widgets.dart';
+import 'package:mapception/pages/sign_in.dart';
 import 'package:mapception/services/auth.dart';
 import 'package:mapception/services/colourPalette.dart';
 import 'package:mapception/services/userData.dart';
@@ -22,56 +23,72 @@ class _Profile extends State<Profile> {
       ),
       body: Column(
         children: [
-          ReusableTitleWidget(title: "Profile", color: Colors.white, fontsize: 40,),
-          SizedBox(height:10),
-
-          ReusableTitleWidget(title: "User ID", color: Colors.grey[100], fontsize: 24,),
-          Row( 
-            children: [
-              ReusableSubtitleWidget(text: userId, fontsize: 16, justification: TextAlign.start),
-              IconButton(
-                icon: Icon(Icons.copy, color: Colors.white,),
-                onPressed: () {
-                  //copy the uid to clipboard when the copy button is pressed
-                  Clipboard.setData(new ClipboardData(text: userId)).then((_) {
-                    ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text('Copied to your clipboard!')));
-                  });
-                },
-
-              )
-            ]
+          ReusableTitleWidget(
+            title: "Profile",
+            color: Colors.white,
+            fontsize: 40,
           ),
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 20),          
-            child: RichText(
-              text: TextSpan(
-                children: [
-                  WidgetSpan(
-                    child: Icon(Icons.info_outline_rounded, size: 20, color: Colors.white),
-                  ),
-                  TextSpan(
-                    text: " Do not share your user id to strangers. New routes can be added remotely through the user id",
-                    style: GoogleFonts.montserrat(color: Colors.grey[400], fontSize: 16),
-                  ),
-                ],
+          SizedBox(height: 10),
+          ReusableTitleWidget(
+            title: "User ID",
+            color: Colors.grey[100],
+            fontsize: 24,
+          ),
+          Row(children: [
+            ReusableSubtitleWidget(
+                text: userId, fontsize: 16, justification: TextAlign.start),
+            IconButton(
+              icon: Icon(
+                Icons.copy,
+                color: Colors.white,
               ),
+              onPressed: () {
+                //copy the uid to clipboard when the copy button is pressed
+                Clipboard.setData(new ClipboardData(text: userId)).then((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Copied to your clipboard!')));
+                });
+              },
             )
-          ),
-          SizedBox(height:20),
+          ]),
+          Container(
+              margin: EdgeInsets.symmetric(horizontal: 20),
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    WidgetSpan(
+                      child: Icon(Icons.info_outline_rounded,
+                          size: 20, color: Colors.white),
+                    ),
+                    TextSpan(
+                      text:
+                          " Do not share your user id to strangers. New routes can be added remotely through the user id",
+                      style: GoogleFonts.montserrat(
+                          color: Colors.grey[400], fontSize: 16),
+                    ),
+                  ],
+                ),
+              )),
+          SizedBox(height: 20),
           TextButton(
             child: Text("Sign out",
                 style: GoogleFonts.montserrat(
-                fontSize: 20, color: Colors.white, fontWeight: FontWeight.w700)),
+                    fontSize: 20,
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700)),
             onPressed: () {
               AuthService _auth = new AuthService();
-              _auth.signOut();
+              setState(() {
+                _auth.signOut();
+              });
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => SignIn()),
+                  ModalRoute.withName('/'));
             },
           ),
-
         ],
       ),
-      
     );
   }
 }

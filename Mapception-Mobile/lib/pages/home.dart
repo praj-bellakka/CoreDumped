@@ -1,13 +1,10 @@
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mapception/models/reusable_widgets.dart';
 import 'package:mapception/pages/profile.dart';
 import 'package:mapception/pages/route_view.dart';
-import 'package:mapception/services/auth.dart';
 import 'package:mapception/services/colourPalette.dart';
-import 'package:mapception/services/userData.dart';
 
 import 'google_map_page.dart';
 
