@@ -112,7 +112,7 @@ class _MapScreenState extends State<MapScreen> {
     }
     // mapList = widget.dbRouteList != null ? widget.dbRouteList : [];
     placesVisited = 0;
-    print(mapList);
+    // print(mapList);
   }
 
   void updateMarker(LocationData _locationData, Uint8List imageData) async {
@@ -233,13 +233,13 @@ class _MapScreenState extends State<MapScreen> {
     for (var i = 0; i < sortedList.length; i++) {
       //1. match marker with location
       var extractedPlaceID = mapList[sortedList[i]].placeId;
-      print(extractedPlaceID);
-      _markers.forEach((element) {
-        print(element.markerId.value);
-      });
+      // print(extractedPlaceID);
+      // _markers.forEach((element) {
+      //   print(element.markerId.value);
+      // });
       var extractedMarker = _markers.firstWhere(
           (marker) => marker.markerId == MarkerId(extractedPlaceID));
-      print(extractedMarker);
+      // print(extractedMarker);
       var newMarkerIcon = await getBytesFromCanvas((i + 1).toString());
       _markers.remove(extractedMarker);
       _addMarker(extractedMarker.markerId.value, extractedMarker.position,
@@ -251,7 +251,7 @@ class _MapScreenState extends State<MapScreen> {
     final sessionToken = Uuid().v4();
     //Assuming the first result is correct
     var placeDetails = await PlaceApiProvider(sessionToken).fetchAddress(pos);
-    print(placeDetails[0]['place_id']);
+    // print(placeDetails[0]['place_id']);
     //add marker
     _addMarker(placeDetails[0]['place_id'], pos,
         placeDetails[0]['formatted_address'], null);
@@ -332,7 +332,7 @@ class _MapScreenState extends State<MapScreen> {
                               context: context,
                               delegate: DataSearch(sessionToken),
                             );
-                            print(mapList.length - clickedSearchItems);
+                            // print(mapList.length - clickedSearchItems);
                             /*handle markers for those clicked by + button */
                             for (int i = mapList.length - clickedSearchItems;
                                 i < mapList.length;
@@ -345,7 +345,7 @@ class _MapScreenState extends State<MapScreen> {
                                     null);
                               });
                             }
-                            print(mapList);
+                            // print(mapList);
                             clickedSearchItems = 0; //reset counter to 0
                             if (result != null) {
                               final placeDetails =
@@ -801,11 +801,12 @@ class _MapScreenState extends State<MapScreen> {
                           if (mapList.length >= 2) {
                             for (int i = 0; i < mapList.length - 1; i++) {
                               for (int j = mapList.length - 1; j > i; j--) {
-                                print("generated path $i to $j\n");
                                 List returnedList =
                                     await generatePathFunction(i, j);
                                 double durationValue = returnedList[0];
                                 double distValue = returnedList[1];
+                                print("generated path $i to $j\n");
+                                print(durationValue);
                                 pathDurationPermutations[i][j] = durationValue;
                                 pathDistPermutations[i][j] = distValue;
                               }
@@ -1042,20 +1043,20 @@ class _CollapsedMenuWithRoute extends State<CollapsedMenuWithRoute> {
                     )),
                 //Undo button
                 if (placesVisited > 0)
-                InkWell(
-                  onTap: () {
-                    //revert back to previous location when pressed.
-                    placesVisited -= 1;
-                  },
-                  child: Container(
-                    margin: EdgeInsets.all(5),
-                    width: 30,
-                    height: MediaQuery.of(context).size.height * 0.05,
-                    decoration: BoxDecoration(
-                        color: Colors.black,
-                        borderRadius: BorderRadius.circular(10)),
-                    child:
-                        Icon(Icons.undo, size: 20, color: Colors.white))),
+                  InkWell(
+                      onTap: () {
+                        //revert back to previous location when pressed.
+                        placesVisited -= 1;
+                      },
+                      child: Container(
+                          margin: EdgeInsets.all(5),
+                          width: 30,
+                          height: MediaQuery.of(context).size.height * 0.05,
+                          decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(10)),
+                          child:
+                              Icon(Icons.undo, size: 20, color: Colors.white))),
               ],
             )
           ],
@@ -1073,16 +1074,18 @@ void _launchMap() async {
   final String googleMapsUrl =
       "https://www.google.com/maps/dir/?api=1&origin=$_srcLat,$_srcLong&destination=$_destLat,$_destLong&travelmode=driving&dir_action=navigate";
   //final String appleMapsUrl = "https://maps.apple.com/?q=$lat,$lng";
-  print(googleMapsUrl);
+  // print(googleMapsUrl);
   //Launches intent only on android
   if (Platform.isAndroid) {
     final AndroidIntent intent = AndroidIntent(
       action: 'action_view',
-      data: Uri.encodeFull("google.navigation:q=Taronga+Zoo,+Sydney+Australia"),
-      //data: Uri.encodeFull("https://www.google.com/maps/dir/?api=1&origin=$_srcLat,$_srcLong&destination=$_destLat,$_destLong&travelmode=driving&dir_action=navigate"),
+      data: Uri.encodeFull("google.navigation:q=$_destLat,$_destLong"),
+      // data: Uri.encodeFull(
+      //     "https://www.google.com/maps/dir/?api=1&origin=$_srcLat,$_srcLong&destination=$_destLat,$_destLong&travelmode=driving&dir_action=navigate"),
       package: 'com.google.android.apps.maps',
     );
     intent.launch();
-  } else
-    await launch(googleMapsUrl);
+  }
+  //  else
+    // await launch(googleMapsUrl);
 }

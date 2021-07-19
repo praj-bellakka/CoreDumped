@@ -279,8 +279,8 @@ class _RouteView extends State<RouteView> {
                     itemBuilder: (BuildContext context, DataSnapshot snapshot,
                         Animation<double> animation, int index) {
                       var route = snapshot.value;
-                      print(route);
-                      print(widget.tagName);
+                      // print(route);
+                      // print(widget.tagName);
                       String itemKey = snapshot.key;
                       // final List list = route.map((o) => RouteStructure.fromJson(o)).toList();
                       //RouteStructure obj = RouteStructure.fromJson(route);

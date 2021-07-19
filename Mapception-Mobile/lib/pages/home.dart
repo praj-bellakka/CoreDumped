@@ -88,7 +88,7 @@ class _Home extends State<Home> {
               ),
               CategoriesScrollBarBottom(),
               SizedBox(
-                height: 200,
+                height: 100,
               ),
             ]),
             Positioned(

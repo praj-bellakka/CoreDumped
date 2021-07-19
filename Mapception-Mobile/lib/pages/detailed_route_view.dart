@@ -132,7 +132,7 @@ class _DetailedRouteView extends State<DetailedRouteView> {
                       ),
                       (Route<dynamic> route) => false);
 
-                  print(mapList);
+                  // print(mapList);
                 },
                 child: Container(
                   height: 60,
@@ -168,7 +168,7 @@ class ListCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print(content);
+    // print(content);
     return Container(
       margin: EdgeInsets.symmetric(vertical: 7, horizontal: 10),
       decoration: BoxDecoration(
