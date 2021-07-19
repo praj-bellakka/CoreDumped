@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mapception/pages/forgot_password.dart';
+import 'package:mapception/pages/home.dart';
 import 'package:mapception/services/auth.dart';
 import 'package:mapception/services/colourPalette.dart';
 
@@ -160,7 +161,6 @@ class _SignInState extends State<SignIn> {
                                 dynamic result =
                                     await _auth.signInWithEmailAndPassword(
                                         email, password);
-
                                 if (result == null) {
                                   setState(() {
                                     ScaffoldMessenger.of(context)
@@ -171,6 +171,11 @@ class _SignInState extends State<SignIn> {
 
                                     ));
                                   });
+                                } else {
+                                  Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => Home()),
+                                    ModalRoute.withName('/'));
                                 }
                               }
                             },
