@@ -1,11 +1,17 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mapception/pages/register.dart';
+import 'package:mapception/pages/home.dart';
 
 void main() {
-  test('register test', (){
+  testWidgets("Home screen", (WidgetTester tester) async {
+    await tester.pumpWidget(MaterialApp(home: Home()));
+    expect(find.text('My Places'), findsOneWidget);
+    expect(find.text('Upcoming Agenda'), findsOneWidget);
+    expect(find.text('Route Categories'), findsOneWidget);
+  });
 
-  var registration = Register();
-
-  //expect(email, '');
+  testWidgets("Categories", (WidgetTester tester) async {
+    await tester.pumpWidget(MaterialApp(home: Home()));
+   // expect(find., findsOneWidget);
   });
 }

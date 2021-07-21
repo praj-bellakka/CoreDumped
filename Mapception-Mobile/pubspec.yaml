@@ -49,6 +49,7 @@ dependencies:
   intl: ^0.17.0 #convert timestamps to date 
   url_launcher: ^6.0.9 #launch urls
   android_intent_plus: ^1.0.2 #directly launch navigation on android
+  firebase_auth_mocks: ^0.7.1
   # test: ^1.17.10 #unit testing
 
   
