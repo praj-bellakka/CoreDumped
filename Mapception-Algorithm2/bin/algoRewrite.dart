@@ -4,8 +4,8 @@ import 'package:graph_collection/graph.dart';
 
 void main() {
   var numOfNodes = 5;
-  var inputs = <int>[101, 21, 31, 41, 51, 61, 71, 81, 91, 101];
-  // var inputs = <int>[1,2,3,4,5,6,7,8,9,10];
+  //var inputs = <int>[101, 21, 31, 41, 51, 61, 71, 81, 91, 101];
+  var inputs = <int>[1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   // var inputs = <int>[10,9,8,7,6,5,4,3,2,1];
   //var inputs = <int>[4, 6, 3, 7, 2, 8, 5, 9, 10, 1];
 

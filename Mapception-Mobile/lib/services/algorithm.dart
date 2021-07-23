@@ -45,7 +45,8 @@ void main() {
   //run dfs
 }
 
-Future<List<int>> RouteOptimizeAlgo(List<List<double>> arrayOfDurations) async {
+Future<List<int>> RouteOptimizeAlgo1(
+    List<List<double>> arrayOfDurations) async {
   //Get input
   var listOfInputs = new List.empty(growable: true);
   for (int i = 0; i < arrayOfDurations.length; i++) {

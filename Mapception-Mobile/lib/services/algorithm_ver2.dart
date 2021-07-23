@@ -147,7 +147,8 @@ void main() {
 }
 
 // ignore: non_constant_identifier_names
-Future<List<int>> RouteOptimizeAlgo(List<List<double>> arrayOfDurations) async {
+Future<List<int>> RouteOptimizeAlgo(
+    List<List<double>> arrayOfDurations, bool endAtStart) async {
   //Get input
   var inputs = new List.empty(growable: true);
   for (int i = 0; i < arrayOfDurations.length; i++) {
@@ -281,16 +282,59 @@ Future<List<int>> RouteOptimizeAlgo(List<List<double>> arrayOfDurations) async {
   print(eulerTour);
 
   //remove duplicate edges
-  List<int> finalList = removeDuplicates(eulerTour, numOfNodes).toList();
+  List<int> onePointFiveApproximate =
+      removeDuplicates(eulerTour, numOfNodes).toList();
   print('\n\n1.5-approximate output:');
-  print(finalList);
+  print(onePointFiveApproximate);
+  double sum1 = 0;
+  for (var i = 0; i < onePointFiveApproximate.length - 1; i++) {
+    var from = onePointFiveApproximate[i];
+    var to = onePointFiveApproximate[i + 1];
+    var a;
+    var b;
+    if (from < to) {
+      a = to;
+      b = from;
+    } else {
+      a = from;
+      b = to;
+    }
+    sum1 += arrayOfDurations[a][b];
+  }
+  print(sum1);
 
   var twoApproximate = twoApprox(mstGraph, numOfNodes);
   print('\n\n2-approximate output:');
   print(twoApproximate);
+  double sum2 = 0;
+  for (var i = 0; i < twoApproximate.length - 1; i++) {
+    var from = twoApproximate[i];
+    var to = twoApproximate[i + 1];
+    var a;
+    var b;
+    if (from < to) {
+      a = to;
+      b = from;
+    } else {
+      a = from;
+      b = to;
+    }
+    sum2 += arrayOfDurations[a][b];
+  }
+  print(sum2);
 
-  return finalList;
-  //two approx
+  if (endAtStart) {
+    var tmp = 0;
+    onePointFiveApproximate.add(tmp);
+    return onePointFiveApproximate;
+  }
+
+  if (sum1 <= sum2) {
+    print('one point five');
+    return onePointFiveApproximate;
+  }
+  print('two');
+  return twoApproximate;
 }
 
 List twoApprox(UndirectedValueGraph graph, int n) {
