@@ -146,6 +146,7 @@ void main() {
   // print(twoApproximate);
 }
 
+// ignore: non_constant_identifier_names
 Future<List<int>> RouteOptimizeAlgo(List<List<double>> arrayOfDurations) async {
   //Get input
   var inputs = new List.empty(growable: true);
