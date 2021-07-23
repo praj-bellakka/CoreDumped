@@ -850,7 +850,8 @@ class _MapScreenState extends State<MapScreen> {
 
                             //1.5 approx algo
                             var sortedList = await RouteOptimizeAlgo(
-                                pathDurationPermutations, returnToStart);
+                                pathDurationPermutations, true);
+
                             await runAlgoAndSetPolylines(sortedList,
                                 pathDurationPermutations, pathDistPermutations);
                             /* edit markers */
