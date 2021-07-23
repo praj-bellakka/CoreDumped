@@ -325,13 +325,13 @@ Future<List<int>> RouteOptimizeAlgo(
     sum2 += arrayOfDurations[a][b];
   }
   print(sum2);
+  */
 
   if (endAtStart) {
     var tmp = 0;
     onePointFiveApproximate.add(tmp);
     return onePointFiveApproximate;
   }
-  */
 
   if (sum1 <= sum2) {
     print('one point five');
