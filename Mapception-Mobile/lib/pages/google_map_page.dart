@@ -79,10 +79,12 @@ class _MapScreenState extends State<MapScreen> {
   var pathDurationPermutations;
   var pathDistPermutations;
 
+  bool returnToStart;
   //initialise key variables with database instance if applicable
   @override
   void initState() {
     super.initState();
+    returnToStart = false;
     if (widget.dbRouteList != null) {
       for (var item in widget.dbRouteList) {
         addToList(item['placeId'], item['address'], item['condensedName'],
@@ -627,98 +629,132 @@ class _MapScreenState extends State<MapScreen> {
 
               SizedBox(height: 10),
               Expanded(
-                child: ReorderableListView.builder(
-                  padding: EdgeInsets.all(10),
-                  itemCount: mapList.length,
-                  itemBuilder: (context, index) {
-                    if (index >= mapList.length) {
-                      //taken from stackoverflow to fix range error
-                      return const Offstage();
-                    }
-                    return Card(
-                      color: Color.fromRGBO(64, 75, 96, .9),
-                      key: ValueKey(mapList[index]),
-                      child: ListTile(
-                        contentPadding: EdgeInsets.symmetric(
-                            horizontal: 20.0, vertical: 10.0),
-                        leading: Container(
-                          padding: EdgeInsets.only(right: 12.0),
-                          decoration: new BoxDecoration(
-                              border: new Border(
-                                  right: new BorderSide(
-                                      width: 1.0, color: Colors.white24))),
-                          child: Text("${index + 1} ",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w900,
-                                  fontSize: 25,
-                                  fontFamily: 'Open Sans')),
-                        ),
-                        title: Text(
-                          mapList[index].address,
-                          style: TextStyle(
-                              color: Colors.white, fontWeight: FontWeight.w600),
-                        ),
-                        trailing: IconButton(
-                          padding: EdgeInsets.only(left: 20),
-                          icon: Icon(
-                            Icons.delete_outline,
-                            color: Colors.white,
-                            size: 30.0,
+                  child: SingleChildScrollView(
+                child: Column(children: [
+                  ReorderableListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    padding: EdgeInsets.all(10),
+                    itemCount: mapList.length,
+                    itemBuilder: (context, index) {
+                      if (index >= mapList.length) {
+                        //taken from stackoverflow to fix range error
+                        return const Offstage();
+                      }
+                      return Card(
+                        color: Color.fromRGBO(64, 75, 96, .9),
+                        key: ValueKey(mapList[index]),
+                        child: ListTile(
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 20.0, vertical: 10.0),
+                          leading: Container(
+                            padding: EdgeInsets.only(right: 12.0),
+                            decoration: new BoxDecoration(
+                                border: new Border(
+                                    right: new BorderSide(
+                                        width: 1.0, color: Colors.white24))),
+                            child: Text("${index + 1} ",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 25,
+                                    fontFamily: 'Open Sans')),
                           ),
-                          onPressed: () {
-                            linkedData.remove(mapList[index]
-                                .placeId); //remove item from the linkedhashmap
-                            setState(() {
-                              //find the marker to remove it
-                              Marker markerToRemove = _markers.firstWhere(
-                                  (marker) =>
-                                      marker.markerId.value ==
-                                      "${mapList[index].placeId}",
-                                  orElse: () => null);
-                              _markers.remove(markerToRemove); //remove marker
-                            });
-                            mapList.removeAt(index); //remove item from the list
-                            placesVisited > 0
-                                ? placesVisited -= 1
-                                : placesVisited;
-                            //if no items left, clear all stored data
-                            if (linkedData.length == 0) {
-                              clearVariables();
-                            }
+                          title: Text(
+                            mapList[index].address,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          trailing: IconButton(
+                            padding: EdgeInsets.only(left: 20),
+                            icon: Icon(
+                              Icons.delete_outline,
+                              color: Colors.white,
+                              size: 30.0,
+                            ),
+                            onPressed: () {
+                              linkedData.remove(mapList[index]
+                                  .placeId); //remove item from the linkedhashmap
+                              setState(() {
+                                //find the marker to remove it
+                                Marker markerToRemove = _markers.firstWhere(
+                                    (marker) =>
+                                        marker.markerId.value ==
+                                        "${mapList[index].placeId}",
+                                    orElse: () => null);
+                                _markers.remove(markerToRemove); //remove marker
+                              });
+                              mapList
+                                  .removeAt(index); //remove item from the list
+                              placesVisited > 0
+                                  ? placesVisited -= 1
+                                  : placesVisited;
+                              //if no items left, clear all stored data
+                              if (linkedData.length == 0) {
+                                clearVariables();
+                              }
+                            },
+                          ),
+                          onTap: () {
+                            _panelController.close();
+                            addMarkerAndGoPosition(
+                                mapList[index].coordinates.latitude,
+                                mapList[index].coordinates.longitude,
+                                mapList[index].placeId,
+                                mapList[index].address);
                           },
                         ),
-                        onTap: () {
-                          _panelController.close();
-                          addMarkerAndGoPosition(
-                              mapList[index].coordinates.latitude,
-                              mapList[index].coordinates.longitude,
-                              mapList[index].placeId,
-                              mapList[index].address);
+                      );
+                    },
+                    onReorder: (oldIndex, newIndex) {
+                      /*Logic to handle swapping of list items */
+                      setState(() {
+                        if (newIndex > oldIndex) {
+                          newIndex -= 1;
+                        }
+                        final item = mapList.removeAt(oldIndex);
+                        mapList.insert(newIndex, item);
+                        linkedData
+                            .clear(); /*recreate a linked hashmap for each swap operation*/
+                        mapList.forEach((element) =>
+                            linkedData[element.placeId] = LocationList(
+                                placeId: element.placeId,
+                                address: element.address,
+                                condensedName: element.condensedName,
+                                coordinates: element.coordinates));
+                      });
+                    },
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(width:10),
+                      Checkbox(
+                        checkColor: Colors.white,
+                        fillColor: MaterialStateColor.resolveWith((states) {
+                          const Set<MaterialState> interactiveStates =
+                              <MaterialState>{
+                            MaterialState.pressed,
+                            MaterialState.hovered,
+                            MaterialState.focused,
+                          };
+                          if (states.any(interactiveStates.contains)) {
+                            return Colors.blue;
+                          }
+                          return Colors.pink[200];
+                        }),
+                        value: returnToStart,
+                        onChanged: (bool value) {
+                          setState(() {
+                            returnToStart = !returnToStart;
+                          });
                         },
                       ),
-                    );
-                  },
-                  onReorder: (oldIndex, newIndex) {
-                    /*Logic to handle swapping of list items */
-                    setState(() {
-                      if (newIndex > oldIndex) {
-                        newIndex -= 1;
-                      }
-                      final item = mapList.removeAt(oldIndex);
-                      mapList.insert(newIndex, item);
-                      linkedData
-                          .clear(); /*recreate a linked hashmap for each swap operation*/
-                      mapList.forEach((element) => linkedData[element.placeId] =
-                          LocationList(
-                              placeId: element.placeId,
-                              address: element.address,
-                              condensedName: element.condensedName,
-                              coordinates: element.coordinates));
-                    });
-                  },
-                ),
-              ),
+                      ReusableTitleWidget(title: 'Return to start location', color: Colors.white, fontsize: 14),
+                    ],
+                  )
+                ]),
+              )),
               Row(
                 children: [
                   SizedBox(width: 25),
@@ -814,7 +850,7 @@ class _MapScreenState extends State<MapScreen> {
 
                             //1.5 approx algo
                             var sortedList = await RouteOptimizeAlgo(
-                                pathDurationPermutations);
+                                pathDurationPermutations, returnToStart);
                             await runAlgoAndSetPolylines(sortedList,
                                 pathDurationPermutations, pathDistPermutations);
                             /* edit markers */
@@ -1087,5 +1123,5 @@ void _launchMap() async {
     intent.launch();
   }
   //  else
-    // await launch(googleMapsUrl);
+  // await launch(googleMapsUrl);
 }
