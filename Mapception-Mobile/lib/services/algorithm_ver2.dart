@@ -287,6 +287,7 @@ Future<List<int>> RouteOptimizeAlgo(
   print('\n\n1.5-approximate output:');
   print(onePointFiveApproximate);
   double sum1 = 0;
+  /*
   for (var i = 0; i < onePointFiveApproximate.length - 1; i++) {
     var from = onePointFiveApproximate[i];
     var to = onePointFiveApproximate[i + 1];
@@ -302,11 +303,13 @@ Future<List<int>> RouteOptimizeAlgo(
     sum1 += arrayOfDurations[a][b];
   }
   print(sum1);
+  */
 
   var twoApproximate = twoApprox(mstGraph, numOfNodes);
   print('\n\n2-approximate output:');
   print(twoApproximate);
   double sum2 = 0;
+  /*
   for (var i = 0; i < twoApproximate.length - 1; i++) {
     var from = twoApproximate[i];
     var to = twoApproximate[i + 1];
@@ -328,6 +331,7 @@ Future<List<int>> RouteOptimizeAlgo(
     onePointFiveApproximate.add(tmp);
     return onePointFiveApproximate;
   }
+  */
 
   if (sum1 <= sum2) {
     print('one point five');
