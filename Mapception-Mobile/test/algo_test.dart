@@ -10,7 +10,7 @@ void main() async {
       [4, 5, 6, null, null],
       [7, 8, 9, 10, null]
     ];
-    var expected = [0, 1, 2, 3, 4];
+    var expected = [0, 1, 2, 3, 4, 0];
     var output = await RouteOptimizeAlgo(input, true);
     expect(output, equals(expected));
   });
@@ -23,7 +23,7 @@ void main() async {
       [7, 6, 5, null, null],
       [4, 3, 2, 1, null]
     ];
-    var expected = [0, 1, 4, 3, 2];
+    var expected = [0, 1, 4, 3, 2, 0];
     var output = await RouteOptimizeAlgo(input, true);
     expect(output, equals(expected));
   });
@@ -36,7 +36,7 @@ void main() async {
       [1, 5, 3, null, null],
       [7, 6, 2, 10, null]
     ];
-    var expected = [0, 1, 4, 2, 3];
+    var expected = [0, 1, 4, 2, 3, 0];
     var output = await RouteOptimizeAlgo(input, true);
     expect(output, equals(expected));
   });
@@ -49,7 +49,7 @@ void main() async {
       [1, 1, 1, null, null],
       [1, 1, 1, 1, null, null],
     ];
-    var expected = [0, 1, 2, 3, 4];
+    var expected = [0, 1, 2, 3, 4, 0];
     var output = await RouteOptimizeAlgo(input, true);
     expect(output, equals(expected));
   });
@@ -62,7 +62,7 @@ void main() async {
       [4, 5, 1, null, null],
       [7, 8, 9, 1, null, null],
     ];
-    var expected = [0, 4, 3, 2, 1];
+    var expected = [0, 4, 3, 2, 1, 0];
     var output = await RouteOptimizeAlgo(input, true);
     expect(output, equals(expected));
   });
@@ -75,7 +75,7 @@ void main() async {
       [4, 5, 1, null, null],
       [7, 8, 9, 1, null, null],
     ];
-    var expected = [0, 4, 3, 2, 1];
+    var expected = [0, 4, 3, 2, 1, 0];
     var output = await RouteOptimizeAlgo(input, true);
     expect(output, equals(expected));
   });
@@ -86,7 +86,7 @@ void main() async {
       [3, null, null],
       [1, 2, null],
     ];
-    var expected = [0, 1, 2];
+    var expected = [0, 1, 2, 0];
     var output = await RouteOptimizeAlgo(input, true);
     expect(output, equals(expected));
   });
@@ -97,7 +97,7 @@ void main() async {
       [3, null, null],
       [1, 2, null],
     ];
-    var expected = [0, 1, 2];
+    var expected = [0, 1, 2, 0];
     var output = await RouteOptimizeAlgo(input, true);
     expect(output, equals(expected));
   });
@@ -109,7 +109,7 @@ void main() async {
       [4, 2, null, null],
       [1, 6, 5, null],
     ];
-    var expected = [0, 1, 2, 3];
+    var expected = [0, 1, 2, 3, 0];
     var output = await RouteOptimizeAlgo(input, true);
     expect(output, equals(expected));
   });
