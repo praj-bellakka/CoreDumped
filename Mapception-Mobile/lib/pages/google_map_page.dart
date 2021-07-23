@@ -814,7 +814,7 @@ class _MapScreenState extends State<MapScreen> {
 
                             //1.5 approx algo
                             var sortedList = await RouteOptimizeAlgo(
-                                pathDurationPermutations);
+                                pathDurationPermutations, true);
                             await runAlgoAndSetPolylines(sortedList,
                                 pathDurationPermutations, pathDistPermutations);
                             /* edit markers */
@@ -1087,5 +1087,5 @@ void _launchMap() async {
     intent.launch();
   }
   //  else
-    // await launch(googleMapsUrl);
+  // await launch(googleMapsUrl);
 }
