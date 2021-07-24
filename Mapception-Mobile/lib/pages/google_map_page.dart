@@ -14,11 +14,9 @@ import 'package:mapception/services/directions_repo.dart';
 import 'package:mapception/services/place_services.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:step_progress_indicator/step_progress_indicator.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:ui' as ui;
 import 'package:android_intent_plus/android_intent.dart';
-import 'package:android_intent_plus/flag.dart';
 import '../services/location_list.dart';
 import 'search-map.dart';
 
@@ -80,11 +78,13 @@ class _MapScreenState extends State<MapScreen> {
   var pathDistPermutations;
 
   bool returnToStart;
+  int numOfLocations;
   //initialise key variables with database instance if applicable
   @override
   void initState() {
     super.initState();
-    returnToStart = false;
+    returnToStart = true;
+    numOfLocations = 0;
     if (widget.dbRouteList != null) {
       for (var item in widget.dbRouteList) {
         addToList(item['placeId'], item['address'], item['condensedName'],
@@ -231,8 +231,12 @@ class _MapScreenState extends State<MapScreen> {
     ));
   }
 
-  Future<void> _editMarkers(List sortedList) async {
-    for (var i = 0; i < sortedList.length; i++) {
+  Future<void> _editMarkers(List sortedList, bool returnToStart) async {
+    for (var i = 0;
+        returnToStart == false
+            ? i < sortedList.length
+            : i < sortedList.length - 1;
+        i++) {
       //1. match marker with location
       var extractedPlaceID = mapList[sortedList[i]].placeId;
       // print(extractedPlaceID);
@@ -462,7 +466,7 @@ class _MapScreenState extends State<MapScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Text(
-                              "${linkedData.length - placesVisited >= 0 ? linkedData.length - placesVisited : 0}",
+                              "${numOfLocations - placesVisited >= 0 ? numOfLocations - placesVisited : 0}",
                               style: TextStyle(
                                 color: Colors.teal[300],
                                 fontFamily: 'Karla',
@@ -471,7 +475,7 @@ class _MapScreenState extends State<MapScreen> {
                               ),
                             ),
                             Text(
-                              "/${linkedData.length} places to go",
+                              "/$numOfLocations places to go",
                               style: TextStyle(
                                 fontFamily: 'Karla',
                                 fontSize: 20,
@@ -540,8 +544,7 @@ class _MapScreenState extends State<MapScreen> {
                         width: MediaQuery.of(context).size.width * 0.9,
                         padding: EdgeInsets.only(left: 10, right: 10),
                         child: StepProgressIndicator(
-                          totalSteps:
-                              linkedData.length == 0 ? 1 : linkedData.length,
+                          totalSteps: numOfLocations == 0 ? 1 : numOfLocations,
                           currentStep: placesVisited,
                           size: 8,
                           padding: 0,
@@ -728,7 +731,7 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                   Row(
                     children: [
-                      SizedBox(width:10),
+                      SizedBox(width: 10),
                       Checkbox(
                         checkColor: Colors.white,
                         fillColor: MaterialStateColor.resolveWith((states) {
@@ -750,7 +753,10 @@ class _MapScreenState extends State<MapScreen> {
                           });
                         },
                       ),
-                      ReusableTitleWidget(title: 'Return to start location', color: Colors.white, fontsize: 14),
+                      ReusableTitleWidget(
+                          title: 'Return to start location',
+                          color: Colors.white,
+                          fontsize: 14),
                     ],
                   )
                 ]),
@@ -850,23 +856,35 @@ class _MapScreenState extends State<MapScreen> {
 
                             //1.5 approx algo
                             var sortedList = await RouteOptimizeAlgo(
-                                pathDurationPermutations, true);
+                                pathDurationPermutations, returnToStart);
+
+                            numOfLocations = sortedList.length;
 
                             await runAlgoAndSetPolylines(sortedList,
                                 pathDurationPermutations, pathDistPermutations);
                             /* edit markers */
-                            _editMarkers(sortedList);
+                            _editMarkers(sortedList, returnToStart);
+                            print(sortedList);
                             /*reorder mapList based on sorted index */
-                            for (int i = 1; i < sortedList.length; i++) {
+
+                            for (int i = 1;
+                                returnToStart == true
+                                    ? i < numOfLocations - 1
+                                    : i < numOfLocations;
+                                i++) {
                               mapList.insert(
                                   sortedList[i], mapList.removeAt(i));
                             }
 
                             startLocationProgBar =
                                 mapList[0].condensedName.split(',')[0];
-                            endLocationProgBar = mapList[mapList.length - 1]
-                                .condensedName
-                                .split(',')[0];
+                            returnToStart == false
+                                ? endLocationProgBar =
+                                    mapList[mapList.length - 1]
+                                        .condensedName
+                                        .split(',')[0]
+                                : endLocationProgBar =
+                                    mapList[0].condensedName.split(',')[0];
                             flag = true;
 
                             //print(polylines);
@@ -893,8 +911,9 @@ class _MapScreenState extends State<MapScreen> {
             ]),
             collapsed: Container(
               color: Colors.blueGrey[800],
-              child:
-                  flag ? CollapsedMenuWithRoute() : CollapsedMenuWithoutRoute(),
+              child: flag
+                  ? CollapsedMenuWithRoute(numOfLocations: numOfLocations, startAtEnd: returnToStart)
+                  : CollapsedMenuWithoutRoute(),
             ),
             onPanelSlide: (position) => setState(() {
               final panelScrollExtent = panelHeightOpen - panelHeightClosed;
@@ -993,6 +1012,11 @@ class CollapsedMenuWithoutRoute extends StatelessWidget {
      Done Button, which displays the next stop on the list (if it's not last)
 */
 class CollapsedMenuWithRoute extends StatefulWidget {
+  final numOfLocations;
+  final startAtEnd;
+  
+  const CollapsedMenuWithRoute({Key key, this.numOfLocations, this.startAtEnd})
+      : super(key: key);
   @override
   _CollapsedMenuWithRoute createState() => _CollapsedMenuWithRoute();
 }
@@ -1015,12 +1039,12 @@ class _CollapsedMenuWithRoute extends State<CollapsedMenuWithRoute> {
           children: [
             ReusableSubtitleWidget(
               text:
-                  "Destination ${(placesVisited < mapList.length - 1 ? placesVisited : mapList.length - 1) + 1}",
+                  "Destination ${(placesVisited < widget.numOfLocations - 1 ? placesVisited : widget.numOfLocations - 1) + 1}",
               fontsize: 15,
               justification: TextAlign.start,
             ),
             Text(
-                "${mapList[placesVisited < mapList.length - 1 ? placesVisited : mapList.length - 1].condensedName.split(',')[0]}",
+                "${mapList[placesVisited < widget.numOfLocations - 1 ? placesVisited : placesVisited == widget.numOfLocations - 1 && widget.startAtEnd ? 0 : widget.startAtEnd == false ? widget.numOfLocations - 1 : 0].condensedName.split(',')[0]}",
                 style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w300,
@@ -1032,8 +1056,10 @@ class _CollapsedMenuWithRoute extends State<CollapsedMenuWithRoute> {
                 InkWell(
                     onTap: () {
                       //increment visited places
-                      if (placesVisited < mapList.length) {
+                      if (placesVisited < widget.numOfLocations) {
+                        print(widget.numOfLocations);
                         placesVisited += 1;
+                        print(placesVisited);
                       }
                     },
                     child: Container(
