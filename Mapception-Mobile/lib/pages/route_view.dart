@@ -135,7 +135,7 @@ class _RouteView extends State<RouteView> {
               children: [
                 ReusableTitleWidget(
                   color: Colors.black,
-                  title: route['name'],
+                  title: widget.tagName != 'Sent Agenda' ? route['name'] : route['nameOfUser'],
                   fontsize: 20,
                 ),
                 //does not display if it is receiving location details
@@ -305,7 +305,7 @@ class _RouteView extends State<RouteView> {
                                 MaterialPageRoute(
                                   builder: (context) => DetailedRouteView(
                                       routeList: route,
-                                      routeName: route['name'],
+                                      routeName: widget.tagName != 'Sent Agenda' ? route['name'] : route['nameOfUser'],
                                       tagName: widget.tagName,
                                       itemKey: itemKey),
                                 ));
