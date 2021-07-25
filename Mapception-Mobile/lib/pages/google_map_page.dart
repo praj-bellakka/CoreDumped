@@ -85,6 +85,8 @@ class _MapScreenState extends State<MapScreen> {
     super.initState();
     returnToStart = true;
     numOfLocations = 0;
+    clearVariables();
+    clearData();
     if (widget.dbRouteList != null) {
       for (var item in widget.dbRouteList) {
         addToList(item['placeId'], item['address'], item['condensedName'],
@@ -279,9 +281,15 @@ class _MapScreenState extends State<MapScreen> {
     totalDuration = 0;
     placesVisited = 0;
     flag = false;
+    numOfLocations = 0;
     polylines.clear();
     startLocationProgBar = 'Nil';
     endLocationProgBar = 'Nil';
+  }
+
+  void clearData() {
+    mapList.clear();
+    linkedData.clear();
   }
 
   @override
@@ -912,7 +920,8 @@ class _MapScreenState extends State<MapScreen> {
             collapsed: Container(
               color: Colors.blueGrey[800],
               child: flag
-                  ? CollapsedMenuWithRoute(numOfLocations: numOfLocations, startAtEnd: returnToStart)
+                  ? CollapsedMenuWithRoute(
+                      numOfLocations: numOfLocations, startAtEnd: returnToStart)
                   : CollapsedMenuWithoutRoute(),
             ),
             onPanelSlide: (position) => setState(() {
@@ -1014,7 +1023,7 @@ class CollapsedMenuWithoutRoute extends StatelessWidget {
 class CollapsedMenuWithRoute extends StatefulWidget {
   final numOfLocations;
   final startAtEnd;
-  
+
   const CollapsedMenuWithRoute({Key key, this.numOfLocations, this.startAtEnd})
       : super(key: key);
   @override
@@ -1057,9 +1066,15 @@ class _CollapsedMenuWithRoute extends State<CollapsedMenuWithRoute> {
                     onTap: () {
                       //increment visited places
                       if (placesVisited < widget.numOfLocations) {
-                        print(widget.numOfLocations);
+                        //print(widget.numOfLocations);
                         placesVisited += 1;
-                        print(placesVisited);
+                        //print(placesVisited);
+                      } else if (placesVisited == widget.numOfLocations) {
+                        final _snackBar = SnackBar(
+                            content: Text('Route has been completed!',
+                                style: GoogleFonts.montserrat(
+                                    color: Colors.red[500])));
+                        ScaffoldMessenger.of(context).showSnackBar(_snackBar);
                       }
                     },
                     child: Container(

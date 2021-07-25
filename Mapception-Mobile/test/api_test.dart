@@ -1,6 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:http/testing.dart';
 import 'package:mapception/services/place_services.dart';
 import 'package:test/test.dart';

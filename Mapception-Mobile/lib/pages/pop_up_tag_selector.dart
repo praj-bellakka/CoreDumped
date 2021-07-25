@@ -125,7 +125,7 @@ class _AddTagPopupCard extends State<AddTagPopupCard> {
                       controller: myTextController,
                       decoration: InputDecoration(
                         hintText: 'Tag Name',
-                        errorText: 'Enter a valid name',
+                        //errorText: 'Enter a valid name',
                         border: InputBorder.none,
                       ),
                       cursorColor: Colors.white,
