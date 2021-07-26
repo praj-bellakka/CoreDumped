@@ -89,8 +89,8 @@ final dataBaseReferenceBossData = databaseReference.child('sendData/$userId/');
 Future<dynamic> getUserData() async {
   return await dataBaseReferenceData.once().then((result) {
     final value = result.value;
-    print(value);
-    print(result.key);
+    // print(value);
+    // print(result.key);
     return value;
   });
 }
@@ -102,11 +102,7 @@ void readData() async {
       // .equalTo('School')
       .once()
       .then((DataSnapshot snapshot) {
-    print(snapshot.value);
-    list.add(snapshot.value);
-    print(snapshot.key);
     // print(snapshot.value);
-    //print(name);
-    //print('Data : ${snapshot.value}');
+    list.add(snapshot.value);
   });
 }

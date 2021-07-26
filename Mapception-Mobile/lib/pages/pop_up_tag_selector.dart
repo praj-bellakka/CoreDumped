@@ -50,7 +50,7 @@ class PopUpTagSelector<T> extends PageRoute<T> {
   @override
   Widget buildPage(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation) {
-    print(context);
+    // print(context);
     return _builder(context);
   }
 
@@ -256,7 +256,7 @@ class _AddTagPopupCard extends State<AddTagPopupCard> {
       setState(() {
         selectedDate = picked;
       });
-    print(selectedDate);
+    // print(selectedDate);
      // final snackBar = SnackBar(
     //       content: Text('Date saved!',
     //           style: GoogleFonts.montserrat(color: Colors.white)));

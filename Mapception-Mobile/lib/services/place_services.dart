@@ -77,7 +77,7 @@ class PlaceApiProvider {
     final request =
         'https://maps.googleapis.com/maps/api/geocode/json?&latlng=${pos.latitude},${pos.longitude}&key=$apiKey&sessiontoken=$sessionToken';
     final response = await client.get(Uri.parse(request));
-    print(response.statusCode);
+    // print(response.statusCode);
     if (response.statusCode == 200) {
       final result = json.decode(response.body);
       // print(result['results'][0]);

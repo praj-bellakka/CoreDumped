@@ -68,7 +68,7 @@ class _RouteView extends State<RouteView> {
   */
 
   Future<bool> checkEmptyList() async {
-    print(widget.tagName);
+    // print(widget.tagName);
     if (widget.tagName != 'Sent Agenda') {
       var data = await _ref.once();
       if (data.value != null) return true;

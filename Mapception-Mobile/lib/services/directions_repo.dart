@@ -34,7 +34,7 @@ class DirectionModel {
 
 Future<DirectionModel> findIndividualDirections(
     LatLng source, LatLng dest, String placeId, String tempId) async {
-  print("$source, $dest");
+  // print("$source, $dest");
   var baseUrl =
       "https://maps.googleapis.com/maps/api/directions/json?origin=${source.latitude},${source.longitude}&destination=${dest.latitude},${dest.longitude}&key=$apiKey";
   final response = await http.get(Uri.parse(baseUrl));
@@ -43,7 +43,7 @@ Future<DirectionModel> findIndividualDirections(
   if (response.statusCode == 200) {
     // print(tempId);
     var jsonResult = DirectionModel.fromJson(jsonDecode(response.body));
-    print(jsonResult.polyline);
+    // print(jsonResult.polyline);
     Polyline polyline = Polyline(
         polylineId: PolylineId(tempId),
         width: 5,
@@ -58,7 +58,7 @@ Future<DirectionModel> findIndividualDirections(
     tempPolylines[tempId] = polyline;
     return jsonResult;
   }
-  print(response.body);
+  // print(response.body);
   return null;
 }
 
@@ -66,11 +66,11 @@ Future<DirectionModel> findIndividualDirections(
 //Then, it will draw the polylines and update the main list
 void runAlgoAndSetPolylines(List<int> sortedList,
     List<List<double>> durationMatrix, List<List<double>> distMatrix) async {
-  print(tempPolylines);
+  // print(tempPolylines);
   for (int i = 0; i < sortedList.length - 1; i++) {
     int from = sortedList[i];
     int to = sortedList[i + 1];
-    print("from${from}to$to");
+    // print("from${from}to$to");
     totalDuration +=
         from < to ? durationMatrix[from][to] : durationMatrix[to][from];
     totalDistance += from < to
@@ -79,10 +79,10 @@ void runAlgoAndSetPolylines(List<int> sortedList,
     Polyline extractedPolyline =
         tempPolylines[from < to ? "from${from}to$to" : "from${to}to$from"];
     if (extractedPolyline != null) {
-      print(extractedPolyline.points);
-      print(extractedPolyline.mapsId);
+      // print(extractedPolyline.points);
+      // print(extractedPolyline.mapsId);
       polylines.add(extractedPolyline);
-      print('length of polylines is ${polylines.length}');
+      // print('length of polylines is ${polylines.length}');
     }
   }
   //clear temp storages

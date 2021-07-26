@@ -321,7 +321,7 @@ class _MapScreenState extends State<MapScreen> {
               _controller = controller;
             },
             onTap: (_position) async {
-              print(_position);
+              // print(_position);
               _findLocationAndAddMarker(_position);
             },
           ),
@@ -855,8 +855,8 @@ class _MapScreenState extends State<MapScreen> {
                                     await generatePathFunction(i, j);
                                 double durationValue = returnedList[0];
                                 double distValue = returnedList[1];
-                                print("generated path $i to $j\n");
-                                print(durationValue);
+                                // print("generated path $i to $j\n");
+                                // print(durationValue);
                                 pathDurationPermutations[i][j] = durationValue;
                                 pathDistPermutations[i][j] = distValue;
                               }
@@ -872,7 +872,7 @@ class _MapScreenState extends State<MapScreen> {
                                 pathDurationPermutations, pathDistPermutations);
                             /* edit markers */
                             _editMarkers(sortedList, returnToStart);
-                            print(sortedList);
+                            // print(sortedList);
                             /*reorder mapList based on sorted index */
 
                             for (int i = 1;

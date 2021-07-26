@@ -86,7 +86,7 @@ class DataSearch extends SearchDelegate<Suggestion> {
                           final placeDetails = await PlaceApiProvider(
                                   sessionToken)
                               .getPlaceDetails(snapshot.data[index].placeId);
-                          print(snapshot.data[index]);
+                          // print(snapshot.data[index]);
                           addToList(
                               snapshot.data[index].placeId,
                               snapshot.data[index].description,
