@@ -1,0 +1,18 @@
+.stepOne {
+  text-align: left;
+}
+
+.title-dashboard {
+  color: rgb(5, 2, 5);
+  text-align: center;
+}
+
+.title-current {
+  text-align: center;
+}
+
+.description-current {
+  margin-left: 15vh;
+  margin-right: 15vh;
+}
+
