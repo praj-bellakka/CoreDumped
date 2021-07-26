@@ -307,7 +307,7 @@ Future<List<int>> RouteOptimizeAlgo(
   }
   print(sum1);
 
-  var twoApproximate = twoApprox(mstGraph, numOfNodes);
+  List<int> twoApproximate = twoApprox(mstGraph, numOfNodes);
   print('\n\n2-approximate output:');
   print(twoApproximate);
   double sum2 = 0;
@@ -343,9 +343,9 @@ Future<List<int>> RouteOptimizeAlgo(
   return twoApproximate;
 }
 
-List twoApprox(UndirectedValueGraph graph, int n) {
+List<int> twoApprox(UndirectedValueGraph graph, int n) {
   var dfs = DepthFirstSearch(graph, n);
-  var finalList = dfs.getDFSorder(0);
+  List<int> finalList = dfs.getDFSorder(0).cast<int>();
   return finalList;
 }
 
